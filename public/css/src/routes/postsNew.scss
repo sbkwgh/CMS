@@ -1,0 +1,198 @@
+@keyframes tag-shake {
+	0% {transform: translateX(0rem);}
+	12.5% {transform: translateX(0.5rem);}
+	25% {transform: translateX(-0.5rem);}
+	37.5% {transform: translateX(0rem);}
+	50% {transform: translateX(0.5rem);}
+	67.5% {transform: translateX(0rem);}
+	75% {transform: translateX(-0.5rem);}
+	100% {transform: translateX(0rem);}
+}
+
+#markdown-editor.focus, #tag-bar.focus {
+	border-color: #cecece !important;
+	box-shadow: 0px 0px 0.125rem rgba(100, 100, 100, 0.15);
+}
+
+#main-container {
+	#title-bar {
+		@include card;
+		border: 0;
+		
+		@include placeholder {
+			text-align: center;
+			font-family: $font-header;
+			font-size: 1.5rem;
+			color: rgba(50,50,50,0.5);
+		}
+		
+		input {
+			width: 100%;
+			font-family: $font-content;
+			font-weight: 300;
+			height: 3rem;
+			padding: 0 0.5rem;
+			outline: none;
+			border: 2px solid $color-lightgray;
+			font-size: 1.5rem;
+
+			transition: all 0.2s;
+			
+			&:focus {
+				border-color: #cecece;
+				box-shadow: 0px 0px 0.125rem rgba(100, 100, 100, 0.15);
+			}
+		}
+	}
+	#editor {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		height: calc(100% - 10.5rem);
+		width: calc(100% - 3rem);
+		margin: 0 1.5rem;
+
+		#markdown-editor, #display {
+			border: 0.125rem solid $color-lightgray;
+			box-shadow: 0px 0px 0.1rem rgba(100, 100, 100, 0.15);
+			width: 50%;
+			background-color: #fff;
+			height: 100%;
+
+			transition: 0.2s all;
+
+			.editor-bar {
+				height: 2rem;
+				padding: 0.25rem 0.5rem;
+				color: $color-gray-l;
+				display: flex;
+				cursor: default;
+				justify-content: space-between;
+			}	
+		}
+
+		#markdown-editor {
+			margin-right: 0.5rem;
+
+			#editor-formatting i {
+				cursor: pointer;
+				margin: 0 0.0625rem;
+				transition: all 0.2s;
+
+				&:hover {
+					color: black;
+				}
+			}
+
+			@include placeholder {
+				color: rgba(50,50,50,0.5);
+				font-size: 1.25rem;
+				text-align: center;
+				font-family: $font-header;
+				line-height: 5rem;
+			}
+
+			textarea {
+				width: calc(100%);
+				outline: none;
+				height: calc(100% - 2rem - 0.1rem);
+				border: 0;
+				font-family: Arial, sans-serif;
+				resize: none;
+				padding: 0.5rem;
+				padding-top: 0;
+				font-size: 0.9rem;
+			}
+		}
+		#display {
+			margin-left: 0.5rem;
+
+			#word-count {
+
+			}
+
+			#display-output {
+				@extend %blogOutput;
+
+				#display-output-none {
+					color: rgb(200, 200, 200);
+					font-size: 1.25rem;
+					text-align: center;
+					font-family: $font-header;
+					line-height: 5rem;
+					width: 100%;
+					display: block;
+					cursor: default;
+
+					@extend .no-select;
+				}
+			}
+		}
+	}
+	#tag-bar {
+		@include card(2.5rem);
+		display: flex;
+		align-items: center;
+		flex-direction: row;
+		justify-content: space-between;
+		padding: 0 0.25rem;
+		margin-top: 1rem;
+		
+		#tags {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+
+			.tag {
+				padding: 0.2rem;
+				background-color: $color-lightgray;
+				display: inline-block;
+				margin: 0 0.125rem;
+				border-radius: 0.125rem;
+				cursor: default;
+				border: thin solid #bfbfbf;
+				position: relative;
+				display: flex;
+				align-items: center;
+				white-space: nowrap;
+
+				&:hover::before {
+					content: '\00D7';
+					position: absolute;
+					text-align: center;
+					display: block;
+					z-index: 2;
+					width: 100%;
+					height: 100%;
+					cursor: pointer;
+					font-size: 1.25rem;
+					left: 0;
+					font-weight: bold;
+					top: 0;
+					color: $color-red;
+					line-height: 1.7rem;
+					background-color: rgba(255, 255, 255, 0.8);
+				}
+			}
+
+			.duplicate {
+				animation: tag-shake 0.5s ease;
+			}
+
+			input[type="text"] {
+				border: 0;
+				width: 20rem;
+				height: 100%;
+				margin-left: 0.25rem;
+				outline: none;
+				font-family: $font-content;
+			}
+		}
+	}
+	#options {
+		position: absolute;
+		bottom: 1.4rem;
+		right: 2rem;
+		font-size: 0.9rem;
+	}
+}

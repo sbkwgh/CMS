@@ -1,0 +1,108 @@
+.no-post-selected {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: 'Montserrat', sans-serif;
+	font-size: 1.25rem;
+	text-align: center;
+
+	a {
+		color: black;
+	}
+}
+
+.post-listings {
+	@include card(calc(100% - 3rem), 15rem, 1.5rem);
+	overflow-y: auto;
+	float: left;
+
+	.no-post-selected {
+		font-size: 1.25rem;
+	}
+
+	.post-listing {
+		padding: 0.25rem 0.5rem;
+		border-bottom: thin solid $color-lightgray;
+		transition: 0.1s all;
+		cursor: pointer;
+
+		&:hover {
+			 background-color: #f6f6f6;
+		}
+
+		.post-title {
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+		.post-status.post-status-draft::before,
+		.post-status.post-status-published::before {
+			font-variant: small-caps;
+			display: inline-block;
+			border-radius: 0.125rem;
+			margin: 0.2rem;
+			padding: 0.125rem 0.25rem;
+			font-size: 0.75rem;
+		}
+		.post-status.post-status-draft::before {
+			content: 'DRAFT';
+			background-color: #fbdad6;
+		}
+		.post-status.post-status-published::before {
+			content: 'PUBLISHED';
+			background-color: #a4efb5;
+		}
+		.post-date_created {
+			float: right;
+			line-height: 2rem;
+			font-size: 0.75rem;
+		}
+	}
+	.post-listing.selected {
+		background-color: rgb(236, 237, 233);
+
+		@include selected-stripe($color-gray-l);
+	}
+
+
+}
+#post-display_card {
+	@include card(calc(100% - 3rem), calc(100% - 19.5rem), 1.5rem 1.5rem 1.5rem 0);
+	float: right;
+
+	#post-display_card-bar {
+		width: 100%;
+		height: 2rem;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		border-bottom: thin solid $color-lightgray;
+		padding: 0 0.75rem;
+
+
+		span, a {
+			cursor: pointer;
+			color: black;
+			text-decoration: none;
+
+			&:hover, &:visited, &:active {
+				text-decoration: underline;
+			}
+		}
+	}
+	#post-display_card-html {
+		@extend %blogOutput;
+
+		padding: 1rem 4.5rem;
+		overflow-y: auto;
+		height: calc(100% - 2rem);
+
+		.no-post-selected {
+			font-size: 1.25rem;
+			margin-top: -1rem;
+		}
+
+	}
+}

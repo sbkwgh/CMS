@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{{config.general.blog.title}}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="/public/css/blog.bundle.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+</head>
+<body>
+	<div id='color-bar'></div>
+	<header>
+		<a href='/blog'>{{config.general.blog.title || "Blogtitle"}}</a>
+		<div>{{config.general.blog.description || "Blog description here"}}</div>
+	</header>
+	{% if !posts.length %}
+		<h1 id='no-posts'>No posts to show here</h1>
+	{% endif %}
+	{% if tags %}
+		<h1 class='post'>Showing all posts with the tag{% if tags.length > 1 %}s{% endif %} "{{tags}}"</h1>
+	{% endif %}
+	{% for post in posts %}
+		<div class='post'>
+			<div class='post-header'>
+				<div class='post-date-author-bar'>
+					<div class='post-date-created'>{{post.dateString}}</div>
+				</div>
+				<a href='/blog/post/{{post.slug}}' class='post-title'>{{post.title}}</a>
+			</div>
+			<div class='post-body'>
+				{% autoescape false %}{{post.bodyHTML}}{% endautoescape %}
+			</div>
+			<div class='post-tags'>
+				{% for tag in post.tags %}
+					<a href='/blog/tags/{{tag}}'>{{tag}}</a>
+				{% endfor %}
+			</div>
+		</div>
+	{% endfor %}
+</body>
+</html>

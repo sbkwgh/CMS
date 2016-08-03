@@ -1,0 +1,134 @@
+@import "button";
+
+#comments {
+	font-family: 'Roboto', sans-serif;
+	font-size: 0.9rem;
+	width: 100%;
+	background-color: rgb(246, 245, 244);
+	box-sizing: border-box;
+	padding: 1rem 0;
+	margin-bottom: 2rem;
+	display: flex;
+	justify-content: center;
+	flex-flow: row wrap;
+		
+	h1 {
+		page-break-after: always;
+		width: 100%;
+		text-align: center;
+	}
+
+	#comments-flex {
+		display: flex;
+		flex-direction: row;
+		margin-bottom: 2rem;
+	}
+
+	label {
+		width: 6.5rem;
+		display: inline-block;
+	}
+	.last-label {
+		position: relative;
+		top: -2rem;
+	}
+	
+	textarea, input {
+		width: 14rem;
+		font-family: 'Roboto', sans-serif;
+		font-size: 0.9rem;
+	}
+	textarea {
+		margin-top: 0.25rem;
+	}
+	div.button {
+		margin-left: 6.75rem;
+		margin-top: 0.25rem;
+	}
+	
+	#form-box {
+		margin-right: 1rem;
+
+		.replies-bar {
+			margin-left: 6.75rem;
+			padding-top: 0.3rem;
+			font-weight: 300;
+			font-size: 0.8rem;
+
+			div {
+				display: inline-block;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				white-space: nowrap;
+				width: 11.65rem;
+			}
+			span {
+				width: 2.5rem;
+				cursor: pointer;
+				display: inline-block;
+				overflow: hidden;
+
+				&:hover {
+					text-decoration: underline;
+				}
+			}
+		}
+	}
+}
+
+.comment.comment-highlight {
+	background-color: rgb(207, 207, 207);
+	transition: background-color 0.5s;
+}
+.comment {
+	width: 45rem;
+	background-color: #fff;
+	font-family: 'Roboto', sans-serif;
+	font-weight: 300;
+	font-size: 0.9rem;
+	padding: 0.5rem 1rem;
+	position: relative;
+	box-sizing:border-box;
+	border-bottom: thin solid gray;
+
+	transition: background-color 8s;
+	
+	.comment-reply {
+		position: absolute;
+		right: 1rem;
+		text-decoration: underline;
+		cursor: pointer;
+		display: none;
+	}
+	.comment-reply.show {
+		display: inline-block;
+	}
+	
+	.comment-header {
+		width: 100%;
+		display: flex;
+		align-content: center;
+		
+		.comment-name {
+			font-weight: normal;
+		}
+		.comment-reply-name {
+			margin-left: 0.125rem;
+			cursor: pointer;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+		.comment-time {
+			margin-left: 0.5rem;
+			color: gray;
+		}
+	}
+}
+.comment:last-child {
+	border: 0;
+}
+.comment-indent {
+	padding-left: 2.5rem;
+}

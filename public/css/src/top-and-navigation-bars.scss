@@ -1,0 +1,95 @@
+.top-bar {
+	width: 100%;
+	height: 2.5rem;
+	background-color: $color-darkgray-d;
+	display: flex;
+
+	#logo {
+		font-family: $font-header;
+		text-align: center;
+		width: 10rem;
+		height: 2.5rem;
+		line-height: 2.5rem;
+		font-size: 1.5rem;
+		color: $color-lightgray;
+		cursor: default;
+	}
+	.actions {
+		width: calc(100% - 15rem);
+		height: 2.5rem;
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-start;
+		align-items: center;
+		color: #fff;
+		font-size: 0.85rem;
+
+		.action {
+			width: 6rem;
+			cursor: pointer;
+			text-align: center;
+			padding: 0.25rem;
+			border-radius: 0.25rem;
+			transition: all 0.2s;
+			margin: 0 1rem;
+
+			&:hover {
+				background-color: $color-darkgray;
+			}
+		}
+	}
+	#logout {
+		display: flex;
+		width: 5rem;
+		align-items: center;
+		height: 2.5rem;
+		font-size: 0.85rem;
+		
+		span {
+			cursor: pointer;
+			text-align: center;
+			padding: 0.25rem 0.5rem;
+			border-radius: 0.25rem;
+			transition: all 0.2s;
+			color: #fff;
+			
+			&:hover {
+				background-color: $color-gray;
+			}
+		}
+
+		
+	}
+}
+.navigation-menu {
+	padding-top: 0.5rem;
+	width: 10rem;
+	background-color: $color-darkgray;
+	height: calc(100% - 2.5rem);
+
+	.menu-item {
+		padding: 0.5rem 1rem;
+		font-size: 0.75rem;
+		font-weight: 300;
+		color: #fff;
+		cursor: default;
+		transition: 0.2s all;
+
+		&:hover {
+			background-color: $color-gray;
+		}
+
+		span, i {
+			cursor: pointer;
+		}
+	}
+	.selected {
+		background-color: $color-gray-l;
+	
+		@include selected-stripe;
+
+		&:hover {
+			background-color: $color-gray-l;
+		}
+	}
+}

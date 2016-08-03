@@ -1,0 +1,23 @@
+{
+  "name": "CMS",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "body-parser": "*",
+    "compression": "*",
+    "cookie-parser": "^1.4.3",
+    "countable": "^2.1.1",
+    "express": "*",
+    "express-session": "^1.14.0",
+    "html-loader": "^0.4.3",
+    "html-word-count": "^1.0.0",
+    "markdown": "^0.5.0",
+    "mongoose": "^4.5.5",
+    "morgan": "*",
+    "password-hash-and-salt": "^0.1.3",
+    "shortid": "^2.2.6",
+    "swig": "^1.4.2",
+    "vue-resource": "^0.9.3"
+  }
+}

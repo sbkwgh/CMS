@@ -1,0 +1,111 @@
+$font-content: 'Roboto', sans-serif;
+$font-header:  'Montserrat', sans-serif;
+
+$color-darkgray-d: #272626;
+$color-darkgray: #4D4D4D;;
+$color-gray: #606060;
+$color-gray-l: #808080;
+$color-lightgray: #e0e0e0;
+
+$color-darkred: #A70C00;
+$color-red: #D73C2C;
+
+@mixin placeholder {
+  ::input-placeholder         {@content}
+  ::-webkit-input-placeholder {@content}
+  :-moz-placeholder           {@content}
+  ::-moz-placeholder          {@content}
+  :-ms-input-placeholder      {@content}  
+}
+
+@mixin selected-stripe($color: #e7e7e7) {
+	position: relative;
+	&::before {
+		content: '';
+		height: 100%;
+		width: 0.125rem;
+		background-color: $color;
+		display: inline-block;
+		position: absolute;
+		left: 0;
+		top: 0;
+	}
+}
+
+@mixin card($height: auto, $width: calc(100% - 3rem), $margin: 1.5rem auto) {
+	border: 0.125rem solid $color-lightgray;
+	box-shadow: 0px 0px 0.1rem rgba(100, 100, 100, 0.15);
+	width: $width;
+	margin: $margin;
+	height: $height;
+	background-color: #fff;
+
+	transition: 0.2s all;
+
+	&:focus {
+		border-color: #cecece;
+		box-shadow: 0px 0px 0.125rem rgba(100, 100, 100, 0.15);
+	}
+}
+
+%blogOutput {
+	width: calc(100%);
+	height: calc(100% - 2rem);
+	border: 0;
+	padding: 0.5rem;
+	padding-top: 0;
+	text-align: justify;
+	overflow-y: auto;
+
+	img {
+		width: 85%;
+		margin: 0 7.5%;
+	}
+}
+
+.no-select {
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none; /* Chrome/Safari/Opera */
+	-khtml-user-select: none; /* Konqueror */
+	-moz-user-select: none; /* Firefox */
+	-ms-user-select: none; /* IE/Edge */
+	user-select: none; /* non-prefixed version, currently not supported by any browser */
+}
+
+@import "button";
+@import "top-and-navigation-bars";
+@import "modals";
+@import "tooltip";
+
+@import "routes/postsNew";
+@import "routes/posts";
+@import "routes/comments";
+
+html, body {
+	margin: 0;
+	padding: 0;
+	font-family: $font-content;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+strong {
+	font-weight: bold;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+#main-container {
+	width: calc(100% - 10rem);
+	height: calc(100% - 2.5rem);
+	position: absolute;
+	left: 10rem;
+	top: 2.5rem;
+	font-weight: 300;
+	font-size: 0.9rem;
+
+	background-color: #f9f8f4;
+}

@@ -1,0 +1,38 @@
+<div id='comments'>
+	<h1>Comments</h1>
+	<div id='comments-flex'>
+		<div id='form-box'>
+			<div><label>Your name:</label> <input v-model='name'></div>
+			<div class='replies-bar' v-if='replies._id.length'>
+				<div>Replying to <b>{{replies.name}}</b></div>
+				<span v-on:click='cancelReply()'>Cancel</span>
+			</div>
+			<div><label class='last-label'>Your comment:</label> <textarea v-model='commentBody'></textarea></div>
+			<div class='button btn-green btn-load' style='line-height: 1.75rem;' v-on:click='addComment()' v-el:add-comment v-bind:class='{"btn-disabled": ui.savingComment}'>
+				<i class='fa fa-refresh fa-spin loading-icon'></i>
+				Add comment
+			</div>
+		</div>
+		<div class='comments-box'>
+			<div v-if='!sortedComments.length' class='comment'>{{ui.loadingMessage}}</div>
+			<div class='comment' v-bind:class='{"comment-indent": comment.head, "comment-highlight": highlight===comment._id}' v-for='comment in sortedComments'>
+				<div class='comment-reply' v-if='comment.status === "approved"' v-on:click='replyComment(this)'>Reply to this comment</div>
+				<div class='comment-header'>
+					<div class='comment-name' v-if='comment.status === "approved"'>{{comment.name}}</div>
+					<span class='comment-reply-name' data-title='Replying to \"{{comment.repliesName}}\" - click to highlight' v-if='comment.status === "approved" && comment.replies' v-on:click='highlightComment(comment.replies)'>
+						<i class='fa fa-long-arrow-right fa-fw'></i>{{comment.repliesName}}
+					</span>
+					<div class='comment-time'>{{comment.dateCreated|timeString}}</div>
+				</div>
+				<div class='comment-comment'>
+					<template v-if='comment.status !== "approved"'>
+						{{{comment.moderatedMessage}}}
+					</template>
+					<template v-else>
+						{{comment.commentBody}}
+					</template>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

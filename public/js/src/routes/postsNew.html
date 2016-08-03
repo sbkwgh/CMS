@@ -1,0 +1,47 @@
+<div id='title-bar'>
+	<input id='post-title' v-model='title' placeholder='Post title' spellcheck="false">
+</div>
+<div id='editor'>
+	<div id='markdown-editor' v-bind:class="{'focus': ui.markdownEditorActive}">
+		<div class='editor-bar'>
+			<span>Markdown</span>
+			<div id='editor-formatting'>
+				<i id='me-bold' v-on:click='bold()' title='Bold' class='fa fa-bold'></i>
+				<i id='me-italic' v-on:click='italic()' title='Italic' class='fa fa-italic'></i>
+				<i id='me-link' v-on:click='link()' title='Link' class='fa fa-link'></i>
+				<i id='me-list-ul' v-on:click='bulletPoint()' title='Bullet-point' class='fa fa-list-ul'></i>
+				<i id='me-picture' v-on:click='image()' title='Image' class="fa fa-picture-o"></i>
+			</div>
+		</div>
+		<textarea v-on:focus='toggleFocusMarkdownEditor' v-on:blur='toggleFocusMarkdownEditor'  v-model='markdown' placeholder="Write your blog post in markdown here"></textarea>
+	</div>
+	<div id='display'>
+		<div class='editor-bar'>
+			<span>Display</span>
+			<div id='word-count'>
+				{{wordCountString}}
+			</div>
+		</div>
+		<div id='display-output'>
+			<template v-if='html.length'>{{{html}}}</template>
+			<span id='display-output-none' v-else>See the HTML output here</span>
+		</div>
+	</div>
+	<div id='options'>
+		<div v-on:click='deletePost()' v-el:delete v-bind:class='{"btn-disabled": ui.deleting}' v-show='ui.isSavedPost' class='button btn-red btn-load'>
+			<i class='fa fa-refresh fa-spin loading-icon'></i>
+			Delete post	
+		</div>
+		<div v-on:click.self='saveDraft()' v-el:save-draft v-bind:class='{"btn-disabled": ui.saving}' v-show='!published' class='button btn-load btn-green'>
+			<i class='fa fa-refresh fa-spin loading-icon'></i>
+			Save draft
+			<i id='save_draft_more' class='fa fa-caret-down btn-icon'></i>
+		</div>
+		<div v-on:click.self='saveDraft()' v-el:save-published v-bind:class='{"btn-disabled": ui.saving}' v-show='published' class='button btn-green btn-load'>
+			<i class='fa fa-refresh fa-spin loading-icon'></i>
+			Save changes
+			<i id='save_published_more' class='fa fa-caret-down btn-icon'></i>
+		</div>
+	</div>
+</div>
+<tag-bar></tag-bar>
