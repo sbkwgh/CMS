@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>{{config.general.blog.title}}</title>
+	<title>{{settings.blogTitle}}</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="/public/css/blog.bundle.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
@@ -9,8 +9,8 @@
 <body>
 	<div id='color-bar'></div>
 	<header>
-		<a href='/blog'>{{config.general.blog.title || "Blogtitle"}}</a>
-		<div>{{config.general.blog.description || "Blog description here"}}</div>
+		<a href='/blog'>{{settings.blogTitle}}</a>
+		<div>{{settings.blogDescription}}</div>
 	</header>
 	{% if !posts.length %}
 		<h1 id='no-posts'>No posts to show here</h1>

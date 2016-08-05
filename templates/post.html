@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>{{config.general.blog.title}}{% if post %} | {{post.title}}{% endif %}</title>
+	<title>{{settings.blogTitle}}{% if post %} | {{post.title}}{% endif %}</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="/public/css/blog.bundle.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 </head>
-<body id='app' data-post-id='{{post._id.toString()}}'>
+<body id='app'>
 	<div id='color-bar'></div>
 	<header>
-		<a href='/blog'>{{config.general.blog.title || 'Blogtitle'}}</a>
-		<div>{{config.general.blog.description || 'Blog description'}}</div>
+		<a href='/blog'>{{settings.blogTitle}}</a>
+		<div>{{settings.blogDescription}}</div>
 	</header>
 	{% if !post %}
 		<h1 id='no-posts'>The requested post does not exist</h1>
@@ -32,7 +32,7 @@
 				{% endfor %}
 			</div>
 		</div>
-		<post-comments></post-comments>
+		<post-comments post-id='{{post._id.toString()}}' comments-message='{{settings.commentsMessage}}'></post-comments>
 	{% endif %}
 	<script src='/public/js/blog.bundle.js'></script>
 </body>

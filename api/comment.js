@@ -2,6 +2,7 @@ var express = require('express');
 var mongoose = require('mongoose');
 var Comment = require('../models/comment.js');
 var Post = require('../models/post.js');
+var settings = require('../models/settings.js');
 var Errors = require('../errors.js');
 var paramsValidator = require('../paramsValidator.js');
 var router = express.Router();
@@ -71,26 +72,35 @@ router.post('/', function(req, res) {
 		return;
 	}
 	
-	Post.findOne({_id: commentParams.postId}, function(err, post) {
-		if(err) {
-			console.log(err);
-			res.json({error: Errors.unknown});
-		} else if(!post) {
-			res.json({error: Errors.invalidParams});
-		} else {
-			commentParams.status = 'pending';
-			commentParams.postTitle = post.title;
-			var comment = new Comment(commentParams);
+	settings.get(req.app.locals.db, function(err, settingsDoc) {
+		var commentsModerated = settingsDoc.commentsModerated;
 
-			comment.save(function(err, savedComment) {
-				if(err) {
-					console.log(err);
-					res.json({error: Errors.unknown});
+		Post.findOne({_id: commentParams.postId}, function(err, post) {
+			if(err) {
+				console.log(err);
+				res.json({error: Errors.unknown});
+			} else if(!post) {
+				res.json({error: Errors.invalidParams});
+			} else {
+				if(commentsModerated) {
+					commentParams.status = 'pending';
 				} else {
-					res.json(savedComment);
+					commentParams.status = 'approved';
 				}
-			});
-		}
+				commentParams.postTitle = post.title;
+				var comment = new Comment(commentParams);
+
+				comment.save(function(err, savedComment) {
+					if(err) {
+						console.log(err);
+						res.json({error: Errors.unknown});
+					} else {
+						res.json(savedComment);
+					}
+				});
+			}
+		});
+
 	});
 });
 

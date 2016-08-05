@@ -1,0 +1,22 @@
+.settings-section {
+	@include card(auto, calc(100% - 3rem), 1.5rem);
+	padding: 0 1rem;
+	box-sizing: border-box;
+
+	h1, h2 {
+		font-weight: 300;
+	}
+}
+
+#settings {
+	height: calc(100% - 6rem);
+	overflow-y: auto;
+}
+#settings-save {
+	position: absolute;
+	bottom: 0;
+
+	.button {
+		margin: 0.5rem 0;
+	}
+}

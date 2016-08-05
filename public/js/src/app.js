@@ -31,6 +31,9 @@ router.map({
 	},
 	'/comments': {
 		component: require('./routes/comments.js')(Vue)
+	},
+	'/settings': {
+		component: require('./routes/settings.js')(Vue)
 	}
 });
 

@@ -3,10 +3,9 @@ var Errors = require('../../../../errors.js');
 module.exports = function(Vue) {
 	return Vue.extend({
 		template: require('html!./postComments.html'),
+		props: ['postId', 'commentsMessage'],
 		data: function() {
 			return {
-				postId: document.body.getAttribute('data-post-id'),
-
 				name: '',
 				commentBody: '',
 				highlight: '',

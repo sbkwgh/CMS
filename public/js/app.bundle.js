@@ -77,6 +77,9 @@
 		},
 		'/comments': {
 			component: __webpack_require__(33)(Vue)
+		},
+		'/settings': {
+			component: __webpack_require__(35)(Vue)
 		}
 	});
 
@@ -21279,6 +21282,84 @@
 /***/ function(module, exports) {
 
 	module.exports = "<div id='comments-selection'>\r\n\t<div class='option' v-on:click='selectCategory(category.name)' v-bind:class='{\"selected\": category.selected}' v-for='category in categories'>\r\n\t\t<i class='fa fa-fw fa-{{category.icon}}'></i> {{category.name}}\r\n\t</div>\r\n</div>\r\n<div id='comments-box'>\r\n\t<div id='comment-box-bar' v-if='filteredComments.length'>\r\n\t\t<span>Sort by: {{sortBy}}&nbsp;<i class='fa fa-caret-down'></i></span>\r\n\t</div>\r\n\t<div class='loading-box no-select' v-if='!filteredComments.length'>\r\n\t\t{{loadingText}}\r\n\t</div>\r\n\t<div class='comment' v-for='comment in filteredComments'>\r\n\t\t<div class='comment-status' v-bind:class='\"comment-\" + comment.status'></div>\r\n\t\t<div class='center-column'>\r\n\t\t\t<div class='title-bar'>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<span class='name' data-title='Name of commenter'>{{comment.name}}</span>\r\n\t\t\t\t\t<span class='reply' data-title='Replying to \\\"{{comment.repliesName}}\\\"' v-if='comment.repliesName'>\r\n\t\t\t\t\t\t<i class='fa fa-long-arrow-right fa-fw'></i>{{comment.repliesName}}\r\n\t\t\t\t\t</span>\r\n\t\t\t\t\tin post\r\n\t\t\t\t\t<span class='post-title' v-on:click='openPost(comment.postId)' data-title='Title of post - click to open in new tab'>\"{{comment.postTitle}}\"</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<span class='date-created'>{{comment.dateCreated}}</span>\r\n\t\t\t</div>\r\n\t\t\t<div class='comment-body'>\r\n\t\t\t\t{{comment.commentBody}}\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div class='comment-buttons'>\r\n\t\t\t<div class='button btn-green' v-on:click='moderate(comment._id, $index, \"approved\")' v-if='comment.status === \"pending\" || comment.status === \"removed\"'>Approve</div>\r\n\t\t\t<div class='button btn-red'  v-on:click='moderate(comment._id, $index, \"removed\")'  v-if='comment.status === \"pending\" || comment.status === \"approved\"'>Remove</div>\r\n\t\t</div>\r\n\t</div>\r\n</div>";
+
+/***/ },
+/* 35 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var modals = __webpack_require__(13);
+	var Errors = __webpack_require__(27);
+
+	module.exports = function(Vue) {
+		return Vue.extend({
+			template: __webpack_require__(36),
+			data: function() {
+				return {
+					blogTitle: '',
+					blogDescription: '',
+					commentsModerated: false,
+					commentsMessage: '',
+					loading: false
+				}
+			},
+			methods: {
+				saveSettings: function() {
+					this.loading = true;
+
+					this.$http
+						.put('/api/settings', {
+							blogTitle: this.blogTitle,
+							blogDescription: this.blogDescription,
+							commentsModerated: this.commentsModerated,
+							commentsMessage: this.commentsMessage
+						})
+						.then(function(res) {
+							this.loading = false;
+
+							console.log(this.$els.save)
+
+							if(res.data.error) {
+								titleTooltip(this.$els.save, res.data.error.message, 5000);
+							} else {
+								titleTooltip(this.$els.save, 'Settings saved', 5000);
+							}
+						}, function(err) {
+							this.loading = false;
+							console.log(err);
+							titleTooltip(this.$els.save, Errors.unknown.message, 5000);
+						});
+				}
+			},
+			route: {
+				data: function(transition) {
+					this.$http
+						.get('/api/settings')
+						.then(function(res) {
+							if(res.data.error) {
+								modals.alert(res.data.error.message);
+							} else {
+								this.blogDescription = res.data.blogDescription;
+								this.blogTitle = res.data.blogTitle;
+								this.commentsModerated = res.data.commentsModerated;
+								this.commentsMessage = res.data.commentsMessage;
+							}
+
+							transition.next();
+						}, function(err) {
+							console.log(err);
+							modals.alert(Errors.unknown.message);
+							transition.next();
+						});
+				}
+			}
+		});
+	};
+
+/***/ },
+/* 36 */
+/***/ function(module, exports) {
+
+	module.exports = "<div id='settings'>\r\n\t<div class='settings-section'>\r\n\t\t<h2>General</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog title: </td>\r\n\t\t\t\t\t<td><input v-model='blogTitle'></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog description: </td>\r\n\t\t\t\t\t<td><textarea v-model='blogDescription'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t</div>\r\n\t<div class='settings-section'>\r\n\t\t<h2>Comment settings</h2>\r\n\t\t<p>\r\n\t\t\tBy selecting to moderate blog comments, all new comments will not show until individually approved\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Moderate comments: </td>\r\n\t\t\t\t\t<td><input type='checkbox' v-model='commentsModerated'></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Message above comment<br/>box (optional): </td>\r\n\t\t\t\t\t<td><textarea v-model='commentsMessage'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t</div>\r\n</div>\r\n\r\n<div class='settings-section' id='settings-save'>\r\n\t<div class='button btn-green btn-load' v-bind:class='{\"btn-disabled\": loading}' v-on:click='saveSettings()' v-el:save>\r\n\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\tSave settings\r\n\t</div>\r\n</div>";
 
 /***/ }
 /******/ ]);

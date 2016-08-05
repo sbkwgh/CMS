@@ -4,6 +4,7 @@ var session = require('express-session');
 var path = require('path');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+var MongoClient = require('mongodb').MongoClient;
 
 mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost/cms');
 var db = mongoose.connection;
@@ -46,6 +47,7 @@ app.get('/logout', function(req, res) {
 app.use('/api/account', require('./api/account.js'));
 app.use('/api/posts', require('./api/post.js'));
 app.use('/api/comments', require('./api/comment.js'));
+app.use('/api/settings', require('./api/settings.js'));
 
 app.get('/', function(req, res) {
 	res.redirect('/blog');
@@ -69,9 +71,19 @@ db.on('err', function() {
 	console.log('Error in connecting to mongodb');
 })
 db.once('open', function() {
-	console.log('Connected to mongodb');
-	app.listen(process.env.PORT || 3000, function() {
-		console.log('Listening on port ' + (process.env.PORT || 3000));
+	MongoClient.connect(process.env.MONGO_URL || 'mongodb://localhost/cms', function(err, db) {
+		if(err) {
+			console.log('Error in connecting to mongodb');
+			return;
+		}
+		console.log('Connected to mongodb');
+
+		app.locals.db = db;
+		require('./models/settings.js').init(db);
+
+		app.listen(process.env.PORT || 3000, function() {
+			console.log('Listening on port ' + (process.env.PORT || 3000));
+		});
 	});
 })
 	

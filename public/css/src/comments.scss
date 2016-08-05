@@ -24,6 +24,12 @@
 		margin-bottom: 2rem;
 	}
 
+	#comments-message {
+		font-weight: 300;
+		padding-bottom: 1rem;
+		margin-left: 6.75rem;
+	}
+
 	label {
 		width: 6.5rem;
 		display: inline-block;
@@ -131,4 +137,56 @@
 }
 .comment-indent {
 	padding-left: 2.5rem;
+}
+
+@media (max-width: 1100px) {
+	#comments #comments-flex {
+		flex-direction: column;
+
+		#form-box {
+			margin-bottom: 1rem;
+		}
+		.comment-reply {
+			display: inline-block;
+			width: 2.5rem;
+			height: 1.5rem;
+			overflow: hidden;
+			text-decoration: underline;
+		}
+	}
+}
+@media (max-width: 750px) {
+	#comments #comments-flex {
+		width: 100%;
+		padding: 0 1rem;
+
+		.comment {
+			width: auto;
+		}
+	}
+}
+@media (max-width: 400px) {
+	#comments #form-box div {
+		display: flex;
+		flex-direction: column;
+
+		.last-label {
+			position: static;
+		}
+	}
+	#comments #comments-flex div.comment-reply {
+		position: static;
+		width: 2rem;
+		overflow: hidden;
+		height: 1rem;
+		display: inline-block;
+		font-size: 0.75rem;
+	}
+	#form-box .button {
+		margin: 0.25rem 0 0.5rem 0 !important;
+		width: 10rem;
+	}
+	div#comments-message {
+		margin-left: 0 !important;
+	}
 }

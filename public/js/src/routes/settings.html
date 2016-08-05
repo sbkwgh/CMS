@@ -1,0 +1,40 @@
+<div id='settings'>
+	<div class='settings-section'>
+		<h2>General</h2>
+		<p>
+			<table>
+				<tr>
+					<td>Blog title: </td>
+					<td><input v-model='blogTitle'></td>
+				</tr>
+				<tr>
+					<td>Blog description: </td>
+					<td><textarea v-model='blogDescription'></textarea></td>
+				</tr>
+			</table>
+		</p>
+	</div>
+	<div class='settings-section'>
+		<h2>Comment settings</h2>
+		<p>
+			By selecting to moderate blog comments, all new comments will not show until individually approved
+			<table>
+				<tr>
+					<td>Moderate comments: </td>
+					<td><input type='checkbox' v-model='commentsModerated'></td>
+				</tr>
+				<tr>
+					<td>Message above comment<br/>box (optional): </td>
+					<td><textarea v-model='commentsMessage'></textarea></td>
+				</tr>
+			</table>
+		</p>
+	</div>
+</div>
+
+<div class='settings-section' id='settings-save'>
+	<div class='button btn-green btn-load' v-bind:class='{"btn-disabled": loading}' v-on:click='saveSettings()' v-el:save>
+		<i class='fa fa-refresh fa-spin loading-icon'></i>
+		Save settings
+	</div>
+</div>
