@@ -8,6 +8,7 @@
     "compression": "*",
     "cookie-parser": "^1.4.3",
     "countable": "^2.1.1",
+    "d3": "^4.2.1",
     "express": "*",
     "express-session": "^1.14.0",
     "html-loader": "^0.4.3",

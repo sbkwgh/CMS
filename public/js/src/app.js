@@ -34,6 +34,9 @@ router.map({
 	},
 	'/settings': {
 		component: require('./routes/settings.js')(Vue)
+	},
+	'/dashboard': {
+		component: require('./routes/dashboard.js')(Vue)
 	}
 });
 

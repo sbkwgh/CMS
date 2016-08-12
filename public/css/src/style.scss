@@ -81,6 +81,7 @@ $color-red: #D73C2C;
 @import "routes/posts";
 @import "routes/comments";
 @import "routes/settings";
+@import "routes/dashboard";
 
 html, body {
 	margin: 0;
