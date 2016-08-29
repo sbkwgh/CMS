@@ -15,7 +15,6 @@ router.post('/', function(req, res) {
 		if(user) {
 			res.json({error: Errors.accountAlreadyCreated});
 		} else {
-			console.log(req.body)
 			var user = new User({
 				username: req.body.username,
 				hash: req.body.password,
@@ -28,7 +27,7 @@ router.post('/', function(req, res) {
 					res.json({error: Errors.unknown});
 				} else {
 					req.session.loggedIn = true;
-					req.session.author = req.body.author;
+					res.cookie('author', req.body.author);
 
 					console.log(req.session)
 					res.json({success: true})
@@ -49,7 +48,7 @@ router.post('/:username', function(req, res) {
 			return;
 		} else if(verified) {
 			req.session.loggedIn = true;
-			req.session.author = user.author;
+			res.cookie('author', user.author);
 
 			res.json({success: true});
 		} else {

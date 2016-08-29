@@ -15,7 +15,8 @@ var postSchema = mongoose.Schema({
 		trim: true
 	}],
 	published: {type: Boolean, require: true, default: false},
-	slug: String
+	slug: String,
+	commentsAllowed: Boolean
 });
 
 postSchema.virtual('dateString').get(function() {

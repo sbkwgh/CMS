@@ -6,6 +6,8 @@ module.exports = function(Vue) {
 		props: ['postId', 'commentsMessage'],
 		data: function() {
 			return {
+				commentsAllowed: true,
+
 				name: '',
 				commentBody: '',
 				highlight: '',
@@ -136,7 +138,10 @@ module.exports = function(Vue) {
 							return comment;
 						});
 						this.ui.loadingMessage = 'No comments - add yours'
+					} else if(res.data.error.name === 'commentsDisabled') {
+						this.commentsAllowed = false;
 					}
+					correctHeaderTop();
 				}, function(err) {
 					this.ui.loadingMessage = 'Something went wrong loading comments. Try refreshing the page';
 					console.log(err);
@@ -165,19 +170,23 @@ module.exports = function(Vue) {
 };
 
 var ticking = false;
+var correctHeaderTop = function() {
+	var $comments = document.querySelector('#comments');
+	var $header = document.querySelector('header');
+
+	if(!$comments) return;
+	var height = $comments.getBoundingClientRect().top - $header.getBoundingClientRect().height - 2*16;
+
+	if(50 >= height) {
+		$header.style.top = height + 'px';
+	} else {
+		$header.style.top = null;
+	}
+}
 window.addEventListener('scroll', function() {
 	if(ticking) return;
 	setTimeout(function() {
-		var $comments = document.querySelector('#commnets');
-		var $header = document.querySelector('header');
-		var height = comments.getBoundingClientRect().top - $header.getBoundingClientRect().height - 2*16;
-
-		if(50 >= height) {
-			$header.style.top = height + 'px';
-		} else {
-			$header.style.top = null;
-		}
-
+		correctHeaderTop();
 		ticking = false;
 	}, 50);
 	ticking = true;

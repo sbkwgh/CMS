@@ -11,11 +11,11 @@ $color-darkred: #A70C00;
 $color-red: #D73C2C;
 
 @mixin placeholder {
-  ::input-placeholder         {@content}
-  ::-webkit-input-placeholder {@content}
-  :-moz-placeholder           {@content}
-  ::-moz-placeholder          {@content}
-  :-ms-input-placeholder      {@content}  
+	::input-placeholder         {@content}
+	::-webkit-input-placeholder {@content}
+	:-moz-placeholder           {@content}
+	::-moz-placeholder          {@content}
+	:-ms-input-placeholder      {@content}  
 }
 
 @mixin selected-stripe($color: #e7e7e7) {
@@ -72,6 +72,75 @@ $color-red: #D73C2C;
 	user-select: none; /* non-prefixed version, currently not supported by any browser */
 }
 
+.checkbox {
+	position: relative;
+
+	input {
+		width: 2rem;
+
+		&:checked + span {
+			border-color: #32d283;
+		}
+		&:checked + span::before {
+			left: 1rem;
+			background-color: #3ddea0;
+		}
+		&:checked:active + span::before {
+			left:0.85rem;
+		}
+
+		&:active + span {
+			filter: brightness(0.95);
+		}
+		&:active + span::before {
+			width: 0.95rem;
+		}
+
+		&:hover + span::before {
+			border-color: #a4a4a4;
+		}
+	}
+	span {
+		width: 2.25rem;
+		height: 1.25rem;
+		display: inline-block;
+		position: absolute;
+		background-color: #fff;
+		left: 0;
+		pointer-events: none;
+		border: 2px solid #a1a1a1;
+		border-radius: 5rem;
+		transition: all 0.15s;
+		box-shadow: 0 0 0.1rem rgba(175, 175, 175, 0.8) inset;
+
+		&::before {
+			content: '';
+			height: 0.8rem;
+			width: 0.8rem;
+			background-color: #bbb;
+			border-radius: 0.9rem;
+			position: relative;
+			top: -0.10625rem;
+			left: 0.2rem;
+			display: inline-block;
+			transition: all 0.2s ease-out;
+		}
+	}
+}
+
+input, textarea {
+	width: 15rem;
+	font-family: Roboto;
+	font-weight: 300;
+	border-radius: 0.125rem;
+	border: thin solid gray;
+	padding: 0.25rem 0.375rem;
+	font-size: 0.8rem;
+	&:focus {
+		border-color: #1699e0;
+	}
+}
+
 @import "button";
 @import "top-and-navigation-bars";
 @import "modals";
@@ -82,6 +151,7 @@ $color-red: #D73C2C;
 @import "routes/comments";
 @import "routes/settings";
 @import "routes/dashboard";
+@import "routes/design";
 
 html, body {
 	margin: 0;

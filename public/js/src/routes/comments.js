@@ -73,6 +73,29 @@ module.exports = function (Vue) {
 						modals.alert(Errors.unknown.message);
 					});
 			},
+			deletePost: function(id, comment) {
+				modals.confirm(
+					'Are you sure you want to permanently delete this comment?' + 
+					'<br/>This cannot be undone',
+					function(res) {
+						if(res) {
+							this.$http
+								.delete('/api/comments/moderate/' + id)
+								.then(function(res) {
+									if(res.data.error) {
+										modals.alert(res.data.error.message);
+									} else {
+										this.comments.$remove(comment);
+									}
+								}, function(err) {
+									console.log(err);
+									modals.alert(Errors.unknown.message);
+								});
+						}
+					}.bind(this),
+					'red'
+				)
+			},
 			openPost: function(id) {
 				window.open('/api/posts/' + id + '/redirect');
 			}

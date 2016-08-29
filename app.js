@@ -1,11 +1,17 @@
 var express = require('express');
+
 var compress = require('compression');
 var session = require('express-session');
-var path = require('path');
+var useragent = require('express-useragent');
 var bodyParser = require('body-parser');
+
+var path = require('path');
 var mongoose = require('mongoose');
 var MongoClient = require('mongodb').MongoClient;
 
+var analytics = require('./models/analytics.js');
+
+mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost/cms');
 var db = mongoose.connection;
 
@@ -17,6 +23,8 @@ app.use(session({
 	resave: false,
 	saveUninitialized: true
 }));
+app.use(useragent.express());
+
 app.use(bodyParser.json());
 app.use('/public', express.static('public'));
 
@@ -37,6 +45,7 @@ app.get('/login', function(req, res) {
 });
 
 app.get('/logout', function(req, res) {
+	res.clearCookie('author');
 	req.session.regenerate(function(err) {
 		if(!err) {
 			res.redirect('/login');
@@ -48,12 +57,7 @@ app.use('/api/account', require('./api/account.js'));
 app.use('/api/posts', require('./api/post.js'));
 app.use('/api/comments', require('./api/comment.js'));
 app.use('/api/settings', require('./api/settings.js'));
-
-app.get('/', function(req, res) {
-	res.redirect('/blog');
-});
-app.use('/blog', require('./blog.js'));
-
+app.use('/api/analytics', require('./api/analytics.js'));
 
 app.get('/cms', function(req, res) {
 	res.redirect('/cms/dashboard');
@@ -65,6 +69,29 @@ app.get('/cms/*', function(req, res) {
 		res.redirect('/login');
 	}
 });
+
+app.use(function(req, res, next) {
+	if(req.session.loggedIn) {
+		next();
+	} else {
+		analytics.add(req.app.locals.db, {
+			ip: req.ip,
+			path: decodeURIComponent(req.url),
+			useragent: req.useragent,
+			id: req.session.id
+		}, function(err) {
+			if(err) {
+				console.log(err);
+			}
+			next();
+		});
+	}
+});
+
+app.get('/', function(req, res) {
+	res.redirect('/blog');
+});
+app.use('/blog', require('./blog.js'));
 
 
 db.on('err', function() {

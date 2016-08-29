@@ -1,3 +1,14 @@
+@keyframes load {
+	from {
+		
+		opacity: 1;
+	}
+	to {
+		margin-top: 0rem;
+		opacity: 1;
+	}
+}
+
 .hidden {
 	display: none;
 }
@@ -119,6 +130,7 @@ html, body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	animation: load 0.25s ease-in;
 }
 
 #load, #message {

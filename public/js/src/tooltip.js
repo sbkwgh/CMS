@@ -25,7 +25,12 @@ function tooltip(tQueryString, tData) {
 		data.items.forEach(function(item) {
 			var itemDiv = document.createElement('div');
 			itemDiv.classList.add('tooltip-item');
-			itemDiv.appendChild(document.createTextNode(item.title));
+
+			if(typeof item.title === 'function') {
+				itemDiv.appendChild(document.createTextNode(item.title()));
+			} else {
+				itemDiv.appendChild(document.createTextNode(item.title));
+			}
 			
 			itemDiv.addEventListener('click', function(ev) {
 				if(item.click) {

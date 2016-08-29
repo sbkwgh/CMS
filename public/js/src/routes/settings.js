@@ -10,6 +10,7 @@ module.exports = function(Vue) {
 				blogDescription: '',
 				commentsModerated: false,
 				commentsMessage: '',
+				commentsAllowed: false,
 				loading: false
 			}
 		},
@@ -22,12 +23,11 @@ module.exports = function(Vue) {
 						blogTitle: this.blogTitle,
 						blogDescription: this.blogDescription,
 						commentsModerated: this.commentsModerated,
-						commentsMessage: this.commentsMessage
+						commentsMessage: this.commentsMessage,
+						commentsAllowed: this.commentsAllowed
 					})
 					.then(function(res) {
 						this.loading = false;
-
-						console.log(this.$els.save)
 
 						if(res.data.error) {
 							titleTooltip(this.$els.save, res.data.error.message, 5000);
@@ -53,6 +53,7 @@ module.exports = function(Vue) {
 							this.blogTitle = res.data.blogTitle;
 							this.commentsModerated = res.data.commentsModerated;
 							this.commentsMessage = res.data.commentsMessage;
+							this.commentsAllowed = res.data.commentsAllowed;
 						}
 
 						transition.next();

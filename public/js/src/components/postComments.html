@@ -1,8 +1,8 @@
-<div id='comments'>
+<div id='comments' v-if='commentsAllowed'>
 	<h1>Comments</h1>
 	<div id='comments-flex'>
 		<div id='form-box'>
-			<div id='comments-message'>{{commentsMessage}}</div>
+			<div id='comments-message' v-if='commentsMessage.length'>{{commentsMessage}}</div>
 			<div><label>Your name:</label> <input v-model='name'></div>
 			<div class='replies-bar' v-if='replies._id.length'>
 				<div>Replying to <b>{{replies.name}}</b></div>

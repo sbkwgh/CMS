@@ -47,42 +47,65 @@
 	var Vue = __webpack_require__(1);
 	var VueRouter = __webpack_require__(2);
 
-	window.titleTooltip = __webpack_require__(32);
-
-
-	var Tooltip = __webpack_require__(3);
-	window.Tooltip = Tooltip;
+	window.titleTooltip = __webpack_require__(3);
+	window.Tooltip = __webpack_require__(4);
 
 	Vue.use(VueRouter);
-	Vue.use(__webpack_require__(4));
+	Vue.use(__webpack_require__(5));
+
+	Vue.filter('pluralize', function(word, number) {
+		if(number === 1) {
+			return word;
+		} else {
+			return word + 's';
+		}
+	});
+
+	Vue.filter('prettyDate', function(d, showTime) {
+		var months = 
+			['January', 'February', 'March', 'April',
+			 'May', 'June', 'July', 'August', 'September',
+			 'October', 'November', 'December'],
+		    date = d,
+		    formattedString;
+
+		if(typeof date === 'string') date = new Date(d);
+		formattedString = date.getDate() + ' ' + months[date.getMonth()];
+		if(showTime) formattedString += ', ' + date.toTimeString().slice(0,5);
+
+		return formattedString;
+	});
 
 	var router = new VueRouter({history: true, root: '/cms'});
 
 
 	var App = Vue.extend({
 		components: {
-			'navigation-menu': __webpack_require__(5)(Vue, router)
+			'navigation-menu': __webpack_require__(6)(Vue, router)
 		}
 	});
 
 	router.map({
 		'/posts': {
-			component: __webpack_require__(6)(Vue)
+			component: __webpack_require__(7)(Vue)
 		},
 		'/posts/post/:id': {
-			component: __webpack_require__(15)(Vue)
+			component: __webpack_require__(16)(Vue)
 		},
 		'/posts/new': {
-			component: __webpack_require__(15)(Vue)
+			component: __webpack_require__(16)(Vue)
 		},
 		'/comments': {
-			component: __webpack_require__(33)(Vue)
+			component: __webpack_require__(31)(Vue)
 		},
 		'/settings': {
-			component: __webpack_require__(35)(Vue)
+			component: __webpack_require__(33)(Vue)
 		},
 		'/dashboard': {
-			component: __webpack_require__(37)(Vue)
+			component: __webpack_require__(35)(Vue)
+		},
+		'/design': {
+			component: __webpack_require__(44)(Vue)
 		}
 	});
 
@@ -12883,6 +12906,101 @@
 /* 3 */
 /***/ function(module, exports) {
 
+	function applyStyles(el, obj) {
+		for(var style in obj) {
+			el.style[style] = obj[style];
+		}
+	}
+
+	function addTitleTooltip(el, text, timeLimit) {
+		var span = document.createElement('span');
+		span.innerHTML = text;
+		span.classList.add('title-tooltip');
+		applyStyles(span, {
+			'backgroundColor': 'rgb(60,60,60)',
+			'color': '#fff',
+			'fontFamily': "'Roboto', sans-serif",
+			'fontWeight': '30',
+			'fontSize': '0.75rem',
+			'padding': '0.25rem 0.5rem',
+			'position': 'absolute',
+			'zIndex': '3',
+			'opacity': '0',
+			'max-width': '15rem',
+			'transition': 'all 0.25s'
+		});
+		
+		var arrow = document.createElement('div');
+		applyStyles(arrow, {
+			'borderLeft': '0.5rem solid transparent',
+			'borderRight': '0.5rem solid transparent',
+			'borderTop': '0.5rem solid rgb(60,60,60)',
+			'position': 'absolute',
+			'left': 'calc(50% - 0.45rem)',
+			'bottom': '-0.4rem'
+		});
+
+		span.appendChild(arrow);
+		document.body.appendChild(span);
+		
+		var coordsSpan = span.getBoundingClientRect();
+		var coordsEl = el.getBoundingClientRect();
+		var body = document.body.getBoundingClientRect();
+
+		var elCenter = coordsEl.left + coordsEl.width/2;
+
+		span.style.left = "calc(" + elCenter + "px - " + coordsSpan.width/2 + "px)";
+		span.style.top = coordsEl.top + window.pageYOffset - document.documentElement.clientTop - (coordsSpan.height+6) + 'px';
+		
+		coordsSpan = span.getBoundingClientRect();
+		coordsEl = el.getBoundingClientRect();
+		var coordsArrow = arrow.getBoundingClientRect();
+		
+		if(coordsSpan.left <= 0) {
+			span.style.left = '8px';
+			arrow.style.left = "calc(" + elCenter + "px - " + coordsArrow.width + "px)";
+		}
+		if(coordsSpan.right >= body.width) {
+			span.style.left = null;
+			span.style.right = '8px';
+			arrow.style.left = null;
+			arrow.style.right = (coordsEl.y + coordsArrow.width) + "px";
+		}
+		
+		if(timeLimit) {
+			setTimeout(function() {
+				document.body.removeChild(span);
+			}, timeLimit);
+		}
+
+		setTimeout(function() {
+			span.style.opacity = '1';
+		}, 250);
+
+		return span;
+	}
+
+	document.body.addEventListener('mouseover', function(ev) {
+		var title = ev.target.getAttribute('data-title');
+		
+		if(title) {
+			addTitleTooltip(ev.target, title);
+		}
+	});
+	document.body.addEventListener('mouseout', function(ev) {
+		var title = ev.target.getAttribute('data-title');
+		
+		if(title) {
+		 document.body.removeChild(document.querySelector('.title-tooltip'));
+		}
+	});
+
+	module.exports = addTitleTooltip;
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
 	function tooltip(tQueryString, tData) {
 		function closeDiv(div) {
 			div.parentElement.removeChild(div);
@@ -12910,7 +13028,12 @@
 			data.items.forEach(function(item) {
 				var itemDiv = document.createElement('div');
 				itemDiv.classList.add('tooltip-item');
-				itemDiv.appendChild(document.createTextNode(item.title));
+
+				if(typeof item.title === 'function') {
+					itemDiv.appendChild(document.createTextNode(item.title()));
+				} else {
+					itemDiv.appendChild(document.createTextNode(item.title));
+				}
 				
 				itemDiv.addEventListener('click', function(ev) {
 					if(item.click) {
@@ -12984,7 +13107,7 @@
 	tooltip('button', data);*/
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports) {
 
 	/*!
@@ -14301,7 +14424,7 @@
 	module.exports = plugin;
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports) {
 
 	function setSelected(route) {
@@ -14353,15 +14476,15 @@
 	};
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var markdown = __webpack_require__(7);
-	var modals = __webpack_require__(13);
+	var markdown = __webpack_require__(8);
+	var modals = __webpack_require__(14);
 
 	module.exports = function(Vue) {
 		return Vue.extend({
-			template: __webpack_require__(14),
+			template: __webpack_require__(15),
 			data: function() {
 				return {
 					posts: [],
@@ -14457,16 +14580,16 @@
 	};
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// super simple module for the most common nodejs use case.
-	exports.markdown = __webpack_require__(8);
+	exports.markdown = __webpack_require__(9);
 	exports.parse = exports.markdown.toHTML;
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Released under MIT license
@@ -14598,7 +14721,7 @@
 
 	// node
 	function mk_block_inspect() {
-	  var util = __webpack_require__(9);
+	  var util = __webpack_require__(10);
 	  return "Markdown.mk_block( " +
 	          util.inspect(this.toString()) +
 	          ", " +
@@ -16197,7 +16320,7 @@
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -16725,7 +16848,7 @@
 	}
 	exports.isPrimitive = isPrimitive;
 
-	exports.isBuffer = __webpack_require__(11);
+	exports.isBuffer = __webpack_require__(12);
 
 	function objectToString(o) {
 	  return Object.prototype.toString.call(o);
@@ -16769,7 +16892,7 @@
 	 *     prototype.
 	 * @param {function} superCtor Constructor function to inherit prototype from.
 	 */
-	exports.inherits = __webpack_require__(12);
+	exports.inherits = __webpack_require__(13);
 
 	exports._extend = function(origin, add) {
 	  // Don't do anything if add isn't an object
@@ -16787,10 +16910,10 @@
 	  return Object.prototype.hasOwnProperty.call(obj, prop);
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(10)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(11)))
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -16887,7 +17010,7 @@
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports) {
 
 	module.exports = function isBuffer(arg) {
@@ -16898,7 +17021,7 @@
 	}
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports) {
 
 	if (typeof Object.create === 'function') {
@@ -16927,7 +17050,7 @@
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports) {
 
 	function genericModal(message, okColour) {
@@ -17036,20 +17159,20 @@
 	}
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	module.exports = "\r\n<div class='post-listings'>\r\n\t<div class='post-listing' v-on:click='selectPost(post.slug)' v-bind:class='{\"selected\": post.selected}\t' v-for='post in posts'>\r\n\t\t<div class='post-title' title='{{post.title}}'>{{post.title}}</div>\r\n\t\t<span class='post-status' v-bind:class='[post.published ? classes.published : classes.draft]'></span>\r\n\t\t<div class='post-date_created'>{{post.dateString}}</div>\r\n\t</div>\r\n\t<template v-if='!posts.length'>\r\n\t\t<div class='no-post-selected'>\r\n\t\t\t<span>{{noPostsMessageBox}}</span>\r\n\t\t</div>\r\n\t</template>\r\n</div>\r\n<div id='post-display_card'>\r\n\t<div id='post-display_card-bar'>\r\n\t\t<template v-if='posts.length'>\r\n\t\t\t<div>\r\n\t\t\t\t<span v-on:click='editPost()'><i class='fa fa-pencil-square-o fa-fw'></i>Edit post</span>\r\n\t\t\t\t<span v-on:click='deletePost()'><i class='fa fa-trash-o fa-fw'></i>Delete post</span>\r\n\t\t\t</div>\r\n\t\t\t<a v-if='selected.published' href='/blog/post/{{selected.slug}}' target='_blank'>\r\n\t\t\t\t<i class='fa fa-external-link fa-fw' style='margin-right: 0.125rem;'></i>View on blog\r\n\t\t\t</a>\r\n\t\t</template>\r\n\t</div>\r\n\t<div id='post-display_card-html'>\r\n\t\t<template v-if='posts.length'>\r\n\t\t\t{{{selected.bodyHTML}}}\r\n\t\t</template>\r\n\t\t<template v-else>\r\n\t\t\t<div class='no-post-selected'>\r\n\t\t\t\t{{{noPostsMessageMain}}}\r\n\t\t\t</div>\r\n\t\t</template>\r\n\t</div>\r\n</div>";
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var markdown = __webpack_require__(7);
-	var modals = __webpack_require__(13);
-	var wordCount = __webpack_require__(16);
-	var tooltip = __webpack_require__(3);
-	var Errors = __webpack_require__(27);
+	var markdown = __webpack_require__(8);
+	var modals = __webpack_require__(14);
+	var wordCount = __webpack_require__(17);
+	var tooltip = __webpack_require__(4);
+	var Errors = __webpack_require__(28);
 
 	function pluralize(number, word) {
 		if(!number || number > 1) {
@@ -17118,10 +17241,10 @@
 	}
 
 	module.exports = function (Vue) {
-		var tagBar = __webpack_require__(28)(Vue);
+		var tagBar = __webpack_require__(29)(Vue);
 
 		return Vue.extend({
-			template: __webpack_require__(29),
+			template: __webpack_require__(30),
 			components: {
 				'tag-bar': tagBar
 			},
@@ -17132,12 +17255,13 @@
 					markdown: '',
 					published: false,
 					slug: '',
+					commentsAllowed: true,
 					ui: {
 						markdownEditorActive: false,
 						tagBarActive: false,
 						isSavedPost: !!this.$route.params.id,
 						saving: false,
-						deleting: false
+						savingOptions: false
 					}
 				}
 			},
@@ -17148,6 +17272,9 @@
 				wordCountString: function() {
 					var count = wordCount(this.html);
 					return pluralize(count, 'word');
+				},
+				random: function() {
+					return Math.random();
 				},
 				tags: {
 					get: function() {
@@ -17169,9 +17296,7 @@
 			},
 			methods: {
 				buttonMessage: function(button, message) {
-					if(button === 'delete') {
-						titleTooltip(this.$els.delete, message, 3000);
-					} else if(button === 'save') {
+					if(button === 'save') {
 						if(this.published) {
 							titleTooltip(this.$els.savePublished, message, 3000);
 						} else {
@@ -17209,11 +17334,12 @@
 				toggleFocusMarkdownEditor: function() {
 					this.ui.markdownEditorActive = !this.ui.markdownEditorActive;
 				},
-				saveDraft(postObjAdditions) {
+				saveDraft(postObjAdditions, message) {
 					var postObj = {
 						title: this.title,
 						markdown: this.markdown,
-						tags: this.tags
+						tags: this.tags,
+						commentsAllowed: this.commentsAllowed
 					};
 					for(var key in postObjAdditions) {
 						postObj[key] = postObjAdditions[key];
@@ -17222,18 +17348,20 @@
 					//This Vue instance is the same for the 'new post' page, as well as saved posts
 					//The difference here is if we put (update) or post (create) a new post
 					var id = this.$route.params.id;
-
 					this.ui.saving = true;
 					if(id) {
 						this.$http.put('/api/posts/' + id, postObj).then(function(res) {
 							if(res.data.error) {
 								modals.alert(res.data.error.message);
-							} else if(res.data.published === false) {
-								this.buttonMessage('save', 'Post unpublished');	
+							} else if(message) {
+								this.buttonMessage(message.button, message.message);
 							} else {
-								this.buttonMessage('save', 'Saved published post');	
+								if(res.data.published === false) {
+									this.buttonMessage('save', 'Post unpublished');	
+								} else {
+									this.buttonMessage('save', 'Saved published post');	
+								}
 							}
-
 							this.ui.saving = false;
 						}, function(err) {
 							console.log(err);
@@ -17276,6 +17404,25 @@
 						}.bind(this),
 						'red'
 					);
+				},
+				toggleComments: function() {
+					var id = this.$route.params.id;
+
+					this.commentsAllowed = !this.commentsAllowed;
+					this.ui.savingOptions = true;
+
+					this.$http.put('/api/posts/' + id, {commentsAllowed: this.commentsAllowed}).then(function(res) {
+						if(res.data.error) {
+							modals.alert(res.data.error.message);
+						} else {
+							this.buttonMessage('options', this.commentsAllowed ? 'Comments enabled' : 'Comments disabled');
+						}
+						this.ui.savingOptions = false;
+					}, function(err) {
+						console.log(err);
+						modals.alert(Errors.unknown.message);
+						this.ui.savingOptions = false;
+					});
 				}
 			},
 			ready: function() {
@@ -17306,23 +17453,36 @@
 						}
 					]
 				});
+				tooltip('#post-options', {
+					items: [
+						{title: 'Delete post', click: this.deletePost},
+						{title: () => this.commentsAllowed ? 'Disable comments' : 'Enable comments', click: this.toggleComments}
+					]
+				})
 
 				var id = this.$route.params.id;
 				if(id) {
 					this.$http.get('/api/posts/' + id).then(function(res) {
-						if(res.error) {
-							modals.alert(res.data.error.message);
+						if(res.data.error) {
+							modals.alert(res.data.error.message, function() {
+								this.$router.go('/posts')
+							}.bind(this));
 						} else {
 							this.title = res.data.title;
 							this.markdown = res.data.markdown;
 							this.tags = res.data.tags;
 							this.published = res.data.published;
-							this.slug = res.data.slug
+							this.slug = res.data.slug;
+							if(typeof res.data.commentsAllowed !== 'undefined') {
+								this.commentsAllowed = res.data.commentsAllowed;
+							}
 						}
 					}, function(err) {
 						if(err) {
 							console.log(err);
-							modals.alert(Errors.unknown.message);
+							modals.alert(Errors.unknown.message, function() {
+								this.$router.go('/posts')
+							}.bind(this));
 						}
 					});
 				}
@@ -17331,11 +17491,11 @@
 	};
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var htmlToText = __webpack_require__(17);
-	var wordCount = __webpack_require__(24);
+	var htmlToText = __webpack_require__(18);
+	var wordCount = __webpack_require__(25);
 
 	module.exports = function (body) {
 	  var text = htmlToText.fromString(body, {
@@ -17349,23 +17509,23 @@
 
 
 /***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__(18);
-
-/***/ },
 /* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var util = __webpack_require__(9);
+	module.exports = __webpack_require__(19);
 
-	var _ = __webpack_require__(19);
-	var _s = __webpack_require__(20);
-	var htmlparser = __webpack_require__(21);
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
 
-	var helper = __webpack_require__(22);
-	var format = __webpack_require__(23);
+	var util = __webpack_require__(10);
+
+	var _ = __webpack_require__(20);
+	var _s = __webpack_require__(21);
+	var htmlparser = __webpack_require__(22);
+
+	var helper = __webpack_require__(23);
+	var format = __webpack_require__(24);
 
 	// Which type of tags should not be parsed
 	var SKIP_TYPES = [
@@ -17511,7 +17671,7 @@
 
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.8.3
@@ -19065,7 +19225,7 @@
 
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//  Underscore.string
@@ -19744,7 +19904,7 @@
 
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(__filename, __dirname) {/***********************************************
@@ -20574,11 +20734,11 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, "/index.js", "/"))
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(19);
-	var _s = __webpack_require__(20);
+	var _ = __webpack_require__(20);
+	var _s = __webpack_require__(21);
 
 	/**
 	 * <p>Decodes any HTML entities in a string into their unicode form</p>
@@ -20660,13 +20820,13 @@
 
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(19);
-	var _s = __webpack_require__(20);
+	var _ = __webpack_require__(20);
+	var _s = __webpack_require__(21);
 
-	var helper = __webpack_require__(22);
+	var helper = __webpack_require__(23);
 
 	function formatText(elem, options) {
 		var text = (options.isInPre ? elem.raw : _s.strip(elem.raw));
@@ -20877,7 +21037,7 @@
 
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*!
@@ -20889,7 +21049,7 @@
 
 	'use strict';
 
-	var matches = __webpack_require__(25);
+	var matches = __webpack_require__(26);
 
 	module.exports = function wordcount(str) {
 	  if (typeof str !== 'string') {
@@ -20901,7 +21061,7 @@
 	};
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*!
@@ -20913,7 +21073,7 @@
 
 	'use strict';
 
-	var regex = __webpack_require__(26);
+	var regex = __webpack_require__(27);
 
 	module.exports = function wordcount(str) {
 	  if (typeof str !== 'string') {
@@ -20924,7 +21084,7 @@
 
 
 /***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports) {
 
 	/*!
@@ -20943,7 +21103,7 @@
 
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports) {
 
 	var Errors = {
@@ -20953,7 +21113,8 @@
 		invalidParams: 'The parameters of the request were incorrect',
 		notAuthorised: 'The request was not authorised. Try logging in again',
 		invalidId: 'An invalid post id was provided',
-		postNotFound: 'No post was found for the id provided'
+		postNotFound: 'No post was found for the id provided',
+		commentsDisabled: 'Comments have been disabled'
 	};
 
 	for(var errorName in Errors) {
@@ -20967,7 +21128,7 @@
 	module.exports = Errors;
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports) {
 
 	module.exports = function (Vue) {
@@ -21059,118 +21220,22 @@
 	}
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports) {
 
-	module.exports = "<div id='title-bar'>\r\n\t<input id='post-title' v-model='title' placeholder='Post title' spellcheck=\"false\">\r\n</div>\r\n<div id='editor'>\r\n\t<div id='markdown-editor' v-bind:class=\"{'focus': ui.markdownEditorActive}\">\r\n\t\t<div class='editor-bar'>\r\n\t\t\t<span>Markdown</span>\r\n\t\t\t<div id='editor-formatting'>\r\n\t\t\t\t<i id='me-bold' v-on:click='bold()' title='Bold' class='fa fa-bold'></i>\r\n\t\t\t\t<i id='me-italic' v-on:click='italic()' title='Italic' class='fa fa-italic'></i>\r\n\t\t\t\t<i id='me-link' v-on:click='link()' title='Link' class='fa fa-link'></i>\r\n\t\t\t\t<i id='me-list-ul' v-on:click='bulletPoint()' title='Bullet-point' class='fa fa-list-ul'></i>\r\n\t\t\t\t<i id='me-picture' v-on:click='image()' title='Image' class=\"fa fa-picture-o\"></i>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<textarea v-on:focus='toggleFocusMarkdownEditor' v-on:blur='toggleFocusMarkdownEditor'  v-model='markdown' placeholder=\"Write your blog post in markdown here\"></textarea>\r\n\t</div>\r\n\t<div id='display'>\r\n\t\t<div class='editor-bar'>\r\n\t\t\t<span>Display</span>\r\n\t\t\t<div id='word-count'>\r\n\t\t\t\t{{wordCountString}}\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div id='display-output'>\r\n\t\t\t<template v-if='html.length'>{{{html}}}</template>\r\n\t\t\t<span id='display-output-none' v-else>See the HTML output here</span>\r\n\t\t</div>\r\n\t</div>\r\n\t<div id='options'>\r\n\t\t<div v-on:click='deletePost()' v-el:delete v-bind:class='{\"btn-disabled\": ui.deleting}' v-show='ui.isSavedPost' class='button btn-red btn-load'>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tDelete post\t\r\n\t\t</div>\r\n\t\t<div v-on:click.self='saveDraft()' v-el:save-draft v-bind:class='{\"btn-disabled\": ui.saving}' v-show='!published' class='button btn-load btn-green'>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tSave draft\r\n\t\t\t<i id='save_draft_more' class='fa fa-caret-down btn-icon'></i>\r\n\t\t</div>\r\n\t\t<div v-on:click.self='saveDraft()' v-el:save-published v-bind:class='{\"btn-disabled\": ui.saving}' v-show='published' class='button btn-green btn-load'>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tSave changes\r\n\t\t\t<i id='save_published_more' class='fa fa-caret-down btn-icon'></i>\r\n\t\t</div>\r\n\t</div>\r\n</div>\r\n<tag-bar></tag-bar>";
+	module.exports = "<div id='title-bar'>\r\n\t<input id='post-title' v-model='title' placeholder='Post title' spellcheck=\"false\">\r\n</div>\r\n<div id='editor'>\r\n\t<div id='markdown-editor' v-bind:class=\"{'focus': ui.markdownEditorActive}\">\r\n\t\t<div class='editor-bar'>\r\n\t\t\t<span>Markdown</span>\r\n\t\t\t<div id='editor-formatting'>\r\n\t\t\t\t<i id='me-bold' v-on:click='bold()' title='Bold' class='fa fa-bold'></i>\r\n\t\t\t\t<i id='me-italic' v-on:click='italic()' title='Italic' class='fa fa-italic'></i>\r\n\t\t\t\t<i id='me-link' v-on:click='link()' title='Link' class='fa fa-link'></i>\r\n\t\t\t\t<i id='me-list-ul' v-on:click='bulletPoint()' title='Bullet-point' class='fa fa-list-ul'></i>\r\n\t\t\t\t<i id='me-picture' v-on:click='image()' title='Image' class=\"fa fa-picture-o\"></i>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<textarea v-on:focus='toggleFocusMarkdownEditor' v-on:blur='toggleFocusMarkdownEditor'  v-model='markdown' placeholder=\"Write your blog post in markdown here\"></textarea>\r\n\t</div>\r\n\t<div id='display'>\r\n\t\t<div class='editor-bar'>\r\n\t\t\t<span>Display</span>\r\n\t\t\t<div id='word-count'>\r\n\t\t\t\t{{wordCountString}}\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div id='display-output'>\r\n\t\t\t<template v-if='html.length'>{{{html}}}</template>\r\n\t\t\t<span id='display-output-none' v-else>See the HTML output here</span>\r\n\t\t</div>\r\n\t</div>\r\n\t<div id='options'>\r\n\t\t<div \r\n\t\t\tid='post-options'\r\n\t\t\tclass='button btn-load'\r\n\t\t\tv-bind:class='{\"btn-disabled\": ui.savingOptions}'\r\n\t\t\tv-show='ui.isSavedPost'\r\n\t\t\tv-el:options\r\n\t\t>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tPost options\r\n\t\t</div>\r\n\t\t<div v-on:click.self='saveDraft()' v-el:save-draft v-bind:class='{\"btn-disabled\": ui.saving}' v-show='!published' class='button btn-load btn-green'>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tSave draft\r\n\t\t\t<i id='save_draft_more' class='fa fa-caret-down btn-icon'></i>\r\n\t\t</div>\r\n\t\t<div v-on:click.self='saveDraft()' v-el:save-published v-bind:class='{\"btn-disabled\": ui.saving}' v-show='published' class='button btn-green btn-load'>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tSave changes\r\n\t\t\t<i id='save_published_more' class='fa fa-caret-down btn-icon'></i>\r\n\t\t</div>\r\n\t</div>\r\n</div>\r\n<tag-bar></tag-bar>";
 
 /***/ },
-/* 30 */,
-/* 31 */,
-/* 32 */
-/***/ function(module, exports) {
-
-	function applyStyles(el, obj) {
-		for(var style in obj) {
-			el.style[style] = obj[style];
-		}
-	}
-
-	function addTitleTooltip(el, text, timeLimit) {
-		var span = document.createElement('span');
-		span.innerHTML = text;
-		span.classList.add('title-tooltip');
-		applyStyles(span, {
-			'backgroundColor': 'rgb(60,60,60)',
-			'color': '#fff',
-			'fontFamily': "'Roboto', sans-serif",
-			'fontWeight': '30',
-			'fontSize': '0.75rem',
-			'padding': '0.25rem 0.5rem',
-			'position': 'absolute',
-			'zIndex': '3',
-			'opacity': '0',
-			'transition': 'all 0.25s'
-		});
-		
-		var arrow = document.createElement('div');
-		applyStyles(arrow, {
-			'borderLeft': '0.5rem solid transparent',
-			'borderRight': '0.5rem solid transparent',
-			'borderTop': '0.5rem solid rgb(60,60,60)',
-			'position': 'absolute',
-			'left': 'calc(50% - 0.4rem)',
-			'bottom': '-0.4rem'
-		});
-
-		span.appendChild(arrow);
-		document.body.appendChild(span);
-		
-		var coordsSpan = span.getBoundingClientRect();
-		var coordsEl = el.getBoundingClientRect();
-		var body = document.body.getBoundingClientRect();
-
-		var elCenter = coordsEl.left + coordsEl.width/2;
-
-		span.style.left = "calc(" + elCenter + "px - " + coordsSpan.width/2 + "px)";
-		span.style.top = coordsEl.top + window.pageYOffset - document.documentElement.clientTop - (coordsSpan.height+6) + 'px';
-		
-		coordsSpan = span.getBoundingClientRect();
-		coordsEl = el.getBoundingClientRect();
-		var coordsArrow = arrow.getBoundingClientRect();
-		
-		if(coordsSpan.left <= 0) {
-			span.style.left = '8px';
-			arrow.style.left = "calc(" + elCenter + "px - " + coordsArrow.width + "px)";
-		}
-		if(coordsSpan.right >= body.width) {
-			span.style.left = null;
-			span.style.right = '8px';
-			arrow.style.left = null;
-			arrow.style.right = (coordsEl.y + coordsArrow.width) + "px";
-		}
-		
-		if(timeLimit) {
-			setTimeout(function() {
-				document.body.removeChild(span);
-			}, timeLimit);
-		}
-
-		setTimeout(function() {
-			span.style.opacity = '1';
-		}, 250);
-
-		return span;
-	}
-
-	document.body.addEventListener('mouseover', function(ev) {
-		var title = ev.target.getAttribute('data-title');
-		
-		if(title) {
-			addTitleTooltip(ev.target, title);
-		}
-	});
-	document.body.addEventListener('mouseout', function(ev) {
-		var title = ev.target.getAttribute('data-title');
-		
-		if(title) {
-		 document.body.removeChild(document.querySelector('.title-tooltip'));
-		}
-	});
-
-	module.exports = addTitleTooltip;
-
-/***/ },
-/* 33 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var modals = __webpack_require__(13);
-	var Tooltip = __webpack_require__(3);
-	var Errors = __webpack_require__(27);
+	var modals = __webpack_require__(14);
+	var Tooltip = __webpack_require__(4);
+	var Errors = __webpack_require__(28);
 
 	module.exports = function (Vue) {
 		return Vue.extend({
-			template: __webpack_require__(34),
+			template: __webpack_require__(32),
 			data: function() {
 				return {
 					categories: [
@@ -21239,6 +21304,29 @@
 							modals.alert(Errors.unknown.message);
 						});
 				},
+				deletePost: function(id, comment) {
+					modals.confirm(
+						'Are you sure you want to permanently delete this comment?' + 
+						'<br/>This cannot be undone',
+						function(res) {
+							if(res) {
+								this.$http
+									.delete('/api/comments/moderate/' + id)
+									.then(function(res) {
+										if(res.data.error) {
+											modals.alert(res.data.error.message);
+										} else {
+											this.comments.$remove(comment);
+										}
+									}, function(err) {
+										console.log(err);
+										modals.alert(Errors.unknown.message);
+									});
+							}
+						}.bind(this),
+						'red'
+					)
+				},
 				openPost: function(id) {
 					window.open('/api/posts/' + id + '/redirect');
 				}
@@ -21281,27 +21369,28 @@
 	}
 
 /***/ },
-/* 34 */
+/* 32 */
 /***/ function(module, exports) {
 
-	module.exports = "<div id='comments-selection'>\r\n\t<div class='option' v-on:click='selectCategory(category.name)' v-bind:class='{\"selected\": category.selected}' v-for='category in categories'>\r\n\t\t<i class='fa fa-fw fa-{{category.icon}}'></i> {{category.name}}\r\n\t</div>\r\n</div>\r\n<div id='comments-box'>\r\n\t<div id='comment-box-bar' v-if='filteredComments.length'>\r\n\t\t<span>Sort by: {{sortBy}}&nbsp;<i class='fa fa-caret-down'></i></span>\r\n\t</div>\r\n\t<div class='loading-box no-select' v-if='!filteredComments.length'>\r\n\t\t{{loadingText}}\r\n\t</div>\r\n\t<div class='comment' v-for='comment in filteredComments'>\r\n\t\t<div class='comment-status' v-bind:class='\"comment-\" + comment.status'></div>\r\n\t\t<div class='center-column'>\r\n\t\t\t<div class='title-bar'>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<span class='name' data-title='Name of commenter'>{{comment.name}}</span>\r\n\t\t\t\t\t<span class='reply' data-title='Replying to \\\"{{comment.repliesName}}\\\"' v-if='comment.repliesName'>\r\n\t\t\t\t\t\t<i class='fa fa-long-arrow-right fa-fw'></i>{{comment.repliesName}}\r\n\t\t\t\t\t</span>\r\n\t\t\t\t\tin post\r\n\t\t\t\t\t<span class='post-title' v-on:click='openPost(comment.postId)' data-title='Title of post - click to open in new tab'>\"{{comment.postTitle}}\"</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<span class='date-created'>{{comment.dateCreated}}</span>\r\n\t\t\t</div>\r\n\t\t\t<div class='comment-body'>\r\n\t\t\t\t{{comment.commentBody}}\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div class='comment-buttons'>\r\n\t\t\t<div class='button btn-green' v-on:click='moderate(comment._id, $index, \"approved\")' v-if='comment.status === \"pending\" || comment.status === \"removed\"'>Approve</div>\r\n\t\t\t<div class='button btn-red'  v-on:click='moderate(comment._id, $index, \"removed\")'  v-if='comment.status === \"pending\" || comment.status === \"approved\"'>Remove</div>\r\n\t\t</div>\r\n\t</div>\r\n</div>";
+	module.exports = "<div id='comments-selection'>\r\n\t<div class='option' v-on:click='selectCategory(category.name)' v-bind:class='{\"selected\": category.selected}' v-for='category in categories'>\r\n\t\t<i class='fa fa-fw fa-{{category.icon}}'></i> {{category.name}}\r\n\t</div>\r\n</div>\r\n<div id='comments-box'>\r\n\t<div id='comment-box-bar' v-if='filteredComments.length'>\r\n\t\t<span>Sort by: {{sortBy}}&nbsp;<i class='fa fa-caret-down'></i></span>\r\n\t</div>\r\n\t<div class='loading-box no-select' v-if='!filteredComments.length'>\r\n\t\t{{loadingText}}\r\n\t</div>\r\n\t<div class='comment' v-for='comment in filteredComments'>\r\n\t\t<div class='comment-status' v-bind:class='\"comment-\" + comment.status'></div>\r\n\t\t<div class='center-column'>\r\n\t\t\t<div class='title-bar'>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<span class='name' data-title='Name of commenter'>{{comment.name}}</span>\r\n\t\t\t\t\t<span class='reply' data-title='Replying to \\\"{{comment.repliesName}}\\\"' v-if='comment.repliesName'>\r\n\t\t\t\t\t\t<i class='fa fa-long-arrow-right fa-fw'></i>{{comment.repliesName}}\r\n\t\t\t\t\t</span>\r\n\t\t\t\t\tin post\r\n\t\t\t\t\t<span class='post-title' v-on:click='openPost(comment.postId)' data-title='Title of post - click to open in new tab'>\"{{comment.postTitle}}\"</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<span class='date-created'>{{comment.dateCreated | prettyDate 'and time'}}</span>\r\n\t\t\t</div>\r\n\t\t\t<div class='comment-body'>\r\n\t\t\t\t{{comment.commentBody}}\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div class='comment-buttons'>\r\n\t\t\t<div class='button btn-green' v-on:click='moderate(comment._id, $index, \"approved\")' v-if='comment.status === \"pending\" || comment.status === \"removed\"'>Approve</div>\r\n\t\t\t<div class='button btn-red'  v-on:click='moderate(comment._id, $index, \"removed\")'  v-if='comment.status === \"pending\" || comment.status === \"approved\"'>Remove</div>\r\n\t\t\t<div class='button btn-red'  v-on:click='deletePost(comment._id, comment)'  v-if='comment.status === \"removed\"'>Delete</div>\r\n\t\t</div>\r\n\t</div>\r\n</div>";
 
 /***/ },
-/* 35 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var modals = __webpack_require__(13);
-	var Errors = __webpack_require__(27);
+	var modals = __webpack_require__(14);
+	var Errors = __webpack_require__(28);
 
 	module.exports = function(Vue) {
 		return Vue.extend({
-			template: __webpack_require__(36),
+			template: __webpack_require__(34),
 			data: function() {
 				return {
 					blogTitle: '',
 					blogDescription: '',
 					commentsModerated: false,
 					commentsMessage: '',
+					commentsAllowed: false,
 					loading: false
 				}
 			},
@@ -21314,12 +21403,11 @@
 							blogTitle: this.blogTitle,
 							blogDescription: this.blogDescription,
 							commentsModerated: this.commentsModerated,
-							commentsMessage: this.commentsMessage
+							commentsMessage: this.commentsMessage,
+							commentsAllowed: this.commentsAllowed
 						})
 						.then(function(res) {
 							this.loading = false;
-
-							console.log(this.$els.save)
 
 							if(res.data.error) {
 								titleTooltip(this.$els.save, res.data.error.message, 5000);
@@ -21345,6 +21433,7 @@
 								this.blogTitle = res.data.blogTitle;
 								this.commentsModerated = res.data.commentsModerated;
 								this.commentsMessage = res.data.commentsMessage;
+								this.commentsAllowed = res.data.commentsAllowed;
 							}
 
 							transition.next();
@@ -21359,30 +21448,231 @@
 	};
 
 /***/ },
-/* 36 */
+/* 34 */
 /***/ function(module, exports) {
 
-	module.exports = "<div id='settings'>\r\n\t<div class='settings-section'>\r\n\t\t<h2>General</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog title: </td>\r\n\t\t\t\t\t<td><input v-model='blogTitle'></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog description: </td>\r\n\t\t\t\t\t<td><textarea v-model='blogDescription'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t</div>\r\n\t<div class='settings-section'>\r\n\t\t<h2>Comment settings</h2>\r\n\t\t<p>\r\n\t\t\tBy selecting to moderate blog comments, all new comments will not show until individually approved\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Moderate comments: </td>\r\n\t\t\t\t\t<td><input type='checkbox' v-model='commentsModerated'></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Message above comment<br/>box (optional): </td>\r\n\t\t\t\t\t<td><textarea v-model='commentsMessage'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t</div>\r\n</div>\r\n\r\n<div class='settings-section' id='settings-save'>\r\n\t<div class='button btn-green btn-load' v-bind:class='{\"btn-disabled\": loading}' v-on:click='saveSettings()' v-el:save>\r\n\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\tSave settings\r\n\t</div>\r\n</div>";
+	module.exports = "<div id='settings'>\r\n\t<div class='settings-section'>\r\n\t\t<h2>General</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog title: </td>\r\n\t\t\t\t\t<td><input v-model='blogTitle'></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog description: </td>\r\n\t\t\t\t\t<td><textarea v-model='blogDescription'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t</div>\r\n\t<div class='settings-section'>\r\n\t\t<h2>Comment settings</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Allow comments:</td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<label class='checkbox'>\r\n\t\t\t\t\t\t\t<input type=\"checkbox\" v-model='commentsAllowed'>\r\n\t\t\t\t\t\t\t<span></span>\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Moderate comments: <i data-title=\"By selecting to moderate blog comments, all new comments will not show until individually approved\" style=\"cursor: pointer;\" class=\"fa fa-question-circle\"></i></td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<label class='checkbox'>\r\n\t\t\t\t\t\t\t<input type='checkbox' v-model='commentsModerated'>\r\n\t\t\t\t\t\t\t<span></span>\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Message above comment<br/>box (optional): </td>\r\n\t\t\t\t\t<td><textarea v-model='commentsMessage'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t</div>\r\n</div>\r\n\r\n<div class='settings-section' id='settings-save'>\r\n\t<div class='button btn-green btn-load' v-bind:class='{\"btn-disabled\": loading}' v-on:click='saveSettings()' v-el:save>\r\n\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\tSave settings\r\n\t</div>\r\n</div>";
 
 /***/ },
-/* 37 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var flexBoxGridCorrect = __webpack_require__(39);
-	var pageViewsGraph = __webpack_require__(42);
-	var browserPieChart = __webpack_require__(44);
+	var modals = __webpack_require__(14);
+	var Errors = __webpack_require__(28);
 
+	var flexBoxGridCorrect = __webpack_require__(36);
+	var pageViewsGraph = __webpack_require__(37);
+	var browserPieChart = __webpack_require__(40);
+		
 	module.exports = function(Vue) {
 		return Vue.extend({
-			template: __webpack_require__(38),
+			template: __webpack_require__(41),
+			data: function() {
+				return {
+					ui: {
+						date: new Date(),
+						time: (new Date()).toTimeString().slice(0,5)
+					},
+					cookies: (function() {
+						var cookies = {};
+						decodeURIComponent(document.cookie)
+							.split(';')
+							.forEach(c => {
+								var temp = c.split('=');
+								cookies[temp[0].trim()] = temp[1];
+							});
+						return cookies;
+					})(),
+					posts: {
+						all: [],
+						drafts: 0,
+						published: 0,
+						views: []
+					},
+					latestPost: {
+						comments: 0,
+						views: 0
+					},
+					analytics: {
+						pageViews: null
+					}
+				}
+			},
+			methods: {
+				sortPosts: function(posts) {
+					posts.forEach(function(post) {
+						if(post.published) {
+							this.posts.published++;
+						} else {
+							this.posts.drafts++;
+						}
+					}.bind(this));
+				},
+				getLatestPostStats: function(posts) {
+					var postId, postSlug, latestPostViews = 0, allPostViews = {}, allPostViewsArr = [];
+
+					for(var i = 0; i < posts.length; i++) {
+						if(posts[i].published) {
+							postId = posts[i]._id;
+							postSlug = posts[i].slug;
+
+							break;
+						}
+					}
+
+					this.$http
+						.get('/api/comments/' + postId)
+						.then(function(res) {
+							if(res.data.error && res.data.error.name !== 'commentsDisabled') {
+								modals.alert(res.data.error.message);
+							} else {
+								this.latestPost.comments = res.data.length || 0;
+							}
+						}, function(err) {
+							console.log(err);
+							modals.alert(Errors.unknown.message);
+						});
+
+					this.analytics.all.forEach(function(session) {
+						session.paths.forEach(function(path) {
+							var post = path.path.split('/blog/post/')[1];
+
+							if(path.path === '/blog/post/' + postSlug) {
+								latestPostViews++;
+							}
+							if(post) {
+								if(!allPostViews[post]) allPostViews[post] = 0;
+
+								allPostViews[post]++; 
+							}
+						});
+					});
+
+					this.posts.all.forEach(function(post) {
+						if(allPostViews[post.slug] && post.published) {
+							allPostViewsArr.push({
+								slug: post.slug,
+								title: post.title,
+								views: allPostViews[post.slug]
+							});
+						}
+					});
+
+					this.latestPost.views = latestPostViews;
+					this.posts.views = allPostViewsArr.sort(function(a, b) {
+						return b.views - a.views
+					}).slice(0, 3);
+				},
+				getPageViewsPerDay: function(data) {
+					this.$http
+						.get('/api/analytics?ordered=date')
+						.then(function(res) {
+							if(res.data.error) {
+								modals.alert(res.data.error.message);
+							} else {
+								var pageViews = [];
+								var pageViewsAddedDays = [];
+					
+								res.data.forEach(function(day) {
+									var temp = 0;
+									day.sessions.forEach(function(session) {
+										temp+= session.paths.length;
+									});
+
+									pageViews.push({date: new Date(day.date), hits: temp});
+								});
+								pageViews = pageViews.reverse();
+							
+								pageViews.forEach(function(day, i, arr) {
+									pageViewsAddedDays.push(day);
+
+									if(!arr[i+1]) return;
+
+									var oneDay = 24*60*60*1000;
+
+									var currentDate = day.date.getTime();
+									var nextDate = arr[i+1].date.getTime();
+
+									var daysInBetween = (nextDate - currentDate) / (oneDay) - 1;
+
+									for(var j = 1; j < daysInBetween+1; j++) {
+										pageViewsAddedDays.push({
+											date: new Date(currentDate + oneDay*j),
+											hits: 0
+										});
+									}
+								});
+
+								pageViewsAddedDays = pageViewsAddedDays.slice(-10);
+
+
+
+								if(pageViewsAddedDays.length < 10) {
+									for(var i = 0, len = 10-pageViewsAddedDays.length; i < len; i++) {
+										pageViewsAddedDays.unshift({
+											date: new Date(pageViewsAddedDays[0].date.getTime() - 24*60*60*1000),
+											hits: 0
+										})
+									}
+								}
+								pageViewsGraph.make(pageViewsAddedDays);
+							}
+						}, function(err) {
+							console.log(err);
+							modals.alert(Errors.unknown.message);
+						});
+				},
+				getBrowserPageViews: function(postsData) {
+					this.$http
+						.get('/api/analytics')
+						.then(function(res) {
+							if(res.data.error) {
+								modals.alert(res.data.error.message);
+							} else {
+								this.analytics.all = res.data;
+								this.getLatestPostStats(postsData);
+
+								var browserPageViews = {};
+								res.data.forEach(function(user) {
+									var browser = user.useragent.browser;
+									if(!browserPageViews[browser]) {
+										browserPageViews[browser] = 0;
+									}
+
+									browserPageViews[browser]++;
+								});
+
+								var browserPageViewsArr = [];
+								Object
+									.keys(browserPageViews)
+									.forEach(function(browser) {
+										browserPageViewsArr.push({
+											name: browser,
+											hits: browserPageViews[browser]
+										});
+									});
+
+								browserPieChart.make(browserPageViewsArr);
+							}
+						}, function(err) {
+							console.log(err);
+							modals.alert(Errors.unknown.message);
+						});
+				},
+				openPost: function(slug) {
+					window.open('/blog/post/' + slug);
+				}
+			},
 			ready: function() {
 				flexBoxGridCorrect('#widgets-holder', 'widget');
-				pageViewsGraph.make();
-				browserPieChart.make();
+
+				setInterval(function() {
+					this.ui.time = (new Date()).toTimeString().slice(0,5);
+				}.bind(this), 10000)
 
 				var ticking = false;
 				window.addEventListener('resize', function() {
-					if(ticking) return;
+					if(ticking || this.$route.path !== '/dashboard') return;
 					setTimeout(function() {
 						pageViewsGraph.update(pageViewsGraph.width());
 						browserPieChart.update(browserPieChart.width());
@@ -21390,19 +21680,35 @@
 						ticking = false;
 					}, 50);
 					ticking = true;
-				});
+				}.bind(this));
+			},
+			route: {
+				data: function(transition) {
+					transition.next();
+
+					this.$http
+						.get('/api/posts')
+						.then(function(res) {
+							this.getPageViewsPerDay();
+
+							if(res.data.error) {
+								modals.alert(res.data.error.message);
+							} else {
+								this.posts.all = res.data;
+								this.sortPosts(res.data);
+								this.getBrowserPageViews(res.data);
+							}
+						}, function(err) {
+							console.log(err);
+							modals.alert(Errors.unknown.message);
+						});
+				}
 			}
 		});
 	};
 
 /***/ },
-/* 38 */
-/***/ function(module, exports) {
-
-	module.exports = "<div id='widgets-holder'>\r\n\t<div class='widget'>\r\n\t\t<svg id='browser-pie-chart'></svg>\r\n\t\t<div class='description'>\r\n\t\t\tBrowser page view statistics\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<svg id='page-views'></svg>\r\n\t\t<div class='description'>\r\n\t\t\tPage views in the last 10 days\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<div class='widget-section'>\r\n\t\t\t<div class='widget-section-number'>10</div>\r\n\t\t\t<div class='widget-section-description'>comments on most recent post</div>\r\n\t\t</div>\r\n\t\t<div class='widget-section'>\r\n\t\t\t<div class='widget-section-number'>110</div>\r\n\t\t\t<div class='widget-section-description'>page views on most recent post</div>\r\n\t\t</div>\r\n\t\t<div class='widget-section'>\r\n\t\t\t<div id='widget-section-published'>\r\n\t\t\t\t<div class='widget-section-number'>16</div>\r\n\t\t\t\t<div class='widget-section-description'>published posts</div>\r\n\t\t\t</div>\r\n\t\t\t<div id='widget-section-drafts'>\r\n\t\t\t\t<div class='widget-section-number'>5</div>\r\n\t\t\t\t<div class='widget-section-description'>drafts</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<ol id='most-viewed-posts'>\r\n\t\t\t<li id='most-viewed'>Post 1</li>\r\n\t\t\t<li>Another</li>\r\n\t\t\t<li>Another</li>\r\n\t\t\t\r\n\t\t</ol>\r\n\t\t<div class='description'>\r\n\t\t\tMost viewed posts\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'></div>\r\n\t<div class='widget'></div>\r\n</div>";
-
-/***/ },
-/* 39 */
+/* 36 */
 /***/ function(module, exports) {
 
 	function removeHiddenFlexBoxChidren(parentString, childClass) {
@@ -21486,7 +21792,260 @@
 	}
 
 /***/ },
-/* 40 */
+/* 37 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var rem = __webpack_require__(38);
+	var d3 = __webpack_require__(39);
+
+	var svg;
+	var data;
+	var yScale;
+	var yScaleAxis;
+	var yAxis;
+
+	var resizeWidth = function() {
+		var width = document
+		.querySelector('#page-views')
+		.parentElement
+		.getBoundingClientRect()
+		.width;
+
+		return width;
+	}
+
+	var update = function(width) {
+		console.log('update')
+		if(!data) return; 
+		
+		var max = d3.max(data.map(d => d.hits));
+		var tHeight = rem(13.5);
+		var tWidth = width;
+		var yMargin = 40;
+		var xMargin = 40;
+
+		var xScale = d3.scaleLinear()
+			.domain([0, data.length-1])
+			.range([xMargin, tWidth - xMargin]);
+
+		var xScaleAxis = d3.scaleTime()
+			.domain([data[0].date, data.slice(-1)[0].date])
+			.range([xMargin, tWidth - xMargin]);
+
+		var xAxis = d3.axisBottom()
+			.scale(xScaleAxis)
+			.tickFormat(function(d, i) {
+				var date = d.getDate() < 10 ? '0' + d.getDate() : d.getDate();
+				var month = d.toDateString().slice(4, 7);
+				
+				if((i === 0 || d.getDate() === 1) && tWidth >= 350) {
+					return month + ' ' + date;
+				} else {
+					return date;
+				}
+			})
+			.ticks(data.length || ticks);
+
+		svg
+			.style('width', tWidth + 'px')
+
+		var line = svg
+			.select('polyline')
+			.transition()
+			.attr('points', data.map((d, i) => {
+				return xScale(i) + ',' + (tHeight - yScale(d.hits));
+			}).join(' '));
+
+		svg.select('.x-axis')
+			.attr('class', 'axis x-axis')
+			.call(xAxis)
+			.transition()
+			.attr('transform', `translate(0, ${tHeight-yMargin})`);
+		svg.select('.x-axis-label')
+			.transition()
+			.attr('x', tWidth/2);
+
+		svg.select('.y-axis-label')
+			.transition()
+			.attr('y', -tWidth + xMargin/2 + 3);
+
+		svg.selectAll('.vertex')
+			.data(data)
+			.transition()
+			.attr('cx', (d, i) => xScale(i))
+		svg.selectAll('.vertex-hidden')
+			.data(data)
+			.transition()
+			.attr('cx', (d, i) => xScale(i));
+	}
+	var make = function(ajaxData) {
+		svg = d3.select('#page-views');
+
+		data = ajaxData;
+
+		var max = d3.max(data.map(d => d.hits));
+		var tHeight = rem(13.5);
+		var tWidth = resizeWidth();
+		var yMargin = 40;
+		var xMargin = 40;
+
+		function yAxisTicks() {
+			var min = d3.min(data.map(d => d.hits));
+
+			if(max-min < 10) {
+				return max-min + 1;
+			} else {
+				return 5;
+			}
+		}
+
+		yScale = d3.scaleLinear()
+			.domain([0, max])
+			.range([yMargin, tHeight - yMargin/2]);
+
+		var xScale = d3.scaleLinear()
+			.domain([0, data.length-1])
+			.range([xMargin, tWidth - xMargin]);
+
+		var xScaleAxis = d3.scaleTime()
+			.domain([data[0].date, data.slice(-2)[0].date])
+			.range([xMargin, tWidth - xMargin])
+			.nice(data.length);
+
+		yScaleAxis = d3.scaleLinear()
+			.domain([0, max])
+			.range([tHeight - yMargin/2, yMargin]);
+
+		var xAxis = d3.axisBottom()
+			.scale(xScaleAxis)
+			.tickFormat(function(d, i) {
+				var date = d.getDate() < 10 ? '0' + d.getDate() : d.getDate();
+				var month = d.toDateString().slice(4, 7);
+
+				if(i === 0 || d.getDate() === 1) {
+					return month + ' ' + date;
+				} else {
+					return date;
+				}
+			});	
+
+		yAxis = d3.axisLeft()
+			.scale(yScaleAxis)
+			.ticks(yAxisTicks())
+
+		svg
+			.style('width', tWidth + 'px')
+			.style('height', yScale(max) + yMargin/2 + 'px');
+
+		var line = svg
+			.append('polyline')
+			.attr('points', data.map((d, i) => {
+				return xScale(i) + ',' + (tHeight - yScale(d.hits));
+			}).join(' '));
+
+		svg.append('g')
+			.call(xAxis)
+			.attr('transform', `translate(0, ${tHeight-yMargin})`)
+			.attr('class', 'x-axis axis');
+		svg.append('text')
+			.text('Date')
+			.attr('class', 'x-axis-label')
+			.attr('y', tHeight - 8)
+			.attr('x', tWidth/2)
+			.style('text-anchor', 'middle')
+			.style('font-weight', 400);
+
+		svg.append('g')
+			.call(yAxis)
+			.attr('class', 'axis')
+			.attr('transform', `translate(${xMargin}, ${-yMargin/2})`);
+		svg.append('text')
+			.text('Page views')
+			.attr('class', 'y-axis-label')
+			.attr('y', -tWidth + xMargin/2 + 3)
+			.attr('x', tHeight/2)
+			.attr('transform', 'rotate(90)')
+			.style('text-anchor', 'middle')
+			.style('font-weight', 400);
+
+		var vertices = svg.selectAll('.vertices')
+			.data(data)
+			.enter()
+			.append('g');
+
+		vertices.append('circle')
+			.attr('r', '3')
+			.attr('class', 'vertex')
+			.attr('cx', (d, i) => xScale(i))
+			.attr('cy', d => tHeight - yScale(d.hits));
+
+		vertices.append('circle')
+			.attr('r', '15')
+			.attr('class', 'vertex-hidden')
+			.attr('data-index', (d, i) => i)
+			.attr('cx', (d, i) => xScale(i))
+			.attr('cy', d => tHeight - yScale(d.hits));
+
+
+		document.querySelector('#page-views').addEventListener('mouseover', function(ev) {
+			if(!ev.target.matches('.vertex-hidden')) return;
+			
+			var span = document.createElement('span');
+			var g = ev.target.parentElement;
+			var d = data[ev.target.getAttribute('data-index')];
+
+			var date = d.date.getDate() < 10 ? '0' + d.date.getDate() : d.date.getDate();
+			var month = d.date.toDateString().slice(4, 7);
+			
+			span.innerHTML = `${d.hits} page ${d.hits === 1 ? 'view' : 'views'}, ${month} ${date}`;
+			span.style.top = ev.clientY - 25 + 'px';
+			span.style.left = ev.clientX + 'px';
+			span.setAttribute('class', 'vertex-label');
+			
+			document.body.appendChild(span)
+			g.querySelector('.vertex').classList.add('vertex-hover');
+		});
+		document.querySelector('#page-views').addEventListener('mouseout', function(ev) {
+			 var span = document.querySelector('.vertex-label');
+			 var g = ev.target.parentElement;
+			
+			 if(!span || !ev.target.matches('.vertex-hidden')) return;
+			
+			document.body.removeChild(span);
+			g.querySelector('.vertex').classList.remove('vertex-hover');
+		});
+
+		document.body.addEventListener('mousemove', function(ev) {
+			var span = document.querySelector('.vertex-label');
+			if(!span) return;
+			
+			span.style.top = ev.clientY - 25 + 'px';
+			span.style.left = ev.clientX + 'px';
+		});
+	}
+
+	module.exports.update = update;
+	module.exports.make = make;
+	module.exports.width = resizeWidth;
+
+/***/ },
+/* 38 */
+/***/ function(module, exports) {
+
+	var div = document.createElement('div');
+	var rem;
+
+	div.style.height = '1rem';
+	document.body.appendChild(div);
+	rem = div.getBoundingClientRect().height;
+	document.body.removeChild(div);
+
+	module.exports = function(val) {
+		return val*rem;
+	}
+
+/***/ },
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// https://d3js.org Version 4.2.1. Copyright 2016 Mike Bostock.
@@ -37719,263 +38278,11 @@
 	}));
 
 /***/ },
-/* 41 */
-/***/ function(module, exports) {
-
-	var div = document.createElement('div');
-	var rem;
-
-	div.style.height = '1rem';
-	document.body.appendChild(div);
-	rem = div.getBoundingClientRect().height;
-	document.body.removeChild(div);
-
-	module.exports = function(val) {
-		return val*rem;
-	}
-
-/***/ },
-/* 42 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var rem = __webpack_require__(41);
-	var d3 = __webpack_require__(40);
-
-	var svg;
-	var data;
-	var yScale;
-	var yScaleAxis;
-	var yAxis;
-
-	var resizeWidth = function() {
-		var width = document
-		.querySelector('#page-views')
-		.parentElement
-		.getBoundingClientRect()
-		.width;
-
-		return width;
-	}
-
-	var update = function(width) {
-		var max = d3.max(data.map(d => d.hits));
-		var tHeight = rem(13.5);
-		var tWidth = width;
-		var yMargin = 40;
-		var xMargin = 40;
-
-		var xScale = d3.scaleLinear()
-			.domain([0, data.length-1])
-			.range([xMargin, tWidth - xMargin]);
-
-		var xScaleAxis = d3.scaleTime()
-			.domain([data[0].date, data.slice(-1)[0].date])
-			.range([xMargin, tWidth - xMargin]);
-
-		var xAxis = d3.axisBottom()
-			.scale(xScaleAxis)
-			.tickFormat(function(d, i) {
-				var date = d.getDate() < 10 ? '0' + d.getDate() : d.getDate();
-				var month = d.toDateString().slice(4, 7);
-				
-				if((i === 0 || d.getDate() === 1) && tWidth >= 350) {
-					return month + ' ' + date;
-				} else {
-					return date;
-				}
-			})
-			.ticks(data.length || ticks);
-
-		svg
-			.style('width', tWidth + 'px')
-
-		var line = svg
-			.select('polyline')
-			.transition()
-			.attr('points', data.map((d, i) => {
-				return xScale(i) + ',' + (tHeight - yScale(d.hits));
-			}).join(' '));
-
-		svg.select('.x-axis')
-			.attr('class', 'axis x-axis')
-			.call(xAxis)
-			.transition()
-			.attr('transform', `translate(0, ${tHeight-yMargin})`);
-		svg.select('.x-axis-label')
-			.transition()
-			.attr('x', tWidth/2);
-
-		svg.select('.y-axis-label')
-			.transition()
-			.attr('y', -tWidth + xMargin/2 + 3);
-
-		svg.selectAll('.vertex')
-			.data(data)
-			.transition()
-			.attr('cx', (d, i) => xScale(i))
-		svg.selectAll('.vertex-hidden')
-			.data(data)
-			.transition()
-			.attr('cx', (d, i) => xScale(i));
-	}
-	var make = function() {
-		svg = d3.select('#page-views');
-
-		data = [
-			{date: new Date('01/25/2016'), hits: 10}, 
-			{date: new Date('01/26/2016'), hits: 9}, 
-			{date: new Date('01/27/2016'), hits: 24}, 
-			{date: new Date('01/28/2016'), hits: 22}, 
-			{date: new Date('01/29/2016'), hits: 0}, 
-			{date: new Date('01/30/2016'), hits: 28}, 
-			{date: new Date('01/31/2016'), hits: 28},
-			{date: new Date('02/01/2016'), hits: 1},
-			{date: new Date('02/02/2016'), hits: 28}, 
-			{date: new Date('02/03/2016'), hits: 40}
-		];
-
-		var max = d3.max(data.map(d => d.hits));
-		var tHeight = rem(13.5);
-		var tWidth = resizeWidth();
-		var yMargin = 40;
-		var xMargin = 40;
-
-		yScale = d3.scaleLinear()
-			.domain([0, max])
-			.range([yMargin, tHeight - yMargin/2]);
-
-		var xScale = d3.scaleLinear()
-			.domain([0, data.length-1])
-			.range([xMargin, tWidth - xMargin]);
-
-		var xScaleAxis = d3.scaleTime()
-			.domain([data[0].date, data.slice(-1)[0].date])
-			.range([xMargin, tWidth - xMargin]);
-
-		yScaleAxis = d3.scaleLinear()
-			.domain([0, max])
-			.range([tHeight - yMargin/2, yMargin]);
-
-		var xAxis = d3.axisBottom()
-			.scale(xScaleAxis)
-			.tickFormat(function(d, i) {
-				var date = d.getDate() < 10 ? '0' + d.getDate() : d.getDate();
-				var month = d.toDateString().slice(4, 7);
-				
-				if(i === 0 || d.getDate() === 1) {
-					return month + ' ' + date;
-				} else {
-					return date;
-				}
-			})
-			.ticks(data.length);
-
-		yAxis = d3.axisLeft()
-			.scale(yScaleAxis)
-			.ticks(10);
-
-		svg
-			.style('width', tWidth + 'px')
-			.style('height', yScale(max) + yMargin/2 + 'px');
-
-		var line = svg
-			.append('polyline')
-			.attr('points', data.map((d, i) => {
-				return xScale(i) + ',' + (tHeight - yScale(d.hits));
-			}).join(' '));
-
-		svg.append('g')
-			.call(xAxis)
-			.attr('transform', `translate(0, ${tHeight-yMargin})`)
-			.attr('class', 'x-axis axis');
-		svg.append('text')
-			.text('Date')
-			.attr('class', 'x-axis-label')
-			.attr('y', tHeight - 8)
-			.attr('x', tWidth/2)
-			.style('text-anchor', 'middle')
-			.style('font-weight', 400);
-
-		svg.append('g')
-			.call(yAxis)
-			.attr('class', 'axis')
-			.attr('transform', `translate(${xMargin}, ${-yMargin/2})`);
-		svg.append('text')
-			.text('Page views')
-			.attr('class', 'y-axis-label')
-			.attr('y', -tWidth + xMargin/2 + 3)
-			.attr('x', tHeight/2)
-			.attr('transform', 'rotate(90)')
-			.style('text-anchor', 'middle')
-			.style('font-weight', 400);
-
-		var vertices = svg.selectAll('.vertices')
-			.data(data)
-			.enter()
-			.append('g');
-
-		vertices.append('circle')
-			.attr('r', '3')
-			.attr('class', 'vertex')
-			.attr('cx', (d, i) => xScale(i))
-			.attr('cy', d => tHeight - yScale(d.hits));
-
-		vertices.append('circle')
-			.attr('r', '15')
-			.attr('class', 'vertex-hidden')
-			.attr('data-index', (d, i) => i)
-			.attr('cx', (d, i) => xScale(i))
-			.attr('cy', d => tHeight - yScale(d.hits));
-
-
-		document.querySelector('#page-views').addEventListener('mouseover', function(ev) {
-			if(!ev.target.matches('.vertex-hidden')) return;
-			
-			var span = document.createElement('span');
-			var g = ev.target.parentElement;
-			var d = data[ev.target.getAttribute('data-index')];
-
-			var date = d.date.getDate() < 10 ? '0' + d.date.getDate() : d.date.getDate();
-			var month = d.date.toDateString().slice(4, 7);
-			
-			span.innerHTML = `${d.hits} page ${d.hits === 1 ? 'view' : 'views'}, ${month} ${date}`;
-			span.style.top = ev.clientY - 25 + 'px';
-			span.style.left = ev.clientX + 'px';
-			span.setAttribute('class', 'vertex-label');
-			
-			document.body.appendChild(span)
-			g.querySelector('.vertex').classList.add('vertex-hover');
-		});
-		document.querySelector('#page-views').addEventListener('mouseout', function(ev) {
-			 var span = document.querySelector('.vertex-label');
-			 var g = ev.target.parentElement;
-			
-			 if(!span || !ev.target.matches('.vertex-hidden')) return;
-			
-			document.body.removeChild(span);
-			g.querySelector('.vertex').classList.remove('vertex-hover');
-		});
-
-		document.body.addEventListener('mousemove', function(ev) {
-			var span = document.querySelector('.vertex-label');
-			if(!span) return;
-			
-			span.style.top = ev.clientY - 25 + 'px';
-			span.style.left = ev.clientX + 'px';
-		});
-	}
-
-	module.exports.update = update;
-	module.exports.make = make;
-	module.exports.width = resizeWidth;
-
-/***/ },
-/* 43 */,
-/* 44 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var d3 = __webpack_require__(40);
-	var rem = __webpack_require__(41);
+	var d3 = __webpack_require__(39);
+	var rem = __webpack_require__(38);
 
 	var data,
 	    height,
@@ -38078,16 +38385,10 @@
 			});
 	}
 
-	var make = function() {
+	var make = function(ajaxData) {
 		var svg = d3.select('#browser-pie-chart');
-		
-		data = [
-			{hits: 70, name: 'Chrome'},
-			{hits: 30, name: 'Internet Explorer'},
-			{hits: 60, name: 'Firefox'},
-			{hits: 25, name: 'Safari'},
-			{hits: 4, name: 'Other'}
-		]
+
+		data = ajaxData;
 
 		var width = resizeWidth();
 		    height = rem(13.5);
@@ -38245,6 +38546,45 @@
 	module.exports.update = update;
 	module.exports.make = make;
 	module.exports.width = resizeWidth;
+
+/***/ },
+/* 41 */
+/***/ function(module, exports) {
+
+	module.exports = "<div id='widgets-holder'>\r\n\t<div class='widget'>\r\n\t\t<div id='time-now'>\r\n\t\t\t<div class='time'>{{ui.time}}</div>\r\n\t\t\t<div class='date'>{{ui.date | prettyDate}}</div>\r\n\t\t\tWelcome back, {{cookies.author}}\r\n\t\t</div>\r\n\t\t<div class='description'>Time right now</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<svg id='page-views'></svg>\r\n\t\t<div class='description'>\r\n\t\t\tPage views in the last 10 days\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<svg id='browser-pie-chart'></svg>\r\n\t\t<div class='description'>\r\n\t\t\tTotal unique page views by browser\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<div class='widget-section'>\r\n\t\t\t<div class='widget-section-number'>{{latestPost.comments}}</div>\r\n\t\t\t<div class='widget-section-description'>{{\"comment\" | pluralize latestPost.comments}} on most recent post</div>\r\n\t\t</div>\r\n\t\t<div class='widget-section'>\r\n\t\t\t<div class='widget-section-number'>{{latestPost.views}}</div>\r\n\t\t\t<div class='widget-section-description'>page {{\"view\" | pluralize latestPost.views}} on most recent post</div>\r\n\t\t</div>\r\n\t\t<div class='widget-section'>\r\n\t\t\t<div id='widget-section-published' v-bind:style='{\"flex-grow\": posts.published}'>\r\n\t\t\t\t<div class='widget-section-number'>{{posts.published}}</div>\r\n\t\t\t\t<div class='widget-section-description'>published {{\"post\" | pluralize posts.published}}</div>\r\n\t\t\t</div>\r\n\t\t\t<div id='widget-section-drafts' v-bind:style='{\"flex-grow\": posts.drafts}'>\r\n\t\t\t\t<div class='widget-section-number'>{{posts.drafts}}</div>\r\n\t\t\t\t<div class='widget-section-description'>{{\"draft\" | pluralize posts.drafts}}</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<ol id='most-viewed-posts'>\r\n\t\t\t<template  v-for='n in 3'>\r\n\t\t\t\t<li \r\n\t\t\t\t\tv-if='posts.views[n]'\r\n\t\t\t\t\tv-on:click='openPost(posts.views[n].slug)'\r\n\t\t\t\t\tv-bind:class='{\"most-viewed\": n===0}'\r\n\t\t\t\t>\r\n\t\t\t\t\t<div data-title='Click to open post'>{{posts.views[n].title}}</div>\r\n\t\t\t\t\t<span>{{posts.views[n].views}} {{\"view\" | pluralize posts.views[n].views}}</span>\r\n\t\t\t\t</li>\r\n\t\t\t\t<li v-else class='no-show'></li>\r\n\t\t\t</template>\r\n\t\t</ol>\r\n\t\t<div class='description'>\r\n\t\t\tMost viewed posts\r\n\t\t</div>\r\n\t</div>\r\n</div>";
+
+/***/ },
+/* 42 */,
+/* 43 */,
+/* 44 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(Vue) {
+		return Vue.extend({
+			template: __webpack_require__(45),
+			data: function() {
+				return {
+					selected: 'a',
+					templates: [
+						{name: 'a'},
+						{name: 'b'},
+						{name: 'c'}
+					]
+				}
+			},
+			methods: {
+				select: function(name) {
+					this.selected = name;
+				}
+			}
+		})
+	};
+
+/***/ },
+/* 45 */
+/***/ function(module, exports) {
+
+	module.exports = "<div class='template-infobox'>\r\n\tSelect a blog template from the left-hand box to customise fonts, colours, etc.\r\n</div>\r\n<div class='template-select'>\r\n\t<div \r\n\t\tclass='template-item'\r\n\t\tv-for='template in templates'\r\n\t\tv-bind:class='{\"template-item-selected\": selected === template.name}'\r\n\t\tv-on:click='select(template.name)'\r\n\t>\r\n\t\t{{template.name}}\r\n\t</div>\r\n</div>\r\n<div class='template-options'>\r\n\t<div class='preview-image'>\r\n\t\t<div class='button'>Preview</div>\r\n\t</div>\r\n</div>";
 
 /***/ }
 /******/ ]);

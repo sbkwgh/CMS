@@ -28,9 +28,15 @@
 		</div>
 	</div>
 	<div id='options'>
-		<div v-on:click='deletePost()' v-el:delete v-bind:class='{"btn-disabled": ui.deleting}' v-show='ui.isSavedPost' class='button btn-red btn-load'>
+		<div 
+			id='post-options'
+			class='button btn-load'
+			v-bind:class='{"btn-disabled": ui.savingOptions}'
+			v-show='ui.isSavedPost'
+			v-el:options
+		>
 			<i class='fa fa-refresh fa-spin loading-icon'></i>
-			Delete post	
+			Post options
 		</div>
 		<div v-on:click.self='saveDraft()' v-el:save-draft v-bind:class='{"btn-disabled": ui.saving}' v-show='!published' class='button btn-load btn-green'>
 			<i class='fa fa-refresh fa-spin loading-icon'></i>

@@ -11,6 +11,10 @@
 #settings {
 	height: calc(100% - 6rem);
 	overflow-y: auto;
+
+	td {
+		vertical-align: top;
+	}
 }
 #settings-save {
 	position: absolute;

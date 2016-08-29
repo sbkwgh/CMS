@@ -32,12 +32,27 @@
 			border-top: thin solid rgba(224, 224, 224, 0.75);
 		}
 
-		#most-viewed-posts {
+		#time-now {
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			background-color: rgba(254, 127, 127, 0.91);
+			color: #fff;
+			height: calc(100% - 2.5rem);
 			flex-direction: column;
-			padding: 2.5rem 0;
+
+			.time {
+				font-size: 4rem;
+				font-family: $font-header;
+			}
+			.date {
+				font-size: 2rem;
+				font-family: $font-content;
+			}
+		}
+
+		#most-viewed-posts {
+			padding: 0;
 			height: calc(100% - 2.5rem);
 			overflow-y: auto;
 			margin: 0;
@@ -47,20 +62,60 @@
 
 			li {
 				margin: 0;
-				padding: 0;
+				padding: 0.5rem 0;
+				cursor: pointer;
+				width: 100%;
+				height: calc(100% / 3);
+				text-align: left;
+				transition: 0.2s all;
+
+				span {
+					padding: 0 0.5rem;
+				}
+				
+				div {
+					text-align: center;
+					font-size: 1.25rem;
+					font-family: $font-content;
+					text-overflow: ellipsis;
+					overflow: hidden;
+					white-space: nowrap;
+					padding: 0 0.5rem;
+
+					&::before {
+						counter-increment: top-posts;
+						content: counter(top-posts) '. ';
+					}
+				}
+				font-size: 0.9rem;
+
+				&:hover {
+					filter: brightness(0.95);
+				}
+
+			}
+			li.most-viewed {
+				div {
+					font-family: $font-header;
+					font-size: 1.5rem;
+				}
 				width: auto;
-				font-size: 1.25rem;
-				font-family: $font-content;
+				background-color: rgb(171, 169, 166);
+				color: #fff;
+			}
+			li:nth-child(2) { background-color: rgb(218, 216, 211); }
+			li:nth-child(3) { background-color: rgb(251, 250, 249); }
+
+
+			li.no-show {
+				cursor: default !important;
 
 				&::before {
-					counter-increment: top-posts;
-					content: counter(top-posts) '. ';
+					content: '' !important;
 				}
-			}
-			li#most-viewed {
-				font-family: $font-header;
-				font-size: 2rem;
-				width: auto;
+				&:hover {
+					filter: none;
+				}
 			}
 		}
 		#page-views {
@@ -146,9 +201,14 @@
 		display: flex;
 		align-items: center;
 		padding-left: 0.5rem;
+		flex-grow: 1;
+
+		.widget-section-description {
+			margin-left: 0.3rem;
+		}
 	}
-	#widget-section-published { flex-grow: 16; background-color: rgb(51, 201, 219); }
-	#widget-section-drafts { flex-grow: 5; background-color: rgb(65, 157, 236); padding-right: 0.25rem; }
+	#widget-section-published { background-color: rgb(51, 201, 219); }
+	#widget-section-drafts { background-color: rgb(65, 157, 236); padding-right: 0.75rem; }
 }
 .widget-section:first-child { background-color: #2ecc71; }
 .widget-section:nth-child(2) { background-color: #1abc9c; }
@@ -164,6 +224,7 @@ svg {
 	}
 }
 .vertex-label, .browser-label {
+	pointer-events: none;
 	position: absolute;
 	font-family: 'Roboto', sans-serif;
 	font-weight: 300;

@@ -13,7 +13,8 @@ module.exports = {
 					blogTitle: 'Blog title',
 					blogDescription: 'Your blog description here',
 					commentsModerated: true,
-					commentsMessage: 'Add a comment'
+					commentsMessage: 'Add a comment',
+					commentsAllowed: true
 				});
 			}
 		});

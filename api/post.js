@@ -1,10 +1,22 @@
 var express = require('express');
 var Post = require('../models/post.js');
-var ObjectId = require('mongoose').Schema.ObjectId;
-//var Comment = require('../models/comment.js');
+var Comment = require('../models/comment.js');
 var Errors = require('../errors.js');
-
+var paramsValidator = require('../paramsValidator.js');
 var router = express.Router();
+
+var validator = paramsValidator({
+	title: {type: 'string', required: true},
+	markdown: {type: 'string', required: true},
+	tags: 'array',
+	commentsAllowed: {type: 'boolean', required: true}
+});
+var updateValidator = paramsValidator({
+	title: 'string',
+	markdown: 'string',
+	tags: 'array',
+	commentsAllowed: 'boolean'
+});
 
 router.get('/', function(req, res) {
 	Post.find({}, null, {sort: '-date'}, function(err, posts) {
@@ -53,13 +65,12 @@ router.get('/:id/redirect', function(req, res) {
 });
 
 router.post('/', function(req, res) {
-	var postObject = {};
-	postObject.title = req.body.title;
-	postObject.markdown = req.body.markdown;
-	postObject.tags = req.body.tags;
-	if(req.body.published) {
-		postObject.published = req.body.published;
+	var postObject = validator(req.body);
+	if(postObject === null) {
+		res.json({error: Errors.invalidParams});
+		return;
 	}
+	if(req.body.published) postObject.published = req.body.published;
 	
 	var post = new Post(postObject);
 	post.save(function(err, savedPost) {
@@ -74,12 +85,13 @@ router.post('/', function(req, res) {
 });
 
 router.put('/:id', function(req, res) {
-	var postObject = {};
+	var postObject = updateValidator(req.body);
 	var id = req.params.id;
 
-	postObject.title = req.body.title;
-	postObject.markdown = req.body.markdown;
-	postObject.tags = req.body.tags;
+	if(postObject === null) {
+		res.json({error: Errors.invalidParams});
+		return;
+	}
 
 	if(typeof req.body.published !== 'undefined') {
 		postObject.published = req.body.published;
@@ -113,14 +125,14 @@ router.delete('/:id', function(req, res) {
 					console.log(err)
 					res.json({error: Errors.unknown});
 				} else {
-					/*Comment.find({postId: ObjectId(req.params.id)}).remove(function(err, success) {
+					Comment.remove({postId: id}, function(err, success) {
 						if(err) {
 							console.log(err)
 							res.json({error: 'unknown error'})
-						} else {*/
+						} else {
 							res.json({success: true});
-					/*	}
-					})*/
+						}
+					})
 				}
 			});
 		}

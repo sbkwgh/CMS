@@ -85,12 +85,13 @@ module.exports = function (Vue) {
 				markdown: '',
 				published: false,
 				slug: '',
+				commentsAllowed: true,
 				ui: {
 					markdownEditorActive: false,
 					tagBarActive: false,
 					isSavedPost: !!this.$route.params.id,
 					saving: false,
-					deleting: false
+					savingOptions: false
 				}
 			}
 		},
@@ -101,6 +102,9 @@ module.exports = function (Vue) {
 			wordCountString: function() {
 				var count = wordCount(this.html);
 				return pluralize(count, 'word');
+			},
+			random: function() {
+				return Math.random();
 			},
 			tags: {
 				get: function() {
@@ -122,9 +126,7 @@ module.exports = function (Vue) {
 		},
 		methods: {
 			buttonMessage: function(button, message) {
-				if(button === 'delete') {
-					titleTooltip(this.$els.delete, message, 3000);
-				} else if(button === 'save') {
+				if(button === 'save') {
 					if(this.published) {
 						titleTooltip(this.$els.savePublished, message, 3000);
 					} else {
@@ -162,11 +164,12 @@ module.exports = function (Vue) {
 			toggleFocusMarkdownEditor: function() {
 				this.ui.markdownEditorActive = !this.ui.markdownEditorActive;
 			},
-			saveDraft(postObjAdditions) {
+			saveDraft(postObjAdditions, message) {
 				var postObj = {
 					title: this.title,
 					markdown: this.markdown,
-					tags: this.tags
+					tags: this.tags,
+					commentsAllowed: this.commentsAllowed
 				};
 				for(var key in postObjAdditions) {
 					postObj[key] = postObjAdditions[key];
@@ -175,18 +178,20 @@ module.exports = function (Vue) {
 				//This Vue instance is the same for the 'new post' page, as well as saved posts
 				//The difference here is if we put (update) or post (create) a new post
 				var id = this.$route.params.id;
-
 				this.ui.saving = true;
 				if(id) {
 					this.$http.put('/api/posts/' + id, postObj).then(function(res) {
 						if(res.data.error) {
 							modals.alert(res.data.error.message);
-						} else if(res.data.published === false) {
-							this.buttonMessage('save', 'Post unpublished');	
+						} else if(message) {
+							this.buttonMessage(message.button, message.message);
 						} else {
-							this.buttonMessage('save', 'Saved published post');	
+							if(res.data.published === false) {
+								this.buttonMessage('save', 'Post unpublished');	
+							} else {
+								this.buttonMessage('save', 'Saved published post');	
+							}
 						}
-
 						this.ui.saving = false;
 					}, function(err) {
 						console.log(err);
@@ -229,6 +234,25 @@ module.exports = function (Vue) {
 					}.bind(this),
 					'red'
 				);
+			},
+			toggleComments: function() {
+				var id = this.$route.params.id;
+
+				this.commentsAllowed = !this.commentsAllowed;
+				this.ui.savingOptions = true;
+
+				this.$http.put('/api/posts/' + id, {commentsAllowed: this.commentsAllowed}).then(function(res) {
+					if(res.data.error) {
+						modals.alert(res.data.error.message);
+					} else {
+						this.buttonMessage('options', this.commentsAllowed ? 'Comments enabled' : 'Comments disabled');
+					}
+					this.ui.savingOptions = false;
+				}, function(err) {
+					console.log(err);
+					modals.alert(Errors.unknown.message);
+					this.ui.savingOptions = false;
+				});
 			}
 		},
 		ready: function() {
@@ -259,23 +283,36 @@ module.exports = function (Vue) {
 					}
 				]
 			});
+			tooltip('#post-options', {
+				items: [
+					{title: 'Delete post', click: this.deletePost},
+					{title: () => this.commentsAllowed ? 'Disable comments' : 'Enable comments', click: this.toggleComments}
+				]
+			})
 
 			var id = this.$route.params.id;
 			if(id) {
 				this.$http.get('/api/posts/' + id).then(function(res) {
-					if(res.error) {
-						modals.alert(res.data.error.message);
+					if(res.data.error) {
+						modals.alert(res.data.error.message, function() {
+							this.$router.go('/posts')
+						}.bind(this));
 					} else {
 						this.title = res.data.title;
 						this.markdown = res.data.markdown;
 						this.tags = res.data.tags;
 						this.published = res.data.published;
-						this.slug = res.data.slug
+						this.slug = res.data.slug;
+						if(typeof res.data.commentsAllowed !== 'undefined') {
+							this.commentsAllowed = res.data.commentsAllowed;
+						}
 					}
 				}, function(err) {
 					if(err) {
 						console.log(err);
-						modals.alert(Errors.unknown.message);
+						modals.alert(Errors.unknown.message, function() {
+							this.$router.go('/posts')
+						}.bind(this));
 					}
 				});
 			}

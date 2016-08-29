@@ -1,0 +1,34 @@
+.template-infobox {
+	@include card(2rem);
+	margin: 1.5rem auto 0 auto;
+	line-height: 1.6rem;
+	padding: 0 0.5rem;
+}
+.template-select {
+	@include card(calc(100% - 6rem), 15rem, 1rem 1.5rem 1.5rem 1.5rem);
+	overflow-y: auto;
+	float: left;
+
+	.template-item {
+		border-bottom: thin solid $color-lightgray;
+		padding: 0.5rem 1rem;
+
+		&:hover {
+			 background-color: #f6f6f6;
+		}
+	}
+	.template-item-selected {
+		@include selected-stripe($color-gray-l);
+		background-color: rgb(236, 237, 233);
+		
+		&:hover {
+			background-color: rgb(236, 237, 233);
+		}
+	}
+}
+
+.template-options {
+	@include card(calc(100% - 6rem), calc(100% - 19.5rem), 1rem 1.5rem 1.5rem 0);
+	float: right;
+	overflow-y: auto;
+}

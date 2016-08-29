@@ -46,9 +46,9 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Vue = __webpack_require__(1);
-	var VueResource = __webpack_require__(4);
+	var VueResource = __webpack_require__(5);
 
-	window.titleTooltip = __webpack_require__(32);
+	window.titleTooltip = __webpack_require__(3);
 
 	Vue.use(VueResource);
 
@@ -71,7 +71,7 @@
 		);
 	});
 
-	Vue.component('post-comments', __webpack_require__(30)(Vue));
+	Vue.component('post-comments', __webpack_require__(42)(Vue));
 
 	var App = new Vue({
 		el: '#app'
@@ -10155,7 +10155,103 @@
 
 /***/ },
 
-/***/ 4:
+/***/ 3:
+/***/ function(module, exports) {
+
+	function applyStyles(el, obj) {
+		for(var style in obj) {
+			el.style[style] = obj[style];
+		}
+	}
+
+	function addTitleTooltip(el, text, timeLimit) {
+		var span = document.createElement('span');
+		span.innerHTML = text;
+		span.classList.add('title-tooltip');
+		applyStyles(span, {
+			'backgroundColor': 'rgb(60,60,60)',
+			'color': '#fff',
+			'fontFamily': "'Roboto', sans-serif",
+			'fontWeight': '30',
+			'fontSize': '0.75rem',
+			'padding': '0.25rem 0.5rem',
+			'position': 'absolute',
+			'zIndex': '3',
+			'opacity': '0',
+			'max-width': '15rem',
+			'transition': 'all 0.25s'
+		});
+		
+		var arrow = document.createElement('div');
+		applyStyles(arrow, {
+			'borderLeft': '0.5rem solid transparent',
+			'borderRight': '0.5rem solid transparent',
+			'borderTop': '0.5rem solid rgb(60,60,60)',
+			'position': 'absolute',
+			'left': 'calc(50% - 0.45rem)',
+			'bottom': '-0.4rem'
+		});
+
+		span.appendChild(arrow);
+		document.body.appendChild(span);
+		
+		var coordsSpan = span.getBoundingClientRect();
+		var coordsEl = el.getBoundingClientRect();
+		var body = document.body.getBoundingClientRect();
+
+		var elCenter = coordsEl.left + coordsEl.width/2;
+
+		span.style.left = "calc(" + elCenter + "px - " + coordsSpan.width/2 + "px)";
+		span.style.top = coordsEl.top + window.pageYOffset - document.documentElement.clientTop - (coordsSpan.height+6) + 'px';
+		
+		coordsSpan = span.getBoundingClientRect();
+		coordsEl = el.getBoundingClientRect();
+		var coordsArrow = arrow.getBoundingClientRect();
+		
+		if(coordsSpan.left <= 0) {
+			span.style.left = '8px';
+			arrow.style.left = "calc(" + elCenter + "px - " + coordsArrow.width + "px)";
+		}
+		if(coordsSpan.right >= body.width) {
+			span.style.left = null;
+			span.style.right = '8px';
+			arrow.style.left = null;
+			arrow.style.right = (coordsEl.y + coordsArrow.width) + "px";
+		}
+		
+		if(timeLimit) {
+			setTimeout(function() {
+				document.body.removeChild(span);
+			}, timeLimit);
+		}
+
+		setTimeout(function() {
+			span.style.opacity = '1';
+		}, 250);
+
+		return span;
+	}
+
+	document.body.addEventListener('mouseover', function(ev) {
+		var title = ev.target.getAttribute('data-title');
+		
+		if(title) {
+			addTitleTooltip(ev.target, title);
+		}
+	});
+	document.body.addEventListener('mouseout', function(ev) {
+		var title = ev.target.getAttribute('data-title');
+		
+		if(title) {
+		 document.body.removeChild(document.querySelector('.title-tooltip'));
+		}
+	});
+
+	module.exports = addTitleTooltip;
+
+/***/ },
+
+/***/ 5:
 /***/ function(module, exports) {
 
 	/*!
@@ -11473,7 +11569,7 @@
 
 /***/ },
 
-/***/ 27:
+/***/ 28:
 /***/ function(module, exports) {
 
 	var Errors = {
@@ -11483,7 +11579,8 @@
 		invalidParams: 'The parameters of the request were incorrect',
 		notAuthorised: 'The request was not authorised. Try logging in again',
 		invalidId: 'An invalid post id was provided',
-		postNotFound: 'No post was found for the id provided'
+		postNotFound: 'No post was found for the id provided',
+		commentsDisabled: 'Comments have been disabled'
 	};
 
 	for(var errorName in Errors) {
@@ -11498,17 +11595,19 @@
 
 /***/ },
 
-/***/ 30:
+/***/ 42:
 /***/ function(module, exports, __webpack_require__) {
 
-	var Errors = __webpack_require__(27);
+	var Errors = __webpack_require__(28);
 
 	module.exports = function(Vue) {
 		return Vue.extend({
-			template: __webpack_require__(31),
+			template: __webpack_require__(43),
 			props: ['postId', 'commentsMessage'],
 			data: function() {
 				return {
+					commentsAllowed: true,
+
 					name: '',
 					commentBody: '',
 					highlight: '',
@@ -11639,7 +11738,10 @@
 								return comment;
 							});
 							this.ui.loadingMessage = 'No comments - add yours'
+						} else if(res.data.error.name === 'commentsDisabled') {
+							this.commentsAllowed = false;
 						}
+						correctHeaderTop();
 					}, function(err) {
 						this.ui.loadingMessage = 'Something went wrong loading comments. Try refreshing the page';
 						console.log(err);
@@ -11668,19 +11770,23 @@
 	};
 
 	var ticking = false;
+	var correctHeaderTop = function() {
+		var $comments = document.querySelector('#comments');
+		var $header = document.querySelector('header');
+
+		if(!$comments) return;
+		var height = $comments.getBoundingClientRect().top - $header.getBoundingClientRect().height - 2*16;
+
+		if(50 >= height) {
+			$header.style.top = height + 'px';
+		} else {
+			$header.style.top = null;
+		}
+	}
 	window.addEventListener('scroll', function() {
 		if(ticking) return;
 		setTimeout(function() {
-			var $comments = document.querySelector('#commnets');
-			var $header = document.querySelector('header');
-			var height = comments.getBoundingClientRect().top - $header.getBoundingClientRect().height - 2*16;
-
-			if(50 >= height) {
-				$header.style.top = height + 'px';
-			} else {
-				$header.style.top = null;
-			}
-
+			correctHeaderTop();
 			ticking = false;
 		}, 50);
 		ticking = true;
@@ -11688,105 +11794,10 @@
 
 /***/ },
 
-/***/ 31:
+/***/ 43:
 /***/ function(module, exports) {
 
-	module.exports = "<div id='comments'>\r\n\t<h1>Comments</h1>\r\n\t<div id='comments-flex'>\r\n\t\t<div id='form-box'>\r\n\t\t\t<div id='comments-message'>{{commentsMessage}}</div>\r\n\t\t\t<div><label>Your name:</label> <input v-model='name'></div>\r\n\t\t\t<div class='replies-bar' v-if='replies._id.length'>\r\n\t\t\t\t<div>Replying to <b>{{replies.name}}</b></div>\r\n\t\t\t\t<span v-on:click='cancelReply()'>Cancel</span>\r\n\t\t\t</div>\r\n\t\t\t<div><label class='last-label'>Your comment:</label> <textarea v-model='commentBody'></textarea></div>\r\n\t\t\t<div class='button btn-green btn-load' style='line-height: 1.75rem;' v-on:click='addComment()' v-el:add-comment v-bind:class='{\"btn-disabled\": ui.savingComment}'>\r\n\t\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\t\tAdd comment\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div class='comments-box'>\r\n\t\t\t<div v-if='!sortedComments.length' class='comment'>{{ui.loadingMessage}}</div>\r\n\t\t\t<div class='comment' v-bind:class='{\"comment-indent\": comment.head, \"comment-highlight\": highlight===comment._id}' v-for='comment in sortedComments'>\r\n\t\t\t\t<div class='comment-reply' v-if='comment.status === \"approved\"' v-on:click='replyComment(this)'>Reply to this comment</div>\r\n\t\t\t\t<div class='comment-header'>\r\n\t\t\t\t\t<div class='comment-name' v-if='comment.status === \"approved\"'>{{comment.name}}</div>\r\n\t\t\t\t\t<span class='comment-reply-name' data-title='Replying to \\\"{{comment.repliesName}}\\\" - click to highlight' v-if='comment.status === \"approved\" && comment.replies' v-on:click='highlightComment(comment.replies)'>\r\n\t\t\t\t\t\t<i class='fa fa-long-arrow-right fa-fw'></i>{{comment.repliesName}}\r\n\t\t\t\t\t</span>\r\n\t\t\t\t\t<div class='comment-time'>{{comment.dateCreated|timeString}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class='comment-comment'>\r\n\t\t\t\t\t<template v-if='comment.status !== \"approved\"'>\r\n\t\t\t\t\t\t{{{comment.moderatedMessage}}}\r\n\t\t\t\t\t</template>\r\n\t\t\t\t\t<template v-else>\r\n\t\t\t\t\t\t{{comment.commentBody}}\r\n\t\t\t\t\t</template>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n</div>";
-
-/***/ },
-
-/***/ 32:
-/***/ function(module, exports) {
-
-	function applyStyles(el, obj) {
-		for(var style in obj) {
-			el.style[style] = obj[style];
-		}
-	}
-
-	function addTitleTooltip(el, text, timeLimit) {
-		var span = document.createElement('span');
-		span.innerHTML = text;
-		span.classList.add('title-tooltip');
-		applyStyles(span, {
-			'backgroundColor': 'rgb(60,60,60)',
-			'color': '#fff',
-			'fontFamily': "'Roboto', sans-serif",
-			'fontWeight': '30',
-			'fontSize': '0.75rem',
-			'padding': '0.25rem 0.5rem',
-			'position': 'absolute',
-			'zIndex': '3',
-			'opacity': '0',
-			'transition': 'all 0.25s'
-		});
-		
-		var arrow = document.createElement('div');
-		applyStyles(arrow, {
-			'borderLeft': '0.5rem solid transparent',
-			'borderRight': '0.5rem solid transparent',
-			'borderTop': '0.5rem solid rgb(60,60,60)',
-			'position': 'absolute',
-			'left': 'calc(50% - 0.4rem)',
-			'bottom': '-0.4rem'
-		});
-
-		span.appendChild(arrow);
-		document.body.appendChild(span);
-		
-		var coordsSpan = span.getBoundingClientRect();
-		var coordsEl = el.getBoundingClientRect();
-		var body = document.body.getBoundingClientRect();
-
-		var elCenter = coordsEl.left + coordsEl.width/2;
-
-		span.style.left = "calc(" + elCenter + "px - " + coordsSpan.width/2 + "px)";
-		span.style.top = coordsEl.top + window.pageYOffset - document.documentElement.clientTop - (coordsSpan.height+6) + 'px';
-		
-		coordsSpan = span.getBoundingClientRect();
-		coordsEl = el.getBoundingClientRect();
-		var coordsArrow = arrow.getBoundingClientRect();
-		
-		if(coordsSpan.left <= 0) {
-			span.style.left = '8px';
-			arrow.style.left = "calc(" + elCenter + "px - " + coordsArrow.width + "px)";
-		}
-		if(coordsSpan.right >= body.width) {
-			span.style.left = null;
-			span.style.right = '8px';
-			arrow.style.left = null;
-			arrow.style.right = (coordsEl.y + coordsArrow.width) + "px";
-		}
-		
-		if(timeLimit) {
-			setTimeout(function() {
-				document.body.removeChild(span);
-			}, timeLimit);
-		}
-
-		setTimeout(function() {
-			span.style.opacity = '1';
-		}, 250);
-
-		return span;
-	}
-
-	document.body.addEventListener('mouseover', function(ev) {
-		var title = ev.target.getAttribute('data-title');
-		
-		if(title) {
-			addTitleTooltip(ev.target, title);
-		}
-	});
-	document.body.addEventListener('mouseout', function(ev) {
-		var title = ev.target.getAttribute('data-title');
-		
-		if(title) {
-		 document.body.removeChild(document.querySelector('.title-tooltip'));
-		}
-	});
-
-	module.exports = addTitleTooltip;
+	module.exports = "<div id='comments' v-if='commentsAllowed'>\r\n\t<h1>Comments</h1>\r\n\t<div id='comments-flex'>\r\n\t\t<div id='form-box'>\r\n\t\t\t<div id='comments-message' v-if='commentsMessage.length'>{{commentsMessage}}</div>\r\n\t\t\t<div><label>Your name:</label> <input v-model='name'></div>\r\n\t\t\t<div class='replies-bar' v-if='replies._id.length'>\r\n\t\t\t\t<div>Replying to <b>{{replies.name}}</b></div>\r\n\t\t\t\t<span v-on:click='cancelReply()'>Cancel</span>\r\n\t\t\t</div>\r\n\t\t\t<div><label class='last-label'>Your comment:</label> <textarea v-model='commentBody'></textarea></div>\r\n\t\t\t<div class='button btn-green btn-load' style='line-height: 1.75rem;' v-on:click='addComment()' v-el:add-comment v-bind:class='{\"btn-disabled\": ui.savingComment}'>\r\n\t\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\t\tAdd comment\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div class='comments-box'>\r\n\t\t\t<div v-if='!sortedComments.length' class='comment'>{{ui.loadingMessage}}</div>\r\n\t\t\t<div class='comment' v-bind:class='{\"comment-indent\": comment.head, \"comment-highlight\": highlight===comment._id}' v-for='comment in sortedComments'>\r\n\t\t\t\t<div class='comment-reply' v-if='comment.status === \"approved\"' v-on:click='replyComment(this)'>Reply to this comment</div>\r\n\t\t\t\t<div class='comment-header'>\r\n\t\t\t\t\t<div class='comment-name' v-if='comment.status === \"approved\"'>{{comment.name}}</div>\r\n\t\t\t\t\t<span class='comment-reply-name' data-title='Replying to \\\"{{comment.repliesName}}\\\" - click to highlight' v-if='comment.status === \"approved\" && comment.replies' v-on:click='highlightComment(comment.replies)'>\r\n\t\t\t\t\t\t<i class='fa fa-long-arrow-right fa-fw'></i>{{comment.repliesName}}\r\n\t\t\t\t\t</span>\r\n\t\t\t\t\t<div class='comment-time'>{{comment.dateCreated|timeString}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class='comment-comment'>\r\n\t\t\t\t\t<template v-if='comment.status !== \"approved\"'>\r\n\t\t\t\t\t\t{{{comment.moderatedMessage}}}\r\n\t\t\t\t\t</template>\r\n\t\t\t\t\t<template v-else>\r\n\t\t\t\t\t\t{{comment.commentBody}}\r\n\t\t\t\t\t</template>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n</div>";
 
 /***/ }
 

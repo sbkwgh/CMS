@@ -102,16 +102,10 @@ var update = function(width) {
 		});
 }
 
-var make = function() {
+var make = function(ajaxData) {
 	var svg = d3.select('#browser-pie-chart');
-	
-	data = [
-		{hits: 70, name: 'Chrome'},
-		{hits: 30, name: 'Internet Explorer'},
-		{hits: 60, name: 'Firefox'},
-		{hits: 25, name: 'Safari'},
-		{hits: 4, name: 'Other'}
-	]
+
+	data = ajaxData;
 
 	var width = resizeWidth();
 	    height = rem(13.5);

@@ -17,12 +17,26 @@
 	<div class='settings-section'>
 		<h2>Comment settings</h2>
 		<p>
-			By selecting to moderate blog comments, all new comments will not show until individually approved
 			<table>
 				<tr>
-					<td>Moderate comments: </td>
-					<td><input type='checkbox' v-model='commentsModerated'></td>
+					<td>Allow comments:</td>
+					<td>
+						<label class='checkbox'>
+							<input type="checkbox" v-model='commentsAllowed'>
+							<span></span>
+						</label>
+					</td>
 				</tr>
+				<tr>
+					<td>Moderate comments: <i data-title="By selecting to moderate blog comments, all new comments will not show until individually approved" style="cursor: pointer;" class="fa fa-question-circle"></i></td>
+					<td>
+						<label class='checkbox'>
+							<input type='checkbox' v-model='commentsModerated'>
+							<span></span>
+						</label>
+					</td>
+				</tr>
+			
 				<tr>
 					<td>Message above comment<br/>box (optional): </td>
 					<td><textarea v-model='commentsMessage'></textarea></td>

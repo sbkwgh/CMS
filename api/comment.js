@@ -41,26 +41,43 @@ router.get('/', function(req, res) {
 });
 
 router.get('/:id', function(req, res) {
-	Comment.find({postId: req.params.id}, function(err, comments) {
-		if(err) {
-			console.log(err);
-			res.json({error: Errors.unknown});
+	settings.get(req.app.locals.db, function(err, settingsDoc) {
+		if(!settingsDoc.commentsAllowed) {
+			res.json({error: Errors.commentsDisabled});
+			return;
 		} else {
-			if(req.session.loggedIn) {
-				res.json(comments);
-			} else {
-				res.json(comments.map(function(comment) {
-					if(comment.status === 'pending' || comment.status === 'removed') {
-						comment.commentBody = '';
-						comment.name = '';
-					}
+			Post.findOne({_id: mongoose.Types.ObjectId(req.params.id)}, function(err, post) {
+				if(err) {
+					console.log(err);
+					res.json({error: Errors.unknown});
+				} else if(!post.commentsAllowed) {
+					res.json({error: Errors.commentsDisabled});
+				} else {	
+					Comment.find({postId: req.params.id}, function(err, comments) {
+						if(err) {
+							console.log(err);
+							res.json({error: Errors.unknown});
+						} else {
+							if(req.session.loggedIn) {
+								res.json(comments);
+							} else {
+								res.json(comments.map(function(comment) {
+									if(comment.status === 'pending' || comment.status === 'removed') {
+										comment.commentBody = '';
+										comment.name = '';
+									}
 
-					return comment;
-				}));
-			}
-			
+									return comment;
+								}));
+							}
+							
+						}
+					});
+				}
+			});
 		}
 	});
+	
 });
 
 
@@ -75,12 +92,19 @@ router.post('/', function(req, res) {
 	settings.get(req.app.locals.db, function(err, settingsDoc) {
 		var commentsModerated = settingsDoc.commentsModerated;
 
+		if(!settingsDoc.commentsAllowed) {
+			res.json({error: Errors.commentsDisabled});
+			return;
+		}
+
 		Post.findOne({_id: commentParams.postId}, function(err, post) {
 			if(err) {
 				console.log(err);
 				res.json({error: Errors.unknown});
 			} else if(!post) {
 				res.json({error: Errors.invalidParams});
+			} else if(!post.commentsAllowed) {
+				res.json({error: Errors.commentsDisabled});
 			} else {
 				if(commentsModerated) {
 					commentParams.status = 'pending';
@@ -128,6 +152,24 @@ router.put('/moderate/:id', function(req, res) {
 			}
 		})
 	}
+});
+
+router.delete('/moderate/:id', function(req, res) {
+	var id = req.params.id;
+
+	if(!mongoose.Types.ObjectId.isValid(id)) {
+		res.json({error: Errors.invalidParams});
+	} else {
+		Comment.findOneAndRemove({_id: id}, function(err) {
+			if(err) {
+				console.log(err);
+				res.json({error: Errors.unknown});
+			} else {
+				res.json({success: true});
+			}
+		});
+	}
+
 });
 
 module.exports = router;

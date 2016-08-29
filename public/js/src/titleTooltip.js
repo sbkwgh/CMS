@@ -18,6 +18,7 @@ function addTitleTooltip(el, text, timeLimit) {
 		'position': 'absolute',
 		'zIndex': '3',
 		'opacity': '0',
+		'max-width': '15rem',
 		'transition': 'all 0.25s'
 	});
 	
@@ -27,7 +28,7 @@ function addTitleTooltip(el, text, timeLimit) {
 		'borderRight': '0.5rem solid transparent',
 		'borderTop': '0.5rem solid rgb(60,60,60)',
 		'position': 'absolute',
-		'left': 'calc(50% - 0.4rem)',
+		'left': 'calc(50% - 0.45rem)',
 		'bottom': '-0.4rem'
 	});
 

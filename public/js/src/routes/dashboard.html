@@ -1,9 +1,11 @@
 <div id='widgets-holder'>
 	<div class='widget'>
-		<svg id='browser-pie-chart'></svg>
-		<div class='description'>
-			Browser page view statistics
+		<div id='time-now'>
+			<div class='time'>{{ui.time}}</div>
+			<div class='date'>{{ui.date | prettyDate}}</div>
+			Welcome back, {{cookies.author}}
 		</div>
+		<div class='description'>Time right now</div>
 	</div>
 	<div class='widget'>
 		<svg id='page-views'></svg>
@@ -12,36 +14,47 @@
 		</div>
 	</div>
 	<div class='widget'>
+		<svg id='browser-pie-chart'></svg>
+		<div class='description'>
+			Total unique page views by browser
+		</div>
+	</div>
+	<div class='widget'>
 		<div class='widget-section'>
-			<div class='widget-section-number'>10</div>
-			<div class='widget-section-description'>comments on most recent post</div>
+			<div class='widget-section-number'>{{latestPost.comments}}</div>
+			<div class='widget-section-description'>{{"comment" | pluralize latestPost.comments}} on most recent post</div>
 		</div>
 		<div class='widget-section'>
-			<div class='widget-section-number'>110</div>
-			<div class='widget-section-description'>page views on most recent post</div>
+			<div class='widget-section-number'>{{latestPost.views}}</div>
+			<div class='widget-section-description'>page {{"view" | pluralize latestPost.views}} on most recent post</div>
 		</div>
 		<div class='widget-section'>
-			<div id='widget-section-published'>
-				<div class='widget-section-number'>16</div>
-				<div class='widget-section-description'>published posts</div>
+			<div id='widget-section-published' v-bind:style='{"flex-grow": posts.published}'>
+				<div class='widget-section-number'>{{posts.published}}</div>
+				<div class='widget-section-description'>published {{"post" | pluralize posts.published}}</div>
 			</div>
-			<div id='widget-section-drafts'>
-				<div class='widget-section-number'>5</div>
-				<div class='widget-section-description'>drafts</div>
+			<div id='widget-section-drafts' v-bind:style='{"flex-grow": posts.drafts}'>
+				<div class='widget-section-number'>{{posts.drafts}}</div>
+				<div class='widget-section-description'>{{"draft" | pluralize posts.drafts}}</div>
 			</div>
 		</div>
 	</div>
 	<div class='widget'>
 		<ol id='most-viewed-posts'>
-			<li id='most-viewed'>Post 1</li>
-			<li>Another</li>
-			<li>Another</li>
-			
+			<template  v-for='n in 3'>
+				<li 
+					v-if='posts.views[n]'
+					v-on:click='openPost(posts.views[n].slug)'
+					v-bind:class='{"most-viewed": n===0}'
+				>
+					<div data-title='Click to open post'>{{posts.views[n].title}}</div>
+					<span>{{posts.views[n].views}} {{"view" | pluralize posts.views[n].views}}</span>
+				</li>
+				<li v-else class='no-show'></li>
+			</template>
 		</ol>
 		<div class='description'>
 			Most viewed posts
 		</div>
 	</div>
-	<div class='widget'></div>
-	<div class='widget'></div>
 </div>

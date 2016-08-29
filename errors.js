@@ -5,7 +5,8 @@ var Errors = {
 	invalidParams: 'The parameters of the request were incorrect',
 	notAuthorised: 'The request was not authorised. Try logging in again',
 	invalidId: 'An invalid post id was provided',
-	postNotFound: 'No post was found for the id provided'
+	postNotFound: 'No post was found for the id provided',
+	commentsDisabled: 'Comments have been disabled'
 };
 
 for(var errorName in Errors) {

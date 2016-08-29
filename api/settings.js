@@ -7,7 +7,8 @@ var validator = require('../paramsValidator.js')({
 	blogTitle: 'string',
 	blogDescription: 'string',
 	commentsModerated: 'boolean',
-	commentsMessage: 'string'
+	commentsMessage: 'string',
+	commentsAllowed: 'boolean'
 });
 
 router.all('*', function(req, res, next) {

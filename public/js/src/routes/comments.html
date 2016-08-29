@@ -22,7 +22,7 @@
 					in post
 					<span class='post-title' v-on:click='openPost(comment.postId)' data-title='Title of post - click to open in new tab'>"{{comment.postTitle}}"</span>
 				</div>
-				<span class='date-created'>{{comment.dateCreated}}</span>
+				<span class='date-created'>{{comment.dateCreated | prettyDate 'and time'}}</span>
 			</div>
 			<div class='comment-body'>
 				{{comment.commentBody}}
@@ -31,6 +31,7 @@
 		<div class='comment-buttons'>
 			<div class='button btn-green' v-on:click='moderate(comment._id, $index, "approved")' v-if='comment.status === "pending" || comment.status === "removed"'>Approve</div>
 			<div class='button btn-red'  v-on:click='moderate(comment._id, $index, "removed")'  v-if='comment.status === "pending" || comment.status === "approved"'>Remove</div>
+			<div class='button btn-red'  v-on:click='deletePost(comment._id, comment)'  v-if='comment.status === "removed"'>Delete</div>
 		</div>
 	</div>
 </div>

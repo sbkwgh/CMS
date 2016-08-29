@@ -18,6 +18,9 @@ var resizeWidth = function() {
 }
 
 var update = function(width) {
+	console.log('update')
+	if(!data) return; 
+	
 	var max = d3.max(data.map(d => d.hits));
 	var tHeight = rem(13.5);
 	var tWidth = width;
@@ -78,27 +81,26 @@ var update = function(width) {
 		.transition()
 		.attr('cx', (d, i) => xScale(i));
 }
-var make = function() {
+var make = function(ajaxData) {
 	svg = d3.select('#page-views');
 
-	data = [
-		{date: new Date('01/25/2016'), hits: 10}, 
-		{date: new Date('01/26/2016'), hits: 9}, 
-		{date: new Date('01/27/2016'), hits: 24}, 
-		{date: new Date('01/28/2016'), hits: 22}, 
-		{date: new Date('01/29/2016'), hits: 0}, 
-		{date: new Date('01/30/2016'), hits: 28}, 
-		{date: new Date('01/31/2016'), hits: 28},
-		{date: new Date('02/01/2016'), hits: 1},
-		{date: new Date('02/02/2016'), hits: 28}, 
-		{date: new Date('02/03/2016'), hits: 40}
-	];
+	data = ajaxData;
 
 	var max = d3.max(data.map(d => d.hits));
 	var tHeight = rem(13.5);
 	var tWidth = resizeWidth();
 	var yMargin = 40;
 	var xMargin = 40;
+
+	function yAxisTicks() {
+		var min = d3.min(data.map(d => d.hits));
+
+		if(max-min < 10) {
+			return max-min + 1;
+		} else {
+			return 5;
+		}
+	}
 
 	yScale = d3.scaleLinear()
 		.domain([0, max])
@@ -109,8 +111,9 @@ var make = function() {
 		.range([xMargin, tWidth - xMargin]);
 
 	var xScaleAxis = d3.scaleTime()
-		.domain([data[0].date, data.slice(-1)[0].date])
-		.range([xMargin, tWidth - xMargin]);
+		.domain([data[0].date, data.slice(-2)[0].date])
+		.range([xMargin, tWidth - xMargin])
+		.nice(data.length);
 
 	yScaleAxis = d3.scaleLinear()
 		.domain([0, max])
@@ -121,18 +124,17 @@ var make = function() {
 		.tickFormat(function(d, i) {
 			var date = d.getDate() < 10 ? '0' + d.getDate() : d.getDate();
 			var month = d.toDateString().slice(4, 7);
-			
+
 			if(i === 0 || d.getDate() === 1) {
 				return month + ' ' + date;
 			} else {
 				return date;
 			}
-		})
-		.ticks(data.length);
+		});	
 
 	yAxis = d3.axisLeft()
 		.scale(yScaleAxis)
-		.ticks(10);
+		.ticks(yAxisTicks())
 
 	svg
 		.style('width', tWidth + 'px')
