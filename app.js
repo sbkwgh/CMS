@@ -53,11 +53,11 @@ app.get('/logout', function(req, res) {
 	});
 });
 
-app.use('/api/account', require('./api/account.js'));
-app.use('/api/posts', require('./api/post.js'));
-app.use('/api/comments', require('./api/comment.js'));
-app.use('/api/settings', require('./api/settings.js'));
-app.use('/api/analytics', require('./api/analytics.js'));
+app.use('/api/account', require('./routes/api/account.js'));
+app.use('/api/posts', require('./routes/api/post.js'));
+app.use('/api/comments', require('./routes/api/comment.js'));
+app.use('/api/settings', require('./routes/api/settings.js'));
+app.use('/api/analytics', require('./routes/api/analytics.js'));
 
 app.get('/cms', function(req, res) {
 	res.redirect('/cms/dashboard');
@@ -91,7 +91,7 @@ app.use(function(req, res, next) {
 app.get('/', function(req, res) {
 	res.redirect('/blog');
 });
-app.use('/blog', require('./blog.js'));
+app.use('/blog', require('./routes/blog.js'));
 
 
 db.on('err', function() {

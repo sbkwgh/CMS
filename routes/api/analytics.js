@@ -1,6 +1,6 @@
 var express = require('express');
-var Errors = require('../errors.js');
-var analytics = require('../models/analytics.js');
+var Errors = require('../../errors.js');
+var analytics = require('../../models/analytics.js');
 var router = express.Router();
 
 router.get('/', function(req, res) {

@@ -105,7 +105,7 @@
 			component: __webpack_require__(35)(Vue)
 		},
 		'/design': {
-			component: __webpack_require__(44)(Vue)
+			component: __webpack_require__(36)(Vue)
 		}
 	});
 
@@ -12914,7 +12914,13 @@
 
 	function addTitleTooltip(el, text, timeLimit) {
 		var span = document.createElement('span');
-		span.innerHTML = text;
+		var spanText = text
+			.replace('@content', el.innerHTML)
+			.replace(/@attr\(([^)]*)\)/gi, function(m, attr) {
+				return el.getAttribute(attr);
+			});
+
+		span.appendChild(document.createTextNode(spanText));
 		span.classList.add('title-tooltip');
 		applyStyles(span, {
 			'backgroundColor': 'rgb(60,60,60)',
@@ -12925,6 +12931,8 @@
 			'padding': '0.25rem 0.5rem',
 			'position': 'absolute',
 			'zIndex': '3',
+			'border': '0',
+			'borderRadius': '0.2rem',
 			'opacity': '0',
 			'max-width': '15rem',
 			'transition': 'all 0.25s'
@@ -12995,16 +13003,32 @@
 		}
 	});
 
+	/*
+	<a
+		href='link'
+		data-title='Here is a @attr(data-dynamic-attr) @content'
+		data-dynamic-attr='tooltip for a'
+	>
+		link
+	</a>
+	Gives: 'Here is a tooltip for a link'
+	*/
+
 	module.exports = addTitleTooltip;
 
 /***/ },
 /* 4 */
 /***/ function(module, exports) {
 
-	function tooltip(tQueryString, tData) {
-		function closeDiv(div) {
+	function closeDiv(div) {
+		div.classList.add('tooltip-fade');
+
+		setTimeout(function() {
 			div.parentElement.removeChild(div);
-		}
+		}, 200);
+	}
+
+	function tooltip(tQueryString, tData) {
 		function eventCb(ev) {
 			if(ev.target.matches(tQueryString)) {
 				 append(tData, ev.target)
@@ -13089,7 +13113,7 @@
 	document.body.addEventListener('click', function(ev) {
 		var tooltipEl = document.querySelector('.tooltip');
 		if(tooltipEl && !tooltipEl.contains(ev.target)) {
-			tooltipEl.parentElement.removeChild(tooltipEl);
+			closeDiv(tooltipEl);
 		}
 	})
 
@@ -21388,6 +21412,7 @@
 				return {
 					blogTitle: '',
 					blogDescription: '',
+					blogSidebar: '',
 					commentsModerated: false,
 					commentsMessage: '',
 					commentsAllowed: false,
@@ -21402,6 +21427,7 @@
 						.put('/api/settings', {
 							blogTitle: this.blogTitle,
 							blogDescription: this.blogDescription,
+							blogSidebar: this.blogSidebar,
 							commentsModerated: this.commentsModerated,
 							commentsMessage: this.commentsMessage,
 							commentsAllowed: this.commentsAllowed
@@ -21430,6 +21456,7 @@
 								modals.alert(res.data.error.message);
 							} else {
 								this.blogDescription = res.data.blogDescription;
+								this.blogSidebar = res.data.blogSidebar;
 								this.blogTitle = res.data.blogTitle;
 								this.commentsModerated = res.data.commentsModerated;
 								this.commentsMessage = res.data.commentsMessage;
@@ -21451,7 +21478,7 @@
 /* 34 */
 /***/ function(module, exports) {
 
-	module.exports = "<div id='settings'>\r\n\t<div class='settings-section'>\r\n\t\t<h2>General</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog title: </td>\r\n\t\t\t\t\t<td><input v-model='blogTitle'></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog description: </td>\r\n\t\t\t\t\t<td><textarea v-model='blogDescription'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t</div>\r\n\t<div class='settings-section'>\r\n\t\t<h2>Comment settings</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Allow comments:</td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<label class='checkbox'>\r\n\t\t\t\t\t\t\t<input type=\"checkbox\" v-model='commentsAllowed'>\r\n\t\t\t\t\t\t\t<span></span>\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Moderate comments: <i data-title=\"By selecting to moderate blog comments, all new comments will not show until individually approved\" style=\"cursor: pointer;\" class=\"fa fa-question-circle\"></i></td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<label class='checkbox'>\r\n\t\t\t\t\t\t\t<input type='checkbox' v-model='commentsModerated'>\r\n\t\t\t\t\t\t\t<span></span>\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Message above comment<br/>box (optional): </td>\r\n\t\t\t\t\t<td><textarea v-model='commentsMessage'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t</div>\r\n</div>\r\n\r\n<div class='settings-section' id='settings-save'>\r\n\t<div class='button btn-green btn-load' v-bind:class='{\"btn-disabled\": loading}' v-on:click='saveSettings()' v-el:save>\r\n\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\tSave settings\r\n\t</div>\r\n</div>";
+	module.exports = "<div id='settings'>\r\n\t<div class='settings-section'>\r\n\t\t<h2>General</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog title: </td>\r\n\t\t\t\t\t<td><input v-model='blogTitle'></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog description: </td>\r\n\t\t\t\t\t<td><textarea v-model='blogDescription'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog side-bar: <i data-title=\"You can format this using markdown\" style=\"cursor: pointer;\" class=\"fa fa-question-circle\"></i></td>\r\n\t\t\t\t\t<td><textarea v-model='blogSidebar'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t</div>\r\n\t<div class='settings-section'>\r\n\t\t<h2>Comment settings</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Allow comments:</td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<label class='checkbox'>\r\n\t\t\t\t\t\t\t<input type=\"checkbox\" v-model='commentsAllowed'>\r\n\t\t\t\t\t\t\t<span></span>\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Moderate comments: <i data-title=\"By selecting to moderate blog comments, all new comments will not show until individually approved\" style=\"cursor: pointer;\" class=\"fa fa-question-circle\"></i></td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<label class='checkbox'>\r\n\t\t\t\t\t\t\t<input type='checkbox' v-model='commentsModerated'>\r\n\t\t\t\t\t\t\t<span></span>\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Message above comment<br/>box (optional): </td>\r\n\t\t\t\t\t<td><textarea v-model='commentsMessage'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t</div>\r\n</div>\r\n\r\n<div class='settings-section' id='settings-save'>\r\n\t<div class='button btn-green btn-load' v-bind:class='{\"btn-disabled\": loading}' v-on:click='saveSettings()' v-el:save>\r\n\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\tSave settings\r\n\t</div>\r\n</div>";
 
 /***/ },
 /* 35 */
@@ -21460,13 +21487,13 @@
 	var modals = __webpack_require__(14);
 	var Errors = __webpack_require__(28);
 
-	var flexBoxGridCorrect = __webpack_require__(36);
-	var pageViewsGraph = __webpack_require__(37);
-	var browserPieChart = __webpack_require__(40);
+	var flexBoxGridCorrect = __webpack_require__(40);
+	var pageViewsGraph = __webpack_require__(41);
+	var browserPieChart = __webpack_require__(44);
 		
 	module.exports = function(Vue) {
 		return Vue.extend({
-			template: __webpack_require__(41),
+			template: __webpack_require__(45),
 			data: function() {
 				return {
 					ui: {
@@ -21494,13 +21521,97 @@
 						views: 0
 					},
 					analytics: {
-						pageViews: null
+						pageViews: null,
+						uniquePageViews: null,
+						currentGraph: 'total',
+						processed: {}
 					}
 				}
 			},
 			methods: {
-				sortPosts: function(posts) {
-					posts.forEach(function(post) {
+				getApiData: function(next) {
+					var apis = [
+						{url: '/api/posts', param: 'posts.all'},
+						{url: '/api/analytics?ordered=date', param: 'analytics.dateOrdered'},
+						{url: '/api/analytics', param: 'analytics.all'}
+					];
+
+					var self = this;
+
+					var doneCount = 0;
+					function done(param, data) {
+						var params = param.split('.');
+						if(params.length === 1) {
+							self[param] = data;
+						} else {
+							self[params[0]][params[1]] = data;
+						}
+
+						if(param === 'posts.all') {
+							getCommentsData(data);
+						}
+
+						doneCount++;
+						//+1 because we send a further request, that depends
+						//on getting the post id from /api/posts
+						if(doneCount === apis.length+1) {
+							next();
+						}
+					}
+
+					function errorCb(err, param, showUnknownError) {
+						done(param, null);
+
+						if(showUnknownError) {
+							console.log(err);
+							modals.alert(Errors.unknown.message);
+						} else {
+							modals.alert(err.message);
+						}
+					}
+
+					function getCommentsData(data) {
+						var postId, postSlug;
+
+						for(var i = 0; i < data.length; i++) {
+							if(data[i].published) {
+								postId = data[i]._id;
+								postSlug = data[i].slug;
+
+								break;
+							}
+						}
+
+						self.latestPost.slug = postSlug;
+
+						self.$http.get('/api/comments/' + postId)
+							.then(function(res) {
+								if(res.data.error && res.data.error.name !== 'commentsDisabled') {
+									errorCb(res.data.error, 'latestPost.comments');
+								} else {
+									done('latestPost.comments', res.data.length || 0);
+								}
+							}, function(err) {
+								errorCb(err, 'latestPost.comments', true);
+							});
+					}
+
+					apis.forEach(function(api, index) {
+
+						self.$http.get(api.url)
+							.then(function(res) {
+								if(res.data.error) {
+									errorCb(res.data.error, api.param);
+								} else {
+									done(api.param, res.data);
+								}
+							}, function(err) {
+								errorCb(err, api.param, true);
+							})
+					});
+				},
+				sortPosts: function() {
+					this.posts.all.forEach(function(post) {
 						if(post.published) {
 							this.posts.published++;
 						} else {
@@ -21509,35 +21620,15 @@
 					}.bind(this));
 				},
 				getLatestPostStats: function(posts) {
-					var postId, postSlug, latestPostViews = 0, allPostViews = {}, allPostViewsArr = [];
+					var latestPostViews = 0, allPostViews = {}, allPostViewsArr = [];
 
-					for(var i = 0; i < posts.length; i++) {
-						if(posts[i].published) {
-							postId = posts[i]._id;
-							postSlug = posts[i].slug;
-
-							break;
-						}
-					}
-
-					this.$http
-						.get('/api/comments/' + postId)
-						.then(function(res) {
-							if(res.data.error && res.data.error.name !== 'commentsDisabled') {
-								modals.alert(res.data.error.message);
-							} else {
-								this.latestPost.comments = res.data.length || 0;
-							}
-						}, function(err) {
-							console.log(err);
-							modals.alert(Errors.unknown.message);
-						});
+					var self = this;
 
 					this.analytics.all.forEach(function(session) {
 						session.paths.forEach(function(path) {
 							var post = path.path.split('/blog/post/')[1];
 
-							if(path.path === '/blog/post/' + postSlug) {
+							if(path.path === '/blog/post/' + self.latestPost.slug) {
 								latestPostViews++;
 							}
 							if(post) {
@@ -21563,101 +21654,138 @@
 						return b.views - a.views
 					}).slice(0, 3);
 				},
-				getPageViewsPerDay: function(data) {
-					this.$http
-						.get('/api/analytics?ordered=date')
-						.then(function(res) {
-							if(res.data.error) {
-								modals.alert(res.data.error.message);
-							} else {
-								var pageViews = [];
-								var pageViewsAddedDays = [];
-					
-								res.data.forEach(function(day) {
-									var temp = 0;
-									day.sessions.forEach(function(session) {
-										temp+= session.paths.length;
-									});
+				processData: function(data) {
+					var dayMs = 24*60*60*1000;
+					function getDaysInBetween(a, b) {
+						var currentDate = a.getTime();
+						var nextDate = b.getTime();
 
-									pageViews.push({date: new Date(day.date), hits: temp});
-								});
-								pageViews = pageViews.reverse();
-							
-								pageViews.forEach(function(day, i, arr) {
-									pageViewsAddedDays.push(day);
+						return (nextDate - currentDate) / (dayMs) - 1;
+					}
 
-									if(!arr[i+1]) return;
+					var pageViews = data;
+					var pageViewsAddedDays = [];
 
-									var oneDay = 24*60*60*1000;
-
-									var currentDate = day.date.getTime();
-									var nextDate = arr[i+1].date.getTime();
-
-									var daysInBetween = (nextDate - currentDate) / (oneDay) - 1;
-
-									for(var j = 1; j < daysInBetween+1; j++) {
-										pageViewsAddedDays.push({
-											date: new Date(currentDate + oneDay*j),
-											hits: 0
-										});
-									}
-								});
-
-								pageViewsAddedDays = pageViewsAddedDays.slice(-10);
-
-
-
-								if(pageViewsAddedDays.length < 10) {
-									for(var i = 0, len = 10-pageViewsAddedDays.length; i < len; i++) {
-										pageViewsAddedDays.unshift({
-											date: new Date(pageViewsAddedDays[0].date.getTime() - 24*60*60*1000),
-											hits: 0
-										})
-									}
-								}
-								pageViewsGraph.make(pageViewsAddedDays);
-							}
-						}, function(err) {
-							console.log(err);
-							modals.alert(Errors.unknown.message);
+					//If the last page hit is not the current date, fill in the array
+					//with items going up to the current date
+					var daysBetweenLastViewAndCurrentDate = getDaysInBetween(pageViews[0].date, new Date());
+					for(var i = 0; i < daysBetweenLastViewAndCurrentDate; i++) {
+						pageViews.unshift({
+							date: new Date(pageViews[0].date.getTime() + dayMs),
+							hits: 0
 						});
+					}
+
+					//If there are less than 10 items, fill the array up with
+					//items going back in time
+					if(pageViews.length < 10) {
+						for(var i = 0, len = 10-pageViews.length; i < len; i++) {
+							pageViews.push({
+								date: new Date(pageViews.slice(-1)[0].date.getTime() - dayMs),
+								hits: 0
+							});
+						}
+					}
+
+					//Now reverse so that it is date ascending
+					pageViews = pageViews.reverse();
+				
+					//Fill in gaps between dates
+					pageViews.forEach(function(day, i, arr) {
+						pageViewsAddedDays.push(day);
+
+						if(!arr[i+1]) return;
+
+
+						var currentDate = day.date;
+						var nextDate = arr[i+1].date;
+						var daysInBetween = getDaysInBetween(currentDate, nextDate);
+
+						for(var j = 1; j < daysInBetween+1; j++) {
+							pageViewsAddedDays.push({
+								date: new Date(currentDate.getTime() + dayMs*j),
+								hits: 0
+							});
+						}
+					});
+
+					//Now take the last 10 dates
+					pageViewsAddedDays = pageViewsAddedDays.slice(-10);
+
+					return pageViewsAddedDays;
+				},
+				getPageViewsPerDay: function(update) {
+					var totalPageViews = [];
+				
+					//Add up each of the page views on each of the sessions
+					//for each day
+					this.analytics.dateOrdered.forEach(function(day) {
+						var temp = 0;
+						day.sessions.forEach(function(session) {
+							temp += session.paths.length;
+						});
+
+						totalPageViews.push({date: new Date(day.date), hits: temp});
+					});
+
+					var uniquePageViewsTemp = {}, uniquePageViews = [];
+					this.analytics.all.forEach(function(session) {
+						var date = new Date(session.paths[0].time)
+						var dateSansTime = new Date(0);
+
+						dateSansTime.setFullYear(date.getFullYear());
+						dateSansTime.setMonth(date.getMonth());
+						dateSansTime.setDate(date.getDate());
+
+						if(!uniquePageViewsTemp[dateSansTime]) uniquePageViewsTemp[dateSansTime] = 0;
+
+						uniquePageViewsTemp[dateSansTime]++;
+					});
+					Object.keys(uniquePageViewsTemp).forEach(function(date) {
+						uniquePageViews.push({
+							date: new Date(date),
+							hits: uniquePageViewsTemp[date]
+						});
+					});
+					uniquePageViews = uniquePageViews.sort(function(a, b) {
+						return new Date(b.date) - new Date(a.date);
+					});
+
+
+					this.analytics.processed.unique = this.processData(uniquePageViews);
+					this.analytics.processed.total = this.processData(totalPageViews);
+				},
+				changePageViewsGraph: function(type) {
+					if(type === 'total') {
+						this.analytics.currentGraph = 'total';
+						pageViewsGraph.update(null, this.analytics.processed.total);
+					} else {
+						this.analytics.currentGraph = 'unique sessions';
+						pageViewsGraph.update(null, this.analytics.processed.unique);
+					}
 				},
 				getBrowserPageViews: function(postsData) {
-					this.$http
-						.get('/api/analytics')
-						.then(function(res) {
-							if(res.data.error) {
-								modals.alert(res.data.error.message);
-							} else {
-								this.analytics.all = res.data;
-								this.getLatestPostStats(postsData);
+					var browserPageViews = {};
+					this.analytics.all.forEach(function(user) {
+						var browser = user.useragent.browser;
+						if(!browserPageViews[browser]) {
+							browserPageViews[browser] = 0;
+						}
 
-								var browserPageViews = {};
-								res.data.forEach(function(user) {
-									var browser = user.useragent.browser;
-									if(!browserPageViews[browser]) {
-										browserPageViews[browser] = 0;
-									}
+						browserPageViews[browser]++;
+					});
 
-									browserPageViews[browser]++;
-								});
-
-								var browserPageViewsArr = [];
-								Object
-									.keys(browserPageViews)
-									.forEach(function(browser) {
-										browserPageViewsArr.push({
-											name: browser,
-											hits: browserPageViews[browser]
-										});
-									});
-
-								browserPieChart.make(browserPageViewsArr);
-							}
-						}, function(err) {
-							console.log(err);
-							modals.alert(Errors.unknown.message);
+					var browserPageViewsArr = [];
+					Object
+						.keys(browserPageViews)
+						.forEach(function(browser) {
+							browserPageViewsArr.push({
+								name: browser,
+								hits: browserPageViews[browser]
+							});
 						});
+
+					browserPieChart.make(browserPageViewsArr);
 				},
 				openPost: function(slug) {
 					window.open('/blog/post/' + slug);
@@ -21668,7 +21796,14 @@
 
 				setInterval(function() {
 					this.ui.time = (new Date()).toTimeString().slice(0,5);
-				}.bind(this), 10000)
+				}.bind(this), 10000);
+
+				Tooltip('#page-views-menu', {
+					items: [
+						{title: 'Total', click: () => this.changePageViewsGraph('total')},
+						{title: 'Unique sessions', click: () => this.changePageViewsGraph('unique')}
+					]
+				})
 
 				var ticking = false;
 				window.addEventListener('resize', function() {
@@ -21684,24 +21819,16 @@
 			},
 			route: {
 				data: function(transition) {
-					transition.next();
+					this.getApiData(function() {
+						transition.next();
 
-					this.$http
-						.get('/api/posts')
-						.then(function(res) {
-							this.getPageViewsPerDay();
+						this.sortPosts();
+						this.getLatestPostStats();
+						this.getBrowserPageViews();
 
-							if(res.data.error) {
-								modals.alert(res.data.error.message);
-							} else {
-								this.posts.all = res.data;
-								this.sortPosts(res.data);
-								this.getBrowserPageViews(res.data);
-							}
-						}, function(err) {
-							console.log(err);
-							modals.alert(Errors.unknown.message);
-						});
+						this.getPageViewsPerDay();
+						pageViewsGraph.make(this.analytics.processed.total);
+					}.bind(this));
 				}
 			}
 		});
@@ -21709,6 +21836,39 @@
 
 /***/ },
 /* 36 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(Vue) {
+		return Vue.extend({
+			template: __webpack_require__(37),
+			data: function() {
+				return {
+					selected: 'a',
+					templates: [
+						{name: 'a'},
+						{name: 'b'},
+						{name: 'c'}
+					]
+				}
+			},
+			methods: {
+				select: function(name) {
+					this.selected = name;
+				}
+			}
+		})
+	};
+
+/***/ },
+/* 37 */
+/***/ function(module, exports) {
+
+	module.exports = "<div class='template-infobox'>\r\n\tSelect a blog template from the left-hand box to customise fonts, colours, etc.\r\n</div>\r\n<div class='template-select'>\r\n\t<div \r\n\t\tclass='template-item'\r\n\t\tv-for='template in templates'\r\n\t\tv-bind:class='{\"template-item-selected\": selected === template.name}'\r\n\t\tv-on:click='select(template.name)'\r\n\t>\r\n\t\t{{template.name}}\r\n\t</div>\r\n</div>\r\n<div class='template-options'>\r\n\t<div class='preview-image'>\r\n\t\t<div class='button'>Preview</div>\r\n\t</div>\r\n</div>";
+
+/***/ },
+/* 38 */,
+/* 39 */,
+/* 40 */
 /***/ function(module, exports) {
 
 	function removeHiddenFlexBoxChidren(parentString, childClass) {
@@ -21792,11 +21952,11 @@
 	}
 
 /***/ },
-/* 37 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var rem = __webpack_require__(38);
-	var d3 = __webpack_require__(39);
+	var rem = __webpack_require__(42);
+	var d3 = __webpack_require__(43);
 
 	var svg;
 	var data;
@@ -21814,13 +21974,13 @@
 		return width;
 	}
 
-	var update = function(width) {
-		console.log('update')
+	var update = function(width, updatedData) {
 		if(!data) return; 
+		if(updatedData) data = updatedData;
 		
 		var max = d3.max(data.map(d => d.hits));
 		var tHeight = rem(13.5);
-		var tWidth = width;
+		var tWidth = width || resizeWidth();
 		var yMargin = 40;
 		var xMargin = 40;
 
@@ -21829,22 +21989,22 @@
 			.range([xMargin, tWidth - xMargin]);
 
 		var xScaleAxis = d3.scaleTime()
-			.domain([data[0].date, data.slice(-1)[0].date])
-			.range([xMargin, tWidth - xMargin]);
+			.domain([data[0].date, data.slice(-2)[0].date])
+			.range([xMargin, tWidth - xMargin])
+			.nice(data.length);
 
 		var xAxis = d3.axisBottom()
 			.scale(xScaleAxis)
 			.tickFormat(function(d, i) {
 				var date = d.getDate() < 10 ? '0' + d.getDate() : d.getDate();
 				var month = d.toDateString().slice(4, 7);
-				
-				if((i === 0 || d.getDate() === 1) && tWidth >= 350) {
+
+				if(i === 0 || d.getDate() === 1) {
 					return month + ' ' + date;
 				} else {
 					return date;
 				}
-			})
-			.ticks(data.length || ticks);
+			});	
 
 		svg
 			.style('width', tWidth + 'px')
@@ -21873,10 +22033,12 @@
 			.data(data)
 			.transition()
 			.attr('cx', (d, i) => xScale(i))
+			.attr('cy', d => tHeight - yScale(d.hits));
 		svg.selectAll('.vertex-hidden')
 			.data(data)
 			.transition()
-			.attr('cx', (d, i) => xScale(i));
+			.attr('cx', (d, i) => xScale(i))
+			.attr('cy', d => tHeight - yScale(d.hits));
 	}
 	var make = function(ajaxData) {
 		svg = d3.select('#page-views');
@@ -22029,7 +22191,7 @@
 	module.exports.width = resizeWidth;
 
 /***/ },
-/* 38 */
+/* 42 */
 /***/ function(module, exports) {
 
 	var div = document.createElement('div');
@@ -22045,7 +22207,7 @@
 	}
 
 /***/ },
-/* 39 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// https://d3js.org Version 4.2.1. Copyright 2016 Mike Bostock.
@@ -38278,11 +38440,11 @@
 	}));
 
 /***/ },
-/* 40 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var d3 = __webpack_require__(39);
-	var rem = __webpack_require__(38);
+	var d3 = __webpack_require__(43);
+	var rem = __webpack_require__(42);
 
 	var data,
 	    height,
@@ -38412,8 +38574,8 @@
 		arcs = d3.pie()(data.map(d => d.hits))
 
 		color = d3.scaleLinear()
-			.domain([0, d3.max(data.map(d => d.hits))])
-			.range(['#fff', '#6C7A89']);
+			.domain([d3.min(data.map(d => d.hits)), d3.max(data.map(d => d.hits))])
+			.range(['#eee', '#6C7A89']);
 
 		var g = svg.append('g');
 
@@ -38440,7 +38602,7 @@
 					.split(', ')
 					.reduce((prev, curr) => (+prev)+(+curr)) / 3;
 
-				if(rgb >= 240) {
+				if(rgb >= 220) {
 					return 'black';
 				} else {
 					return '#fff';
@@ -38548,43 +38710,10 @@
 	module.exports.width = resizeWidth;
 
 /***/ },
-/* 41 */
-/***/ function(module, exports) {
-
-	module.exports = "<div id='widgets-holder'>\r\n\t<div class='widget'>\r\n\t\t<div id='time-now'>\r\n\t\t\t<div class='time'>{{ui.time}}</div>\r\n\t\t\t<div class='date'>{{ui.date | prettyDate}}</div>\r\n\t\t\tWelcome back, {{cookies.author}}\r\n\t\t</div>\r\n\t\t<div class='description'>Time right now</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<svg id='page-views'></svg>\r\n\t\t<div class='description'>\r\n\t\t\tPage views in the last 10 days\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<svg id='browser-pie-chart'></svg>\r\n\t\t<div class='description'>\r\n\t\t\tTotal unique page views by browser\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<div class='widget-section'>\r\n\t\t\t<div class='widget-section-number'>{{latestPost.comments}}</div>\r\n\t\t\t<div class='widget-section-description'>{{\"comment\" | pluralize latestPost.comments}} on most recent post</div>\r\n\t\t</div>\r\n\t\t<div class='widget-section'>\r\n\t\t\t<div class='widget-section-number'>{{latestPost.views}}</div>\r\n\t\t\t<div class='widget-section-description'>page {{\"view\" | pluralize latestPost.views}} on most recent post</div>\r\n\t\t</div>\r\n\t\t<div class='widget-section'>\r\n\t\t\t<div id='widget-section-published' v-bind:style='{\"flex-grow\": posts.published}'>\r\n\t\t\t\t<div class='widget-section-number'>{{posts.published}}</div>\r\n\t\t\t\t<div class='widget-section-description'>published {{\"post\" | pluralize posts.published}}</div>\r\n\t\t\t</div>\r\n\t\t\t<div id='widget-section-drafts' v-bind:style='{\"flex-grow\": posts.drafts}'>\r\n\t\t\t\t<div class='widget-section-number'>{{posts.drafts}}</div>\r\n\t\t\t\t<div class='widget-section-description'>{{\"draft\" | pluralize posts.drafts}}</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<ol id='most-viewed-posts'>\r\n\t\t\t<template  v-for='n in 3'>\r\n\t\t\t\t<li \r\n\t\t\t\t\tv-if='posts.views[n]'\r\n\t\t\t\t\tv-on:click='openPost(posts.views[n].slug)'\r\n\t\t\t\t\tv-bind:class='{\"most-viewed\": n===0}'\r\n\t\t\t\t>\r\n\t\t\t\t\t<div data-title='Click to open post'>{{posts.views[n].title}}</div>\r\n\t\t\t\t\t<span>{{posts.views[n].views}} {{\"view\" | pluralize posts.views[n].views}}</span>\r\n\t\t\t\t</li>\r\n\t\t\t\t<li v-else class='no-show'></li>\r\n\t\t\t</template>\r\n\t\t</ol>\r\n\t\t<div class='description'>\r\n\t\t\tMost viewed posts\r\n\t\t</div>\r\n\t</div>\r\n</div>";
-
-/***/ },
-/* 42 */,
-/* 43 */,
-/* 44 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = function(Vue) {
-		return Vue.extend({
-			template: __webpack_require__(45),
-			data: function() {
-				return {
-					selected: 'a',
-					templates: [
-						{name: 'a'},
-						{name: 'b'},
-						{name: 'c'}
-					]
-				}
-			},
-			methods: {
-				select: function(name) {
-					this.selected = name;
-				}
-			}
-		})
-	};
-
-/***/ },
 /* 45 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class='template-infobox'>\r\n\tSelect a blog template from the left-hand box to customise fonts, colours, etc.\r\n</div>\r\n<div class='template-select'>\r\n\t<div \r\n\t\tclass='template-item'\r\n\t\tv-for='template in templates'\r\n\t\tv-bind:class='{\"template-item-selected\": selected === template.name}'\r\n\t\tv-on:click='select(template.name)'\r\n\t>\r\n\t\t{{template.name}}\r\n\t</div>\r\n</div>\r\n<div class='template-options'>\r\n\t<div class='preview-image'>\r\n\t\t<div class='button'>Preview</div>\r\n\t</div>\r\n</div>";
+	module.exports = "<div id='widgets-holder'>\r\n\t<div class='widget'>\r\n\t\t<div id='time-now'>\r\n\t\t\t<div class='time'>{{ui.time}}</div>\r\n\t\t\t<div class='date'>{{ui.date | prettyDate}}</div>\r\n\t\t\tWelcome back, {{cookies.author}}\r\n\t\t</div>\r\n\t\t<div class='description'>Time right now</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<svg id='page-views'></svg>\r\n\t\t<div class='description'>\r\n\t\t\tPage views in the last 10 days:&nbsp;\r\n\t\t\t<span id='page-views-menu' class='menu'>\r\n\t\t\t\t{{analytics.currentGraph}} <i class=\"fa fa-caret-down\"></i>\r\n\t\t\t</span>\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<svg id='browser-pie-chart'></svg>\r\n\t\t<div class='description'>\r\n\t\t\tTotal unique page views by browser\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<div class='widget-section'>\r\n\t\t\t<div class='widget-section-number'>{{latestPost.comments}}</div>\r\n\t\t\t<div class='widget-section-description'>{{\"comment\" | pluralize latestPost.comments}} on most recent post</div>\r\n\t\t</div>\r\n\t\t<div class='widget-section'>\r\n\t\t\t<div class='widget-section-number'>{{latestPost.views}}</div>\r\n\t\t\t<div class='widget-section-description'>page {{\"view\" | pluralize latestPost.views}} on most recent post</div>\r\n\t\t</div>\r\n\t\t<div class='widget-section'>\r\n\t\t\t<div id='widget-section-published' v-bind:style='{\"flex-grow\": posts.published}'>\r\n\t\t\t\t<div class='widget-section-number'>{{posts.published}}</div>\r\n\t\t\t\t<div class='widget-section-description'>published {{\"post\" | pluralize posts.published}}</div>\r\n\t\t\t</div>\r\n\t\t\t<div id='widget-section-drafts' v-bind:style='{\"flex-grow\": posts.drafts}'>\r\n\t\t\t\t<div class='widget-section-number'>{{posts.drafts}}</div>\r\n\t\t\t\t<div class='widget-section-description'>{{\"draft\" | pluralize posts.drafts}}</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<ol id='most-viewed-posts'>\r\n\t\t\t<template  v-for='n in 3'>\r\n\t\t\t\t<li \r\n\t\t\t\t\tv-if='posts.views[n]'\r\n\t\t\t\t\tv-on:click='openPost(posts.views[n].slug)'\r\n\t\t\t\t\tv-bind:class='{\"most-viewed\": n===0}'\r\n\t\t\t\t>\r\n\t\t\t\t\t<div data-title=\"Open post '@content'\" data-test='Open post'>{{posts.views[n].title}}</div>\r\n\t\t\t\t\t<span>{{posts.views[n].views}} {{\"view\" | pluralize posts.views[n].views}}</span>\r\n\t\t\t\t</li>\r\n\t\t\t\t<li v-else class='no-show'></li>\r\n\t\t\t</template>\r\n\t\t</ol>\r\n\t\t<div class='description'>\r\n\t\t\tMost viewed posts\r\n\t\t</div>\r\n\t</div>\r\n</div>";
 
 /***/ }
 /******/ ]);

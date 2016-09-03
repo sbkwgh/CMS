@@ -72,7 +72,8 @@ input, textarea {
   border-radius: 0.125rem;
   border: thin solid gray;
   padding: 0.25rem 0.375rem;
-  font-size: 0.8rem; }
+  font-size: 0.8rem;
+  outline: none; }
   input:focus, textarea:focus {
     border-color: #1699e0; }
 
@@ -333,7 +334,15 @@ input, textarea {
   margin-bottom: 10rem;
   opacity: 0; }
 
+@keyframes load {
+  from {
+    margin-top: -1rem;
+    opacity: 0; }
+  to {
+    margin-top: 0rem;
+    opacity: 1; } }
 .tooltip {
+  animation: load 0.2s;
   width: 12.5rem;
   font-family: "Roboto", sans-serif, sans-serif;
   font-size: 0.8rem;
@@ -342,7 +351,11 @@ input, textarea {
   border-radius: 0.2rem;
   position: absolute;
   z-index: 5;
-  box-shadow: 0px 0px 0.25rem rgba(100, 100, 100, 0.25); }
+  box-shadow: 0px 0px 0.25rem rgba(100, 100, 100, 0.25);
+  transition: all 0.2s; }
+
+.tooltip-fade {
+  opacity: 0; }
 
 .tooltip-triangle-gray {
   width: 0;
@@ -357,12 +370,12 @@ input, textarea {
 .tooltip-triangle-white {
   width: 0;
   height: 0;
-  border-left: 0.35rem solid transparent;
-  border-right: 0.35rem solid transparent;
-  border-top: 0.35rem solid #fff;
+  border-left: 0.4rem solid transparent;
+  border-right: 0.4rem solid transparent;
+  border-top: 0.4rem solid #fff;
   position: absolute;
-  left: calc(50% - 0.15rem);
-  bottom: -0.3rem; }
+  left: calc(50% - 0.2rem);
+  bottom: -0.35rem; }
 
 .tooltip-header {
   border-bottom: 1px solid gray;
@@ -375,7 +388,9 @@ input, textarea {
 .tooltip-item {
   padding: 0.0625rem 0.3rem;
   cursor: default;
-  font-weight: 300; }
+  font-weight: 300;
+  position: relative;
+  z-index: 2; }
 
 .tooltip-item:hover {
   background-color: rgba(100, 100, 100, 0.075); }
@@ -854,7 +869,7 @@ input, textarea {
   justify-content: center;
   padding: 0.5rem 0px; }
   #widgets-holder .widget {
-    border: thin solid rgba(224, 224, 224, 0.75);
+    border: 0;
     border-radius: 0.25rem;
     box-shadow: 0px 1px 0.2rem rgba(100, 100, 100, 0.1);
     background-color: #fff;
@@ -866,7 +881,7 @@ input, textarea {
     overflow-y: auto;
     text-align: center; }
     #widgets-holder .widget .description {
-      background-color: #f0f1f2;
+      background-color: #f2f1f3;
       height: 2.5rem;
       display: flex;
       align-items: center;
@@ -875,7 +890,11 @@ input, textarea {
       bottom: 0px;
       width: 100%;
       border-radius: 0px 0px 0.25rem 0.25rem;
-      border-top: thin solid rgba(224, 224, 224, 0.75); }
+      border: thin solid #e0e0e0; }
+      #widgets-holder .widget .description .menu {
+        cursor: pointer; }
+        #widgets-holder .widget .description .menu:hover {
+          text-decoration: underline; }
     #widgets-holder .widget #time-now {
       display: flex;
       align-items: center;
@@ -909,7 +928,6 @@ input, textarea {
         #widgets-holder .widget #most-viewed-posts li span {
           padding: 0 0.5rem; }
         #widgets-holder .widget #most-viewed-posts li div {
-          text-align: center;
           font-size: 1.25rem;
           font-family: "Roboto", sans-serif;
           text-overflow: ellipsis;

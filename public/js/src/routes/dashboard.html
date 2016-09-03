@@ -10,7 +10,10 @@
 	<div class='widget'>
 		<svg id='page-views'></svg>
 		<div class='description'>
-			Page views in the last 10 days
+			Page views in the last 10 days:&nbsp;
+			<span id='page-views-menu' class='menu'>
+				{{analytics.currentGraph}} <i class="fa fa-caret-down"></i>
+			</span>
 		</div>
 	</div>
 	<div class='widget'>
@@ -47,7 +50,7 @@
 					v-on:click='openPost(posts.views[n].slug)'
 					v-bind:class='{"most-viewed": n===0}'
 				>
-					<div data-title='Click to open post'>{{posts.views[n].title}}</div>
+					<div data-title="Open post '@content'" data-test='Open post'>{{posts.views[n].title}}</div>
 					<span>{{posts.views[n].views}} {{"view" | pluralize posts.views[n].views}}</span>
 				</li>
 				<li v-else class='no-show'></li>

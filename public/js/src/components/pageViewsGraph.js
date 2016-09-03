@@ -17,13 +17,13 @@ var resizeWidth = function() {
 	return width;
 }
 
-var update = function(width) {
-	console.log('update')
+var update = function(width, updatedData) {
 	if(!data) return; 
+	if(updatedData) data = updatedData;
 	
 	var max = d3.max(data.map(d => d.hits));
 	var tHeight = rem(13.5);
-	var tWidth = width;
+	var tWidth = width || resizeWidth();
 	var yMargin = 40;
 	var xMargin = 40;
 
@@ -32,22 +32,22 @@ var update = function(width) {
 		.range([xMargin, tWidth - xMargin]);
 
 	var xScaleAxis = d3.scaleTime()
-		.domain([data[0].date, data.slice(-1)[0].date])
-		.range([xMargin, tWidth - xMargin]);
+		.domain([data[0].date, data.slice(-2)[0].date])
+		.range([xMargin, tWidth - xMargin])
+		.nice(data.length);
 
 	var xAxis = d3.axisBottom()
 		.scale(xScaleAxis)
 		.tickFormat(function(d, i) {
 			var date = d.getDate() < 10 ? '0' + d.getDate() : d.getDate();
 			var month = d.toDateString().slice(4, 7);
-			
-			if((i === 0 || d.getDate() === 1) && tWidth >= 350) {
+
+			if(i === 0 || d.getDate() === 1) {
 				return month + ' ' + date;
 			} else {
 				return date;
 			}
-		})
-		.ticks(data.length || ticks);
+		});	
 
 	svg
 		.style('width', tWidth + 'px')
@@ -76,10 +76,12 @@ var update = function(width) {
 		.data(data)
 		.transition()
 		.attr('cx', (d, i) => xScale(i))
+		.attr('cy', d => tHeight - yScale(d.hits));
 	svg.selectAll('.vertex-hidden')
 		.data(data)
 		.transition()
-		.attr('cx', (d, i) => xScale(i));
+		.attr('cx', (d, i) => xScale(i))
+		.attr('cy', d => tHeight - yScale(d.hits));
 }
 var make = function(ajaxData) {
 	svg = d3.select('#page-views');

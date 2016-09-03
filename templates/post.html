@@ -1,39 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>{{settings.blogTitle}}{% if post %} | {{post.title}}{% endif %}</title>
+	<title>{{settings.blogTitle}}</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="/public/css/blog.bundle.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 </head>
 <body id='app'>
-	<div id='color-bar'></div>
 	<header>
 		<a href='/blog'>{{settings.blogTitle}}</a>
 		<div>{{settings.blogDescription}}</div>
 	</header>
-	{% if !post %}
-		<h1 id='no-posts'>The requested post does not exist</h1>
-	{% endif %}
-	{% if post %}
-		<div class='post'>
-			<div class='post-header'>
-				<div class='post-date-author-bar'>
-					<div class='post-date-created'>{{post.dateString}}</div>
+	<div id="content">
+		<div id='posts'>
+			{% if !post %}
+				<h1 class='content-message' id='no-posts'>The requested post does not exist</h1>
+			{% endif %}
+			{% if post %}
+				<div class='post'>
+					<div class='post-header'>
+						<div class='post-date-author-bar'>
+							<div class='post-date-created'>{{post.dateString}}</div>
+						</div>
+						<a href='/blog/post/{{post.slug}}' class='post-title'>{{post.title}}</a>
+					</div>
+					<div class='post-body'>
+						{% autoescape false %}{{post.bodyHTML}}{% endautoescape %}
+					</div>
+					<div class='post-tags'>
+						{% for tag in post.tags %}
+							<a href='/blog/tags/{{tag}}'>{{tag}}</a>
+						{% endfor %}
+					</div>
 				</div>
-				<a href='/blog/post/{{post.slug}}' class='post-title'>{{post.title}}</a>
-			</div>
-			<div class='post-body'>
-				{% autoescape false %}{{post.bodyHTML}}{% endautoescape %}
-			</div>
-			<div class='post-tags'>
-				{% for tag in post.tags %}
-					<a href='/blog/tags/{{tag}}'>{{tag}}</a>
-				{% endfor %}
-			</div>
+			{% endif %}
 		</div>
+		<div id='sidebar'><div>{% autoescape false %}{{settings.blogSidebarHTML}}{% endautoescape %}</div></div>
+	</div>
+	{% if post %}
 		<post-comments post-id='{{post._id.toString()}}' comments-message='{{settings.commentsMessage}}'></post-comments>
 	{% endif %}
+
 	<script src='/public/js/blog.bundle.js'></script>
 </body>
 </html>

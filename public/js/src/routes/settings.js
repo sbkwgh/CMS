@@ -8,6 +8,7 @@ module.exports = function(Vue) {
 			return {
 				blogTitle: '',
 				blogDescription: '',
+				blogSidebar: '',
 				commentsModerated: false,
 				commentsMessage: '',
 				commentsAllowed: false,
@@ -22,6 +23,7 @@ module.exports = function(Vue) {
 					.put('/api/settings', {
 						blogTitle: this.blogTitle,
 						blogDescription: this.blogDescription,
+						blogSidebar: this.blogSidebar,
 						commentsModerated: this.commentsModerated,
 						commentsMessage: this.commentsMessage,
 						commentsAllowed: this.commentsAllowed
@@ -50,6 +52,7 @@ module.exports = function(Vue) {
 							modals.alert(res.data.error.message);
 						} else {
 							this.blogDescription = res.data.blogDescription;
+							this.blogSidebar = res.data.blogSidebar;
 							this.blogTitle = res.data.blogTitle;
 							this.commentsModerated = res.data.commentsModerated;
 							this.commentsMessage = res.data.commentsMessage;

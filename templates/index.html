@@ -7,34 +7,48 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 </head>
 <body>
-	<div id='color-bar'></div>
 	<header>
 		<a href='/blog'>{{settings.blogTitle}}</a>
 		<div>{{settings.blogDescription}}</div>
 	</header>
-	{% if !posts.length %}
-		<h1 id='no-posts'>No posts to show here</h1>
-	{% endif %}
-	{% if tags %}
-		<h1 class='post'>Showing all posts with the tag{% if tags.length > 1 %}s{% endif %} "{{tags}}"</h1>
-	{% endif %}
-	{% for post in posts %}
-		<div class='post'>
-			<div class='post-header'>
-				<div class='post-date-author-bar'>
-					<div class='post-date-created'>{{post.dateString}}</div>
+	<div id="content">
+		<div id='posts'>
+				{% if !posts.length %}
+					<h1 class='content-message' id='no-posts'>No posts to show here</h1>
+				{% endif %}
+				{% if tags %}
+					<h1 class='content-message'>Showing all posts with the tag{% if tags.split(', ').length !== 1 %}s{% endif %} "{{tags}}"</h1>
+				{% endif %}
+			{% for post in posts %}
+				<div class='post'>
+					<div class='post-header'>
+						<div class='post-date-author-bar'>
+							<div class='post-date-created'>{{post.dateString}}</div>
+						</div>
+						<a href='/blog/post/{{post.slug}}' class='post-title'>{{post.title}}</a>
+					</div>
+					<div class='post-body'>
+						{% autoescape false %}{{post.truncatedHTML}}{% endautoescape %}
+						<p>
+							<a href='/blog/post/{{post.slug}}'>Continue reading post</a>
+						</p>
+					</div>
+					<div class='post-tags'>
+						{% for tag in post.tags %}
+							<a href='/blog/tags/{{tag}}'>{{tag}}</a>
+						{% endfor %}
+					</div>
 				</div>
-				<a href='/blog/post/{{post.slug}}' class='post-title'>{{post.title}}</a>
-			</div>
-			<div class='post-body'>
-				{% autoescape false %}{{post.bodyHTML}}{% endautoescape %}
-			</div>
-			<div class='post-tags'>
-				{% for tag in post.tags %}
-					<a href='/blog/tags/{{tag}}'>{{tag}}</a>
-				{% endfor %}
+			{% endfor %}
+			<div id='pagination'>
+				{% if pageNumbers.previous %}<a href='/blog/page/{{pageNumbers.previous}}'>&laquo;</a>{% endif %}
+				<a href='/blog'>0</a>
+				...
+				<a href='/blog/page/{{pageNumbers.total}}'>{{pageNumbers.total}}</a>
+				{% if pageNumbers.next %}<a href='/blog/page/{{pageNumbers.next}}'>&raquo;</a>{% endif %}
 			</div>
 		</div>
-	{% endfor %}
+		<div id='sidebar'><div>{% autoescape false %}{{settings.blogSidebarHTML}}{% endautoescape %}</div></div>
+	</div>
 </body>
 </html>

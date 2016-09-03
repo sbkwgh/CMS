@@ -1,10 +1,10 @@
 var express = require('express');
 var mongoose = require('mongoose');
-var Comment = require('../models/comment.js');
-var Post = require('../models/post.js');
-var settings = require('../models/settings.js');
-var Errors = require('../errors.js');
-var paramsValidator = require('../paramsValidator.js');
+var Comment = require('../../models/comment.js');
+var Post = require('../../models/post.js');
+var settings = require('../../models/settings.js');
+var Errors = require('../../errors.js');
+var paramsValidator = require('../../paramsValidator.js');
 var router = express.Router();
 
 var validator = paramsValidator({

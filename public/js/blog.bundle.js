@@ -71,7 +71,7 @@
 		);
 	});
 
-	Vue.component('post-comments', __webpack_require__(42)(Vue));
+	Vue.component('post-comments', __webpack_require__(38)(Vue));
 
 	var App = new Vue({
 		el: '#app'
@@ -10166,7 +10166,13 @@
 
 	function addTitleTooltip(el, text, timeLimit) {
 		var span = document.createElement('span');
-		span.innerHTML = text;
+		var spanText = text
+			.replace('@content', el.innerHTML)
+			.replace(/@attr\(([^)]*)\)/gi, function(m, attr) {
+				return el.getAttribute(attr);
+			});
+
+		span.appendChild(document.createTextNode(spanText));
 		span.classList.add('title-tooltip');
 		applyStyles(span, {
 			'backgroundColor': 'rgb(60,60,60)',
@@ -10177,6 +10183,8 @@
 			'padding': '0.25rem 0.5rem',
 			'position': 'absolute',
 			'zIndex': '3',
+			'border': '0',
+			'borderRadius': '0.2rem',
 			'opacity': '0',
 			'max-width': '15rem',
 			'transition': 'all 0.25s'
@@ -10246,6 +10254,17 @@
 		 document.body.removeChild(document.querySelector('.title-tooltip'));
 		}
 	});
+
+	/*
+	<a
+		href='link'
+		data-title='Here is a @attr(data-dynamic-attr) @content'
+		data-dynamic-attr='tooltip for a'
+	>
+		link
+	</a>
+	Gives: 'Here is a tooltip for a link'
+	*/
 
 	module.exports = addTitleTooltip;
 
@@ -11595,14 +11614,15 @@
 
 /***/ },
 
-/***/ 42:
+/***/ 38:
 /***/ function(module, exports, __webpack_require__) {
 
 	var Errors = __webpack_require__(28);
+	var rem = __webpack_require__(42);
 
 	module.exports = function(Vue) {
 		return Vue.extend({
-			template: __webpack_require__(43),
+			template: __webpack_require__(39),
 			props: ['postId', 'commentsMessage'],
 			data: function() {
 				return {
@@ -11712,6 +11732,8 @@
 				}
 			},
 			ready: function() {
+				correctHeaderTop();
+
 				function getComment(node) {
 					if(!node.parentElement) return null;
 
@@ -11773,14 +11795,35 @@
 	var correctHeaderTop = function() {
 		var $comments = document.querySelector('#comments');
 		var $header = document.querySelector('header');
+		var $sidebar = document.querySelector('#sidebar');
+		var bodyRect = document.body.getBoundingClientRect();
+
+		var sidebarStatic = getComputedStyle($sidebar).position === 'static';
 
 		if(!$comments) return;
-		var height = $comments.getBoundingClientRect().top - $header.getBoundingClientRect().height - 2*16;
+		if(getComputedStyle($header).position === 'static') return;
 
-		if(50 >= height) {
-			$header.style.top = height + 'px';
+		if(bodyRect.height - $comments.getBoundingClientRect().top >= 0) {
+			if($header.style.top) return;
+
+			$header.style.position = 'absolute';
+			$header.style.top = -bodyRect.top + rem(3.5) + 'px';
+
+			if(!sidebarStatic) {
+				$sidebar.style.top = -bodyRect.top + rem(15.5) + 'px';
+				$sidebar.style.position = 'absolute';
+			}
+
+			
 		} else {
+			$header.style.position = 'fixed';
 			$header.style.top = null;
+
+			if(!sidebarStatic) {
+				$sidebar.style.position = 'fixed';
+				$sidebar.style.top = null;
+			}
+			
 		}
 	}
 	window.addEventListener('scroll', function() {
@@ -11788,16 +11831,33 @@
 		setTimeout(function() {
 			correctHeaderTop();
 			ticking = false;
-		}, 50);
+		}, 5);
 		ticking = true;
 	});
 
 /***/ },
 
-/***/ 43:
+/***/ 39:
 /***/ function(module, exports) {
 
 	module.exports = "<div id='comments' v-if='commentsAllowed'>\r\n\t<h1>Comments</h1>\r\n\t<div id='comments-flex'>\r\n\t\t<div id='form-box'>\r\n\t\t\t<div id='comments-message' v-if='commentsMessage.length'>{{commentsMessage}}</div>\r\n\t\t\t<div><label>Your name:</label> <input v-model='name'></div>\r\n\t\t\t<div class='replies-bar' v-if='replies._id.length'>\r\n\t\t\t\t<div>Replying to <b>{{replies.name}}</b></div>\r\n\t\t\t\t<span v-on:click='cancelReply()'>Cancel</span>\r\n\t\t\t</div>\r\n\t\t\t<div><label class='last-label'>Your comment:</label> <textarea v-model='commentBody'></textarea></div>\r\n\t\t\t<div class='button btn-green btn-load' style='line-height: 1.75rem;' v-on:click='addComment()' v-el:add-comment v-bind:class='{\"btn-disabled\": ui.savingComment}'>\r\n\t\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\t\tAdd comment\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div class='comments-box'>\r\n\t\t\t<div v-if='!sortedComments.length' class='comment'>{{ui.loadingMessage}}</div>\r\n\t\t\t<div class='comment' v-bind:class='{\"comment-indent\": comment.head, \"comment-highlight\": highlight===comment._id}' v-for='comment in sortedComments'>\r\n\t\t\t\t<div class='comment-reply' v-if='comment.status === \"approved\"' v-on:click='replyComment(this)'>Reply to this comment</div>\r\n\t\t\t\t<div class='comment-header'>\r\n\t\t\t\t\t<div class='comment-name' v-if='comment.status === \"approved\"'>{{comment.name}}</div>\r\n\t\t\t\t\t<span class='comment-reply-name' data-title='Replying to \\\"{{comment.repliesName}}\\\" - click to highlight' v-if='comment.status === \"approved\" && comment.replies' v-on:click='highlightComment(comment.replies)'>\r\n\t\t\t\t\t\t<i class='fa fa-long-arrow-right fa-fw'></i>{{comment.repliesName}}\r\n\t\t\t\t\t</span>\r\n\t\t\t\t\t<div class='comment-time'>{{comment.dateCreated|timeString}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class='comment-comment'>\r\n\t\t\t\t\t<template v-if='comment.status !== \"approved\"'>\r\n\t\t\t\t\t\t{{{comment.moderatedMessage}}}\r\n\t\t\t\t\t</template>\r\n\t\t\t\t\t<template v-else>\r\n\t\t\t\t\t\t{{comment.commentBody}}\r\n\t\t\t\t\t</template>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n</div>";
+
+/***/ },
+
+/***/ 42:
+/***/ function(module, exports) {
+
+	var div = document.createElement('div');
+	var rem;
+
+	div.style.height = '1rem';
+	document.body.appendChild(div);
+	rem = div.getBoundingClientRect().height;
+	document.body.removeChild(div);
+
+	module.exports = function(val) {
+		return val*rem;
+	}
 
 /***/ }
 

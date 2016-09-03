@@ -1,19 +1,20 @@
+@import 'https://fonts.googleapis.com/css?family=Playfair+Display:400,900|Source+Sans+Pro:300,400';
 
-@import "comments";
+$font-header: 'Playfair Display', serif;
+$font-content: 'Source Sans Pro', sans-serif;
 
 html, body {
 	width: 100%;
 	height: calc(100% - 1.25rem);
 	padding: 0;
 	margin: 0;
-	font-family: 'Roboto', sans-serif;
+	font-family: $font-content;
 	padding-top: 1.25rem;
 }
 
 header a:visited, header a:active, header a{
 	color: #595959;
 }
-
 a:active {
 	color: #8EB7CB;
 }
@@ -33,7 +34,6 @@ a:visited {
 	top: 0;
 	position: fixed;
 }
-
 #no-posts {
 	text-align: center;
 	position: relative;
@@ -45,140 +45,217 @@ a:visited {
 blockquote {
 	background-color: rgb(233, 233, 233);
 	border-left: 0.5rem solid rgb(191, 191, 191);
-}
-	blockquote p {
+
+	p {
 		padding: 0.5rem;
 	}
+}
 
 header {
 	font-size: 3rem;
-	font-weight: bold;
-	display: inline-block;
-	position: fixed;
-	top: 3rem;
-	left: 2rem;
-	width: 17.5rem;
-}
-	header a {
+	text-align: center;
+
+	a {
 		color:  #6C7172;
 		text-decoration: none;
+		font-weight: 900;
+		font-family: $font-header;
 	}
-	header div {
+	div {
 		font-size: 0.9rem;
-		font-weight: 300;
+		
 		color: #4D4D4D;
 	}
-
-.post, #comments-holder {
-	width: 45rem;
-	overflow: hidden;
-	margin: 1rem auto 3rem auto;
-}
-	.post img {
-		margin: 0 7.5%;
-		width: 85%;
-	}
-	.post-header {
-		margin-bottom: 0.5rem;
-		border-bottom: 1px solid #E9E9E9;
-	}
-		.post-date-author-bar {
-			color: gray;
-		}
-			.post-date-created, .post-author {
-				display: inline-block;
-				font-size: 0.9rem;
-			}
-		.post-title {
-			font-size: 2rem;
-			font-weight: bold;
-			color: black;
-			text-decoration: none;
-		}
-	.post-body {
-		text-align: justify;
-		margin-bottom: 0.5rem;
-		font-weight: 300;
-	}
-	.post-tags {
-		height: 1.5rem;
-	}
-		.post-tags a {
-			border: 1px solid #ADA9A9;
-			color: #5C5C5C;
-			font-size: 0.9rem;
-			text-decoration: none;
-			background-color: #FBFBFB;
-			transition: all 0.2s;
-			padding: 0.1rem 0.2rem;
-		}
-			.post-tags a:hover {
-				text-decoration: underline;
-			}
-	.post-comments {
-		padding-top: 0.5rem;
-	}
-	.post-comments, .post-comments a {
-		color: #5C5C5C;
-		font-size: 0.9rem;
-	}
-
-
-@media(max-width:1348px) {
-	.post, #comments-holder {
-		width: 50rem;
-		margin: 0;
-		margin-left: calc(19.75rem + (100% - 19.75rem - 50rem) / 2);
-		margin-top: 1rem;
-		margin-bottom: 3rem;
-	}
 }
 
-@media(max-width:1175px) {
-	.post, #comments-holder {
+#content {
+	display: flex;
+	justify-content: center;
+
+	.content-message {
+		font-weight: 400;
+		font-size: 2.5rem;
+	}
+
+	#posts {
 		width: 45rem;
-		margin: 0;
-		margin: 1rem auto;
-		margin-bottom: 3rem;
+
+		.post, #comments-holder {
+			overflow: hidden;
+			margin: 1rem auto 3rem auto;
+		}
+		.post {
+			img {
+				margin: 0 7.5%;
+				width: 85%;
+			}
+			.post-header {
+				margin-bottom: 0.5rem;
+				border-bottom: 1px solid #E9E9E9;
+
+				.post-date-author-bar {
+					color: gray;
+					.post-date-created, .post-author {
+						display: inline-block;
+						font-size: 0.9rem;
+					}
+				}
+				.post-title {
+					font-size: 2rem;
+					color: black;
+					text-decoration: none;
+					font-family: $font-header;
+					font-weight: 400 !important;
+				}
+			}
+			.post-body {
+				text-align: justify;
+				margin-bottom: 0.5rem;
+				font-weight: 300;
+			}
+			.post-tags {
+				min-height: 1.5rem;
+				line-height: 1.75rem;
+
+				a {
+					border: 1px solid #ADA9A9;
+					color: #5C5C5C;
+					font-size: 0.9rem;
+					text-decoration: none;
+					background-color: #FBFBFB;
+					transition: all 0.2s;
+					padding: 0.1rem 0.2rem;
+
+					&:hover {
+						text-decoration: underline;
+					}
+				}
+			}
+			.post-comments {
+				padding-top: 0.5rem;
+
+				a {
+					color: #5C5C5C;
+					font-size: 0.9rem;
+				}
+			}
+		}
+		#pagination {
+			text-align: center;
+			font-size: 1.25rem;
+			font-weight: 300;
+			margin: 2rem;
+		}
 	}
-	header {
-		font-size: 3rem;
-		font-weight: bold;
-		display: block;
-		top: 3rem;
-		left: 2rem;
+	#sidebar {
 		width: 17.5rem;
-		position: initial;
-		margin-left: calc((100% - 45rem) / 2);
+		margin-left: 3rem;
+		margin-top: 1.5rem;
+
+		div:first-child {
+			border: thin solid rgb(233, 233, 233);
+			border-radius: 0.125rem;
+			padding: 0.5rem 1rem 1rem 1rem;
+			min-height: 20rem;
+
+			h1, h2, h3, h4, h5, h6, p, blockquote, ul, ol, pre, code {
+				margin: 0.5rem 0;
+			}
+
+			h1, h2, h3, h4, h5, h6 {
+				font-weight: 400;
+			}
+
+			&:first-child {
+				margin-top: 0;
+			}
+		}
 	}
 }
 
-@media(max-width:800px) {
-	.post, #comments-holder {
-		width: 90%;
+@media (max-width: 1200px) {
+	#content {
+		#posts {
+			width: 40rem;
+		}
+		#sidebar {
+			width: 15rem;
+		}
 	}
+}
+@media (max-width: 1050px) {
+	#content {
+		#posts {
+			width: 35rem;
+		}
+	}
+}
+
+@media (max-width: 1050px) {
+	#content {
+		flex-direction: column;
+
+		#posts {
+			width: 80%;
+			margin: 0px auto;
+		}
+		#sidebar {
+			width: 80%;
+			margin: -1rem auto 2rem;
+
+			div:first-child {
+				min-height: auto;
+
+				blockquote {
+					display: inline-block;
+
+					p {
+						margin: 0;
+					}
+				}
+			}
+		}
+	}
+}
+
+@media (max-width: 550px) {
 	header {
-		margin-left: 5%;
+		a {
+			font-size: 2.5rem;
+		}
+	}
+
+	#content {
+		#posts {
+			width: calc(100% - 3rem);
+			margin: 0 1.5rem;
+
+			.post {
+				.post-header {
+					.post-title {
+						font-size: 1.5rem;
+					}
+				}
+			}
+		}
+		#sidebar {
+			margin: -1rem 1.5rem 2rem;
+		}
 	}
 }
 
-@media(max-width:600px) {
-	header {
-		margin-top: -1rem;
+@media (max-width: 350px) {
+	#content {
+		#posts, #sidebar {
+			width: calc(100% - 2rem);
+			margin: 0 1rem;
+		}
+		#sidebar {
+			margin: -1rem 1rem 2rem;
+		}
 	}
 }
 
-@media(max-width: 400px) {
-	#add-comment-form input {
-		width: calc(100% - 0.75rem) !important;
-	}
-	#add-comment-form textarea {
-		width: calc(100% - 0.75rem) !important;
-	}
-	#reply-comment-bar {
-		width: calc(100% - 4px) !important;
-	}
-	#markdown-question {
-		left: calc(95% - 0.3rem) !important;
-	}
-}
+
+//@import "themes/basic";
+@import "comments";

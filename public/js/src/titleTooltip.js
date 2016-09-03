@@ -6,7 +6,13 @@ function applyStyles(el, obj) {
 
 function addTitleTooltip(el, text, timeLimit) {
 	var span = document.createElement('span');
-	span.innerHTML = text;
+	var spanText = text
+		.replace('@content', el.innerHTML)
+		.replace(/@attr\(([^)]*)\)/gi, function(m, attr) {
+			return el.getAttribute(attr);
+		});
+
+	span.appendChild(document.createTextNode(spanText));
 	span.classList.add('title-tooltip');
 	applyStyles(span, {
 		'backgroundColor': 'rgb(60,60,60)',
@@ -17,6 +23,8 @@ function addTitleTooltip(el, text, timeLimit) {
 		'padding': '0.25rem 0.5rem',
 		'position': 'absolute',
 		'zIndex': '3',
+		'border': '0',
+		'borderRadius': '0.2rem',
 		'opacity': '0',
 		'max-width': '15rem',
 		'transition': 'all 0.25s'
@@ -86,5 +94,16 @@ document.body.addEventListener('mouseout', function(ev) {
 	 document.body.removeChild(document.querySelector('.title-tooltip'));
 	}
 });
+
+/*
+<a
+	href='link'
+	data-title='Here is a @attr(data-dynamic-attr) @content'
+	data-dynamic-attr='tooltip for a'
+>
+	link
+</a>
+Gives: 'Here is a tooltip for a link'
+*/
 
 module.exports = addTitleTooltip;

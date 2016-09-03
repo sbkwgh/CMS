@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var markdown = require( "markdown" ).markdown;
+var truncate = require('html-truncate');
 var shortid = require('shortid');
 var Errors = require('../errors.js');
 
@@ -32,6 +33,9 @@ postSchema.virtual('dateString').get(function() {
 
 postSchema.virtual('bodyHTML').get(function() {
 	return markdown.toHTML(this.markdown);
+});
+postSchema.virtual('truncatedHTML').get(function() {
+	return truncate(this.bodyHTML, 1000, {keepImageTag: true});
 });
 
 postSchema.statics.findPostById = function(id, cb) {

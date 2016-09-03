@@ -1,11 +1,12 @@
 var express = require('express');
 var router = express.Router();
-var Errors = require('../errors.js');
-var settings = require('../models/settings.js');
+var Errors = require('../../errors.js');
+var settings = require('../../models/settings.js');
 
-var validator = require('../paramsValidator.js')({
+var validator = require('../../paramsValidator.js')({
 	blogTitle: 'string',
 	blogDescription: 'string',
+	blogSidebar: 'string',
 	commentsModerated: 'boolean',
 	commentsMessage: 'string',
 	commentsAllowed: 'boolean'

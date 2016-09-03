@@ -1,8 +1,8 @@
 var express = require('express');
-var Post = require('../models/post.js');
-var Comment = require('../models/comment.js');
-var Errors = require('../errors.js');
-var paramsValidator = require('../paramsValidator.js');
+var Post = require('../../models/post.js');
+var Comment = require('../../models/comment.js');
+var Errors = require('../../errors.js');
+var paramsValidator = require('../../paramsValidator.js');
 var router = express.Router();
 
 var validator = paramsValidator({

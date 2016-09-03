@@ -1,7 +1,10 @@
 @import "button";
 
+$font-content: 'Roboto', sans-serif !default;
+$font-header: 'Roboto', sans-serif !default;
+
 #comments {
-	font-family: 'Roboto', sans-serif;
+	font-family: $font-content;
 	font-size: 0.9rem;
 	width: 100%;
 	background-color: rgb(246, 245, 244);
@@ -16,11 +19,12 @@
 		page-break-after: always;
 		width: 100%;
 		text-align: center;
+		font-family: $font-header;
 	}
 
 	input, textarea {
 		width: 15rem;
-		font-family: Roboto;
+		font-family: sans-serif;
 		font-weight: 300;
 		border-radius: 0.125rem;
 		border: thin solid gray;
@@ -54,7 +58,7 @@
 	
 	textarea, input {
 		width: 14rem;
-		font-family: 'Roboto', sans-serif;
+		font-family: sans-serif;
 		font-size: 0.9rem;
 	}
 	textarea {
@@ -102,7 +106,7 @@
 .comment {
 	width: 45rem;
 	background-color: #fff;
-	font-family: 'Roboto', sans-serif;
+	font-family: $font-content;
 	font-weight: 300;
 	font-size: 0.9rem;
 	padding: 0.5rem 1rem;

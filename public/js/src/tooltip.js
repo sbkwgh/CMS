@@ -1,7 +1,12 @@
-function tooltip(tQueryString, tData) {
-	function closeDiv(div) {
+function closeDiv(div) {
+	div.classList.add('tooltip-fade');
+
+	setTimeout(function() {
 		div.parentElement.removeChild(div);
-	}
+	}, 200);
+}
+
+function tooltip(tQueryString, tData) {
 	function eventCb(ev) {
 		if(ev.target.matches(tQueryString)) {
 			 append(tData, ev.target)
@@ -86,7 +91,7 @@ function tooltip(tQueryString, tData) {
 document.body.addEventListener('click', function(ev) {
 	var tooltipEl = document.querySelector('.tooltip');
 	if(tooltipEl && !tooltipEl.contains(ev.target)) {
-		tooltipEl.parentElement.removeChild(tooltipEl);
+		closeDiv(tooltipEl);
 	}
 })
 

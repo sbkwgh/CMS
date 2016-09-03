@@ -1,6 +1,6 @@
 var express = require('express');
-var User = require('../models/user.js');
-var Errors = require('../errors.js');
+var User = require('../../models/user.js');
+var Errors = require('../../errors.js');
 
 var router = express.Router();
 

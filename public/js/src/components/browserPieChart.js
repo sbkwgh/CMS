@@ -129,8 +129,8 @@ var make = function(ajaxData) {
 	arcs = d3.pie()(data.map(d => d.hits))
 
 	color = d3.scaleLinear()
-		.domain([0, d3.max(data.map(d => d.hits))])
-		.range(['#fff', '#6C7A89']);
+		.domain([d3.min(data.map(d => d.hits)), d3.max(data.map(d => d.hits))])
+		.range(['#eee', '#6C7A89']);
 
 	var g = svg.append('g');
 
@@ -157,7 +157,7 @@ var make = function(ajaxData) {
 				.split(', ')
 				.reduce((prev, curr) => (+prev)+(+curr)) / 3;
 
-			if(rgb >= 240) {
+			if(rgb >= 220) {
 				return 'black';
 			} else {
 				return '#fff';

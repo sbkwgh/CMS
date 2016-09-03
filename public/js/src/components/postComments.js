@@ -1,4 +1,5 @@
 var Errors = require('../../../../errors.js');
+var rem = require('../rem.js');
 
 module.exports = function(Vue) {
 	return Vue.extend({
@@ -112,6 +113,8 @@ module.exports = function(Vue) {
 			}
 		},
 		ready: function() {
+			correctHeaderTop();
+
 			function getComment(node) {
 				if(!node.parentElement) return null;
 
@@ -173,14 +176,35 @@ var ticking = false;
 var correctHeaderTop = function() {
 	var $comments = document.querySelector('#comments');
 	var $header = document.querySelector('header');
+	var $sidebar = document.querySelector('#sidebar');
+	var bodyRect = document.body.getBoundingClientRect();
+
+	var sidebarStatic = getComputedStyle($sidebar).position === 'static';
 
 	if(!$comments) return;
-	var height = $comments.getBoundingClientRect().top - $header.getBoundingClientRect().height - 2*16;
+	if(getComputedStyle($header).position === 'static') return;
 
-	if(50 >= height) {
-		$header.style.top = height + 'px';
+	if(bodyRect.height - $comments.getBoundingClientRect().top >= 0) {
+		if($header.style.top) return;
+
+		$header.style.position = 'absolute';
+		$header.style.top = -bodyRect.top + rem(3.5) + 'px';
+
+		if(!sidebarStatic) {
+			$sidebar.style.top = -bodyRect.top + rem(15.5) + 'px';
+			$sidebar.style.position = 'absolute';
+		}
+
+		
 	} else {
+		$header.style.position = 'fixed';
 		$header.style.top = null;
+
+		if(!sidebarStatic) {
+			$sidebar.style.position = 'fixed';
+			$sidebar.style.top = null;
+		}
+		
 	}
 }
 window.addEventListener('scroll', function() {
@@ -188,6 +212,6 @@ window.addEventListener('scroll', function() {
 	setTimeout(function() {
 		correctHeaderTop();
 		ticking = false;
-	}, 50);
+	}, 5);
 	ticking = true;
 });
