@@ -1,4 +1,4 @@
-var Vue = require('./vue.js');
+var Vue = require('vue');
 var VueResource = require('vue-resource');
 
 window.titleTooltip = require('./titleTooltip.js');
