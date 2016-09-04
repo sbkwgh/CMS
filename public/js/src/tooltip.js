@@ -1,3 +1,5 @@
+var tooltipEventListeners = {};
+
 function closeDiv(div) {
 	div.classList.add('tooltip-fade');
 
@@ -7,6 +9,10 @@ function closeDiv(div) {
 }
 
 function tooltip(tQueryString, tData) {
+	//Prevent multiple event listeners being added
+	if(tooltipEventListeners[tQueryString]) return;
+	tooltipEventListeners[tQueryString] = true;
+
 	function eventCb(ev) {
 		if(ev.target.matches(tQueryString)) {
 			 append(tData, ev.target)
@@ -93,7 +99,7 @@ document.body.addEventListener('click', function(ev) {
 	if(tooltipEl && !tooltipEl.contains(ev.target)) {
 		closeDiv(tooltipEl);
 	}
-})
+});
 
 module.exports = tooltip;
 
