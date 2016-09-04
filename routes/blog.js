@@ -21,7 +21,7 @@ function getPageNumbers(posts, currentPage) {
 	if(nextPage > totalPages) {
 		nextPage = null;
 	}
-	if(previousPage< 0) {
+	if(previousPage < 0) {
 		previousPage = null;
 	}
 

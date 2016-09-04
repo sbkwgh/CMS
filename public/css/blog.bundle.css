@@ -105,13 +105,17 @@ header {
         font-size: 0.9rem; }
     #content #posts #pagination {
       text-align: center;
-      font-size: 1.25rem;
+      font-size: 1.125rem;
       font-weight: 300;
       margin: 2rem; }
+      #content #posts #pagination a {
+        margin: 0 1rem;
+        color: #000; }
   #content #sidebar {
     width: 17.5rem;
     margin-left: 3rem;
-    margin-top: 1.5rem; }
+    margin-top: 1.5rem;
+    margin-bottom: 2rem; }
     #content #sidebar div:first-child {
       border: thin solid #e9e9e9;
       border-radius: 0.125rem;
