@@ -155,8 +155,15 @@ module.exports = function (Vue) {
 			},
 			image: function() {
 				var self = this;
-				modals.prompt('Enter the URL of the image', 'e.g. https://placehold.it/100x50', function(val) {
-					if(val) {
+				modals.file({
+					placeholder: 'Or enter the URL of the image',
+					message: 'Drag and drop an image here or',
+					accept: 'image/*',
+					leftButton: 'Add image'
+				}, function(err, val) {
+					if(err) {
+						modals.alert(err.message);
+					} else if(val) {
 						self.$set('markdown', replaceSelectedText('![', '](' + val.trim() + ')'))
 					}
 				}, 'green');

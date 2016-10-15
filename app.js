@@ -26,6 +26,8 @@ app.use(session({
 app.use(useragent.express());
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use('/public', express.static('public'));
 
 app.engine('html', require('swig').renderFile);
@@ -58,6 +60,7 @@ app.use('/api/posts', require('./routes/api/post.js'));
 app.use('/api/comments', require('./routes/api/comment.js'));
 app.use('/api/settings', require('./routes/api/settings.js'));
 app.use('/api/analytics', require('./routes/api/analytics.js'));
+app.use('/api/images', require('./routes/api/images.js'));
 
 app.get('/cms', function(req, res) {
 	res.redirect('/cms/dashboard');

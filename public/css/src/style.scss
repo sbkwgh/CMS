@@ -58,8 +58,10 @@ $color-red: #D73C2C;
 	overflow-y: auto;
 
 	img {
-		width: 85%;
-		margin: 0 7.5%;
+		max-width: 85%;
+		text-align: center;
+		display: block;
+		margin: 0 auto;
 	}
 }
 

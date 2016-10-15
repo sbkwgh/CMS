@@ -40,13 +40,14 @@
 					</div>
 				</div>
 			{% endfor %}
-			<div id='pagination'>
-				{% if pageNumbers.previous %}<a href='/blog/page/{{pageNumbers.previous}}'>&laquo; Newer posts</a> ...{% endif %}
-				<a href='/blog'>Home</a>
-				{% if pageNumbers.next %}... <a href='/blog/page/{{pageNumbers.next}}'>Older posts &raquo;</a>{% endif %}
-			</div>
+			
 		</div>
 		<div id='sidebar'><div>{% autoescape false %}{{settings.blogSidebarHTML}}{% endautoescape %}</div></div>
+	</div>
+	<div id='pagination'>
+		{% if pageNumbers.previous %}<a href='/blog/page/{{pageNumbers.previous}}'>&laquo; Newer posts</a> ...{% endif %}
+		<a href='/blog'>Home</a>
+		{% if pageNumbers.next %}... <a href='/blog/page/{{pageNumbers.next}}'>Older posts &raquo;</a>{% endif %}
 	</div>
 </body>
 </html>

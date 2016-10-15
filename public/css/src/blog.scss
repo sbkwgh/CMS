@@ -86,8 +86,10 @@ header {
 		}
 		.post {
 			img {
-				margin: 0 7.5%;
-				width: 85%;
+				max-width: 85%;
+				text-align: center;
+				display: block;
+				margin: 0 auto;
 			}
 			.post-header {
 				margin-bottom: 0.5rem;
@@ -140,17 +142,6 @@ header {
 				}
 			}
 		}
-		#pagination {
-			text-align: center;
-			font-size: 1.125rem;
-			font-weight: 300;
-			margin: 2rem;
-
-			a {
-				margin: 0 1rem;
-				color: #000;
-			}
-		}
 	}
 	#sidebar {
 		width: 17.5rem;
@@ -176,6 +167,18 @@ header {
 				margin-top: 0;
 			}
 		}
+	}
+}
+
+#pagination {
+	text-align: center;
+	font-size: 1.125rem;
+	font-weight: 300;
+	margin: 2rem;
+
+	a {
+		margin: 0 1rem;
+		color: #000;
 	}
 }
 
@@ -231,6 +234,10 @@ header {
 		}
 	}
 
+	.content-message {
+		font-size: 2rem;
+	}
+
 	#content {
 		#posts {
 			width: calc(100% - 3rem);
@@ -242,15 +249,23 @@ header {
 						font-size: 1.5rem;
 					}
 				}
+				.post-body {
+					font-size: 1.25rem;
+				}
 			}
 		}
 		#sidebar {
 			margin: -1rem 1.5rem 2rem;
+			width: calc(100% - 3rem)
 		}
 	}
 }
 
 @media (max-width: 350px) {
+	.content-message {
+		font-size: 1.5rem;
+	}
+
 	#content {
 		#posts, #sidebar {
 			width: calc(100% - 2rem);
@@ -258,6 +273,7 @@ header {
 		}
 		#sidebar {
 			margin: -1rem 1rem 2rem;
+			width: calc(100% - 2rem);
 		}
 	}
 }

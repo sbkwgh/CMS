@@ -65,8 +65,10 @@ header {
       overflow: hidden;
       margin: 1rem auto 3rem auto; }
     #content #posts .post img {
-      margin: 0 7.5%;
-      width: 85%; }
+      max-width: 85%;
+      text-align: center;
+      display: block;
+      margin: 0 auto; }
     #content #posts .post .post-header {
       margin-bottom: 0.5rem;
       border-bottom: 1px solid #E9E9E9; }
@@ -103,14 +105,6 @@ header {
       #content #posts .post .post-comments a {
         color: #5C5C5C;
         font-size: 0.9rem; }
-    #content #posts #pagination {
-      text-align: center;
-      font-size: 1.125rem;
-      font-weight: 300;
-      margin: 2rem; }
-      #content #posts #pagination a {
-        margin: 0 1rem;
-        color: #000; }
   #content #sidebar {
     width: 17.5rem;
     margin-left: 3rem;
@@ -127,6 +121,15 @@ header {
         font-weight: 400; }
       #content #sidebar div:first-child:first-child {
         margin-top: 0; }
+
+#pagination {
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: 300;
+  margin: 2rem; }
+  #pagination a {
+    margin: 0 1rem;
+    color: #000; }
 
 @media (max-width: 1200px) {
   #content #posts {
@@ -155,19 +158,29 @@ header {
   header a {
     font-size: 2.5rem; }
 
+  .content-message {
+    font-size: 2rem; }
+
   #content #posts {
     width: calc(100% - 3rem);
     margin: 0 1.5rem; }
     #content #posts .post .post-header .post-title {
       font-size: 1.5rem; }
+    #content #posts .post .post-body {
+      font-size: 1.25rem; }
   #content #sidebar {
-    margin: -1rem 1.5rem 2rem; } }
+    margin: -1rem 1.5rem 2rem;
+    width: calc(100% - 3rem); } }
 @media (max-width: 350px) {
+  .content-message {
+    font-size: 1.5rem; }
+
   #content #posts, #content #sidebar {
     width: calc(100% - 2rem);
     margin: 0 1rem; }
   #content #sidebar {
-    margin: -1rem 1rem 2rem; } }
+    margin: -1rem 1rem 2rem;
+    width: calc(100% - 2rem); } }
 .button {
   font-family: 'Roboto', sans-serif;
   border: thin solid #808080;
@@ -416,11 +429,17 @@ header {
     #comments #comments-flex .comment {
       width: auto; } }
 @media (max-width: 400px) {
+  #comments #form-box {
+    margin-right: 0; }
+
   #comments #form-box div {
     display: flex;
     flex-direction: column; }
     #comments #form-box div .last-label {
       position: static; }
+    #comments #form-box div input, #comments #form-box div textarea {
+      width: calc(100% - 1rem);
+      outline: none; }
 
   #comments #comments-flex div.comment-reply {
     position: static;
@@ -432,7 +451,9 @@ header {
 
   #form-box .button {
     margin: 0.25rem 0 0.5rem 0 !important;
-    width: 10rem; }
+    line-height: 1.9rem !important;
+    width: calc(100% - 1rem);
+    height: 2rem; }
 
   div#comments-message {
     margin-left: 0 !important; }
@@ -440,6 +461,22 @@ header {
   #comments-flex #form-box .replies-bar {
     margin-left: 0;
     display: flex;
-    flex-direction: row; } }
+    flex-direction: row;
+    font-size: 0.9rem; }
+    #comments-flex #form-box .replies-bar span {
+      right: 1rem;
+      width: 3rem;
+      position: absolute;
+      text-decoration: underline; }
+
+  .comment .comment-reply {
+    font-size: 1rem !important;
+    width: 3rem !important;
+    height: 1.2rem !important;
+    text-decoration: underline !important; }
+  .comment .comment-header {
+    font-size: 1rem; }
+  .comment .comment-comment {
+    font-size: 1.125rem; } }
 
 /*# sourceMappingURL=blog.bundle.css.map */
