@@ -29,7 +29,6 @@ router.post('/', function(req, res) {
 					req.session.loggedIn = true;
 					res.cookie('author', req.body.author);
 
-					console.log(req.session)
 					res.json({success: true})
 				}
 			})
