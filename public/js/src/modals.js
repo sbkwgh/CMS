@@ -132,7 +132,7 @@ var fileBox = function (props, cb, okColour) {
 	function uploadFile(file) {
 		fileBoxDiv.querySelector('.modal-box').classList.add('modal-box-disabled');
 
-		Request.post('/api/images', file, function(err, res) {
+		Request.post(props.upload, file, function(err, res) {
 			fileBoxDiv.close();
 
 			if(err) {
@@ -166,7 +166,7 @@ var fileBox = function (props, cb, okColour) {
 	});
 
 	fileBoxDiv.querySelector('#modal-button-ok').addEventListener('click', function() {
-		cb(input.value.trim());
+		cb(null, input.value.trim());
 		fileBoxDiv.close();
 	});
 	fileBoxDiv.querySelector('#modal-button-cancel').addEventListener('click', function() {

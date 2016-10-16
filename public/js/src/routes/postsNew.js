@@ -159,7 +159,8 @@ module.exports = function (Vue) {
 					placeholder: 'Or enter the URL of the image',
 					message: 'Drag and drop an image here or',
 					accept: 'image/*',
-					leftButton: 'Add image'
+					leftButton: 'Add image',
+					upload: '/api/images'
 				}, function(err, val) {
 					if(err) {
 						modals.alert(err.message);
