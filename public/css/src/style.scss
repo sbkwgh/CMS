@@ -84,11 +84,11 @@ $color-red: #D73C2C;
 			border-color: #32d283;
 		}
 		&:checked + span::before {
-			left: 1rem;
+			margin-left: 1rem;
 			background-color: #3ddea0;
 		}
 		&:checked:active + span::before {
-			left:0.85rem;
+			margin-left:0.85rem;
 		}
 
 		&:active + span {
@@ -105,8 +105,10 @@ $color-red: #D73C2C;
 	span {
 		width: 2.25rem;
 		height: 1.25rem;
-		display: inline-block;
+		display: flex;
 		position: absolute;
+		top: -0.125rem;
+		align-items: center;
 		background-color: #fff;
 		left: 0;
 		pointer-events: none;
@@ -121,10 +123,8 @@ $color-red: #D73C2C;
 			width: 0.8rem;
 			background-color: #bbb;
 			border-radius: 0.9rem;
-			position: relative;
-			top: -0.10625rem;
-			left: 0.2rem;
 			display: inline-block;
+			margin-left: 0.2rem;
 			transition: all 0.2s ease-out;
 		}
 	}
