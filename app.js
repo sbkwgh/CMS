@@ -6,6 +6,7 @@ var useragent = require('express-useragent');
 var bodyParser = require('body-parser');
 
 var path = require('path');
+var url = require('url');
 var mongoose = require('mongoose');
 var MongoClient = require('mongodb').MongoClient;
 
@@ -74,7 +75,7 @@ app.get('/cms/*', function(req, res) {
 });
 
 app.use(function(req, res, next) {
-	if(req.session.loggedIn) {
+	if(req.session.loggedIn || url.parse(req.originalUrl).pathname.split('/')[1] !== 'blog') {
 		next();
 	} else {
 		analytics.add(req.app.locals.db, {
