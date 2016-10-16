@@ -1,5 +1,7 @@
 var express = require('express');
 
+var argv = require('yargs').argv;
+
 var compress = require('compression');
 var session = require('express-session');
 var useragent = require('express-useragent');
@@ -13,14 +15,14 @@ var MongoClient = require('mongodb').MongoClient;
 var analytics = require('./models/analytics.js');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost/cms');
+mongoose.connect(process.env.MONGO_URL || argv.mongo_url || 'mongodb://localhost/cms');
 var db = mongoose.connection;
 
 var app = express();
 
 app.use(compress());
 app.use(session({
-	secret: 'session secret' || process.ENV.SECRET,
+	secret: argv.session_secret || process.env.SESSION_SECRET || 'secret',
 	resave: false,
 	saveUninitialized: true
 }));
@@ -102,18 +104,18 @@ db.on('err', function() {
 	console.log('Error in connecting to mongodb');
 })
 db.once('open', function() {
-	MongoClient.connect(process.env.MONGO_URL || 'mongodb://localhost/cms', function(err, db) {
+	MongoClient.connect(process.env.MONGO_URL || argv.mongo_url || 'mongodb://localhost/cms', function(err, db) {
 		if(err) {
 			console.log('Error in connecting to mongodb');
 			return;
 		}
-		console.log('Connected to mongodb');
+		console.log(`Connected to mongodb (${process.env.MONGO_URL || argv.mongo_url || 'mongodb://localhost/cms'})`);
 
 		app.locals.db = db;
 		require('./models/settings.js').init(db);
 
-		app.listen(process.env.PORT || 3000, function() {
-			console.log('Listening on port ' + (process.env.PORT || 3000));
+		app.listen(process.env.PORT || argv.port || 3000, function() {
+			console.log('Listening on port ' + (process.env.PORT || argv.port || 3000));
 		});
 	});
 })
