@@ -3,7 +3,14 @@
 	<div id='comments-flex'>
 		<div id='form-box'>
 			<div id='comments-message' v-if='commentsMessage.length'>{{commentsMessage}}</div>
-			<div><label>Your name:</label> <input v-model='name'></div>
+			<div>
+				<template v-if='cookies.author'>
+					<b id='author-commenting'>Commenting as {{cookies.author}}</b>
+				</template>
+				<template v-else>
+					<label>Your name:</label> <input v-model='name'>
+				</template>
+			</div>
 			<div class='replies-bar' v-if='replies._id.length'>
 				<div>Replying to <b>{{replies.name}}</b></div>
 				<span v-on:click='cancelReply()'>Cancel</span>
@@ -19,7 +26,10 @@
 			<div class='comment' v-bind:class='{"comment-indent": comment.head, "comment-highlight": highlight===comment._id}' v-for='comment in sortedComments'>
 				<div class='comment-reply' v-if='comment.status === "approved"' v-on:click='replyComment(this)'>Reply to this comment</div>
 				<div class='comment-header'>
-					<div class='comment-name' v-if='comment.status === "approved"'>{{comment.name}}</div>
+					<div class='comment-name' v-if='comment.status === "approved"'>
+						<span class='fa fa-pencil' v-if='comment.author' data-title='Comment by blog author'></span>
+						{{comment.name}}
+					</div>
 					<span class='comment-reply-name' data-title='Replying to \"{{comment.repliesName}}\" - click to highlight' v-if='comment.status === "approved" && comment.replies' v-on:click='highlightComment(comment.replies)'>
 						<i class='fa fa-long-arrow-right fa-fw'></i>{{comment.repliesName}}
 					</span>

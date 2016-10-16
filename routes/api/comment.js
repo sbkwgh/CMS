@@ -87,6 +87,8 @@ router.post('/', function(req, res) {
 	if(commentParams === null) {
 		res.json({error: Errors.invalidParams});
 		return;
+	} else if(req.session.loggedIn) {
+		commentParams.author = true;
 	}
 	
 	settings.get(req.app.locals.db, function(err, settingsDoc) {
@@ -106,7 +108,7 @@ router.post('/', function(req, res) {
 			} else if(!post.commentsAllowed) {
 				res.json({error: Errors.commentsDisabled});
 			} else {
-				if(commentsModerated) {
+				if(commentsModerated && !req.session.loggedIn) {
 					commentParams.status = 'pending';
 				} else {
 					commentParams.status = 'approved';

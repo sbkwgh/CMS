@@ -90,22 +90,22 @@
 			component: __webpack_require__(8)(Vue)
 		},
 		'/posts/post/:id': {
-			component: __webpack_require__(16)(Vue)
+			component: __webpack_require__(18)(Vue)
 		},
 		'/posts/new': {
-			component: __webpack_require__(16)(Vue)
+			component: __webpack_require__(18)(Vue)
 		},
 		'/comments': {
-			component: __webpack_require__(31)(Vue)
+			component: __webpack_require__(32)(Vue)
 		},
 		'/settings': {
-			component: __webpack_require__(33)(Vue)
+			component: __webpack_require__(34)(Vue)
 		},
 		'/dashboard': {
-			component: __webpack_require__(35)(Vue)
+			component: __webpack_require__(36)(Vue)
 		},
 		'/design': {
-			component: __webpack_require__(42)(Vue)
+			component: __webpack_require__(43)(Vue)
 		}
 	});
 
@@ -14618,7 +14618,7 @@
 
 	module.exports = function(Vue) {
 		return Vue.extend({
-			template: __webpack_require__(15),
+			template: __webpack_require__(17),
 			data: function() {
 				return {
 					posts: [],
@@ -17090,8 +17090,8 @@
 /* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Errors = __webpack_require__(28);
-	var Request = __webpack_require__(46);
+	var Errors = __webpack_require__(15);
+	var Request = __webpack_require__(16);
 
 	function genericModal(message, okColour) {
 		var modalDiv = document.createElement('div');
@@ -17224,7 +17224,7 @@
 		function uploadFile(file) {
 			fileBoxDiv.querySelector('.modal-box').classList.add('modal-box-disabled');
 
-			Request.post('/api/images', file, function(err, res) {
+			Request.post(props.upload, file, function(err, res) {
 				fileBoxDiv.close();
 
 				if(err) {
@@ -17258,7 +17258,7 @@
 		});
 
 		fileBoxDiv.querySelector('#modal-button-ok').addEventListener('click', function() {
-			cb(input.value.trim());
+			cb(null, input.value.trim());
 			fileBoxDiv.close();
 		});
 		fileBoxDiv.querySelector('#modal-button-cancel').addEventListener('click', function() {
@@ -17286,17 +17286,252 @@
 /* 15 */
 /***/ function(module, exports) {
 
-	module.exports = "\r\n<div class='post-listings'>\r\n\t<div class='post-listing' v-on:click='selectPost(post.slug)' v-bind:class='{\"selected\": post.selected}\t' v-for='post in posts'>\r\n\t\t<div class='post-title' title='{{post.title}}'>{{post.title}}</div>\r\n\t\t<span class='post-status' v-bind:class='[post.published ? classes.published : classes.draft]'></span>\r\n\t\t<div class='post-date_created'>{{post.dateString}}</div>\r\n\t</div>\r\n\t<template v-if='!posts.length'>\r\n\t\t<div class='no-post-selected'>\r\n\t\t\t<span>{{noPostsMessageBox}}</span>\r\n\t\t</div>\r\n\t</template>\r\n</div>\r\n<div id='post-display_card'>\r\n\t<div id='post-display_card-bar'>\r\n\t\t<template v-if='posts.length'>\r\n\t\t\t<div>\r\n\t\t\t\t<span v-on:click='editPost()'><i class='fa fa-pencil-square-o fa-fw'></i>Edit post</span>\r\n\t\t\t\t<span v-on:click='deletePost()'><i class='fa fa-trash-o fa-fw'></i>Delete post</span>\r\n\t\t\t</div>\r\n\t\t\t<a v-if='selected.published' href='/blog/post/{{selected.slug}}' target='_blank'>\r\n\t\t\t\t<i class='fa fa-external-link fa-fw' style='margin-right: 0.125rem;'></i>View on blog\r\n\t\t\t</a>\r\n\t\t</template>\r\n\t</div>\r\n\t<div id='post-display_card-html'>\r\n\t\t<template v-if='posts.length'>\r\n\t\t\t{{{selected.bodyHTML}}}\r\n\t\t</template>\r\n\t\t<template v-else>\r\n\t\t\t<div class='no-post-selected'>\r\n\t\t\t\t{{{noPostsMessageMain}}}\r\n\t\t\t</div>\r\n\t\t</template>\r\n\t</div>\r\n</div>";
+	var Errors = {
+		unknown: 'An unknown error occured on our end. Please try again later',
+		accountAlreadyCreated: 'An account has already been created',
+		incorrectCredentials: 'Either the username or password was incorrect',
+		invalidParams: 'The parameters of the request were incorrect',
+		notAuthorised: 'The request was not authorised. Try logging in again',
+		invalidId: 'An invalid post id was provided',
+		postNotFound: 'No post was found for the id provided',
+		commentsDisabled: 'Comments have been disabled'
+	};
+
+	for(var errorName in Errors) {
+		var temp = {};
+		temp.name = errorName;
+		temp.message = Errors[errorName];
+
+		Errors[errorName] = temp;
+	}
+
+	module.exports = Errors;
 
 /***/ },
 /* 16 */
+/***/ function(module, exports) {
+
+	var Request = {};
+
+	Request.serializeData = function(object) {
+		var temp = '';
+		var serializedString = '';
+		for(var key in object) {
+			if(object[key] === undefined) continue;
+			if(typeof object[key] === 'object') {
+				temp = '&' + key + '=' + encodeURIComponent(JSON.stringify(object[key]));
+			} else {
+				temp = '&' + key + '=' + encodeURIComponent(object[key]);
+			}
+			serializedString += temp;
+		}
+		return serializedString.slice(1);
+	};
+	Request.request = function(method, url, data, cb) {
+		var http = new XMLHttpRequest();
+
+		http.addEventListener('load', function() {
+			var json;
+
+			try {
+				json = JSON.parse(this.responseText)
+			} catch(err) {
+				console.log(err);
+				console.log(this.responseText);
+				cb(err)
+			}
+
+			if(cb) {
+				cb(null, json);
+			}
+		})
+
+		http.open(method, url, true);
+
+		if(data instanceof File) {
+			var formData = new FormData();
+			formData.append('image', data);
+
+			http.send(formData);
+		} else if(typeof data !== 'function') {
+			http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			http.send(this.serializeData(data));
+		} else {
+			http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			http.send();
+		}
+	}
+	Request.post = function(url, data, cb) {
+		this.request('post', url, data, cb);
+	};
+	Request.delete = function(url, data, cb) {
+		this.request('delete', url, data, cb);
+	};
+	Request.put = function(url, data, cb) {
+		this.request('put', url, data, cb);
+	};
+	Request.get = function(url, data, cb) {
+		var http = new XMLHttpRequest();
+
+		http.addEventListener('load', function() {
+			if(cb) {
+				cb(JSON.parse(this.responseText));
+			}
+		})
+
+		http.open('GET', url + '/?' + this.serializeData(data || {}), true);
+		http.send();
+	};
+
+	var Model = {
+		getType: function(val) {
+			if(typeof val !== 'object') {
+				return typeof val;
+			} else if(Array.isArray(val)) {
+				return 'array';
+			} else if(val === null) {
+				return 'null';
+			} else {
+				return typeof val;
+			}
+		},
+		new: function(modelName, modelDefn, updateDelay, updateFunction) {
+			var modelFactory = function(params) {
+				var self = this;
+				var _data = {};
+
+				this.data = {};
+				this.changedObject = {};
+
+				if(updateFunction) {
+					this.updateFunction = updateFunction.bind(this);
+				}
+
+				this.save = function(cb) {
+					var url = Model.rootUrl + '/' + modelFactory.modelName;
+					var dataNoUndefined = {};
+
+					for(var key in _data) {
+						if(_data[key] !== undefined) {
+							dataNoUndefined[key] = _data[key];
+						}
+					}
+
+					Request.post(url, dataNoUndefined, function(modelInstance) {
+						if(modelInstance._id) {
+							self.data._id = modelInstance._id;
+						}
+						cb(modelInstance.error, modelInstance);
+					})
+				}
+
+				this.delete = function(cb) {
+					if(!this.data[modelFactory.primaryKey]) {
+						throw new Error('Model instance does not have primary key field "' + modelFactory.primaryKey + '"');
+						return;
+					}
+					var url = Model.rootUrl + '/' + modelFactory.modelName + '/' + this.data[modelFactory.primaryKey];
+					Request.delete(url, function(result) {
+						cb(result.error, result);
+					})
+				}
+
+				this.update = function(cb, specificData) {
+					if(!this.data[modelFactory.primaryKey]) {
+						throw new Error('Model instance does not have primary key field "' + modelFactory.primaryKey + '"');
+						return;
+					}
+					var url = Model.rootUrl + '/' + modelFactory.modelName + '/' + this.data[modelFactory.primaryKey];
+					Request.put(url, specificData || _data, function(modelInstance) {
+						cb(modelInstance.error, modelInstance);
+					})
+				}
+				
+
+				this.post = function(url, cb) {	
+					var url = Model.rootUrl + '/' + modelFactory.modelName + '/' + url;
+					Request.post(url, _data, cb);
+				}
+
+				//Create getter/setter for each field
+				// which checks type on setting
+				function getSetProp(proxyObj, prop, originalObj, type) {
+					Object.defineProperty(proxyObj, prop, {
+						get: function() {
+							return originalObj[prop];
+						},
+						set: function(val) {
+							if(Model.getType(val) !== type) {
+								throw new TypeError('Field "' + prop + '" must be of type "' + type + '"');
+							} else {
+								originalObj[prop] = val;
+								self.changedObject[prop] = val;
+							}
+						}
+					})
+				}
+				for(var prop in modelDefn) {
+					var type = modelDefn[prop].type || modelDefn[prop];
+
+					if(modelDefn[prop].primaryKey) {
+						modelFactory.primaryKey = prop;
+					}
+
+					if(typeof params[prop] !== undefined) {
+						_data[prop] = params[prop];
+					}
+
+					getSetProp(self.data, prop, _data, type);
+				}
+
+				setInterval(function() {
+					if(Object.keys(self.changedObject).length && self.updateFunction) {
+						self.update(self.updateFunction, self.changedObject)
+						self.changedObject = {};
+					}
+				}, modelFactory.updateDelay)
+			};
+
+			modelFactory.modelName = modelName;
+
+			modelFactory.get = function(idOrCb, cb) {
+				var url = Model.rootUrl + '/' + modelFactory.modelName;
+				if(typeof idOrCb !== 'function') {
+					url += '/' + idOrCb;
+				}
+				
+				Request.get(url, {}, function(modelInstances) {
+					if(cb) {
+						cb(modelInstances.error, modelInstances);
+					} else {
+						idOrCb(modelInstances.error, modelInstances);
+					}
+				})
+			};
+
+			modelFactory.updateDelay = updateDelay;
+			
+			return modelFactory;
+		}
+	};
+
+	module.exports = Request;
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	module.exports = "\r\n<div class='post-listings'>\r\n\t<div class='post-listing' v-on:click='selectPost(post.slug)' v-bind:class='{\"selected\": post.selected}\t' v-for='post in posts'>\r\n\t\t<div class='post-title' title='{{post.title}}'>{{post.title}}</div>\r\n\t\t<span class='post-status' v-bind:class='[post.published ? classes.published : classes.draft]'></span>\r\n\t\t<div class='post-date_created'>{{post.dateString}}</div>\r\n\t</div>\r\n\t<template v-if='!posts.length'>\r\n\t\t<div class='no-post-selected'>\r\n\t\t\t<span>{{noPostsMessageBox}}</span>\r\n\t\t</div>\r\n\t</template>\r\n</div>\r\n<div id='post-display_card'>\r\n\t<div id='post-display_card-bar'>\r\n\t\t<template v-if='posts.length'>\r\n\t\t\t<div>\r\n\t\t\t\t<span v-on:click='editPost()'><i class='fa fa-pencil-square-o fa-fw'></i>Edit post</span>\r\n\t\t\t\t<span v-on:click='deletePost()'><i class='fa fa-trash-o fa-fw'></i>Delete post</span>\r\n\t\t\t</div>\r\n\t\t\t<a v-if='selected.published' href='/blog/post/{{selected.slug}}' target='_blank'>\r\n\t\t\t\t<i class='fa fa-external-link fa-fw' style='margin-right: 0.125rem;'></i>View on blog\r\n\t\t\t</a>\r\n\t\t</template>\r\n\t</div>\r\n\t<div id='post-display_card-html'>\r\n\t\t<template v-if='posts.length'>\r\n\t\t\t{{{selected.bodyHTML}}}\r\n\t\t</template>\r\n\t\t<template v-else>\r\n\t\t\t<div class='no-post-selected'>\r\n\t\t\t\t{{{noPostsMessageMain}}}\r\n\t\t\t</div>\r\n\t\t</template>\r\n\t</div>\r\n</div>";
+
+/***/ },
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var markdown = __webpack_require__(9);
 	var modals = __webpack_require__(14);
-	var wordCount = __webpack_require__(17);
+	var wordCount = __webpack_require__(19);
 	var tooltip = __webpack_require__(5);
-	var Errors = __webpack_require__(28);
+	var Errors = __webpack_require__(15);
 
 	function pluralize(number, word) {
 		if(!number || number > 1) {
@@ -17365,10 +17600,10 @@
 	}
 
 	module.exports = function (Vue) {
-		var tagBar = __webpack_require__(29)(Vue);
+		var tagBar = __webpack_require__(30)(Vue);
 
 		return Vue.extend({
-			template: __webpack_require__(30),
+			template: __webpack_require__(31),
 			components: {
 				'tag-bar': tagBar
 			},
@@ -17453,7 +17688,8 @@
 						placeholder: 'Or enter the URL of the image',
 						message: 'Drag and drop an image here or',
 						accept: 'image/*',
-						leftButton: 'Add image'
+						leftButton: 'Add image',
+						upload: '/api/images'
 					}, function(err, val) {
 						if(err) {
 							modals.alert(err.message);
@@ -17622,11 +17858,11 @@
 	};
 
 /***/ },
-/* 17 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var htmlToText = __webpack_require__(18);
-	var wordCount = __webpack_require__(25);
+	var htmlToText = __webpack_require__(20);
+	var wordCount = __webpack_require__(27);
 
 	module.exports = function (body) {
 	  var text = htmlToText.fromString(body, {
@@ -17640,23 +17876,23 @@
 
 
 /***/ },
-/* 18 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(19);
+	module.exports = __webpack_require__(21);
 
 /***/ },
-/* 19 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var util = __webpack_require__(11);
 
-	var _ = __webpack_require__(20);
-	var _s = __webpack_require__(21);
-	var htmlparser = __webpack_require__(22);
+	var _ = __webpack_require__(22);
+	var _s = __webpack_require__(23);
+	var htmlparser = __webpack_require__(24);
 
-	var helper = __webpack_require__(23);
-	var format = __webpack_require__(24);
+	var helper = __webpack_require__(25);
+	var format = __webpack_require__(26);
 
 	// Which type of tags should not be parsed
 	var SKIP_TYPES = [
@@ -17802,7 +18038,7 @@
 
 
 /***/ },
-/* 20 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.8.3
@@ -19356,7 +19592,7 @@
 
 
 /***/ },
-/* 21 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//  Underscore.string
@@ -20035,7 +20271,7 @@
 
 
 /***/ },
-/* 22 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(__filename, __dirname) {/***********************************************
@@ -20865,11 +21101,11 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, "/index.js", "/"))
 
 /***/ },
-/* 23 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(20);
-	var _s = __webpack_require__(21);
+	var _ = __webpack_require__(22);
+	var _s = __webpack_require__(23);
 
 	/**
 	 * <p>Decodes any HTML entities in a string into their unicode form</p>
@@ -20951,13 +21187,13 @@
 
 
 /***/ },
-/* 24 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(20);
-	var _s = __webpack_require__(21);
+	var _ = __webpack_require__(22);
+	var _s = __webpack_require__(23);
 
-	var helper = __webpack_require__(23);
+	var helper = __webpack_require__(25);
 
 	function formatText(elem, options) {
 		var text = (options.isInPre ? elem.raw : _s.strip(elem.raw));
@@ -21168,7 +21404,7 @@
 
 
 /***/ },
-/* 25 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*!
@@ -21180,7 +21416,7 @@
 
 	'use strict';
 
-	var matches = __webpack_require__(26);
+	var matches = __webpack_require__(28);
 
 	module.exports = function wordcount(str) {
 	  if (typeof str !== 'string') {
@@ -21192,7 +21428,7 @@
 	};
 
 /***/ },
-/* 26 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*!
@@ -21204,7 +21440,7 @@
 
 	'use strict';
 
-	var regex = __webpack_require__(27);
+	var regex = __webpack_require__(29);
 
 	module.exports = function wordcount(str) {
 	  if (typeof str !== 'string') {
@@ -21215,7 +21451,7 @@
 
 
 /***/ },
-/* 27 */
+/* 29 */
 /***/ function(module, exports) {
 
 	/*!
@@ -21234,32 +21470,7 @@
 
 
 /***/ },
-/* 28 */
-/***/ function(module, exports) {
-
-	var Errors = {
-		unknown: 'An unknown error occured on our end. Please try again later',
-		accountAlreadyCreated: 'An account has already been created',
-		incorrectCredentials: 'Either the username or password was incorrect',
-		invalidParams: 'The parameters of the request were incorrect',
-		notAuthorised: 'The request was not authorised. Try logging in again',
-		invalidId: 'An invalid post id was provided',
-		postNotFound: 'No post was found for the id provided',
-		commentsDisabled: 'Comments have been disabled'
-	};
-
-	for(var errorName in Errors) {
-		var temp = {};
-		temp.name = errorName;
-		temp.message = Errors[errorName];
-
-		Errors[errorName] = temp;
-	}
-
-	module.exports = Errors;
-
-/***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports) {
 
 	module.exports = function (Vue) {
@@ -21351,22 +21562,22 @@
 	}
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports) {
 
 	module.exports = "<div id='title-bar'>\r\n\t<input id='post-title' v-model='title' placeholder='Post title' spellcheck=\"false\">\r\n</div>\r\n<div id='editor'>\r\n\t<div id='markdown-editor' v-bind:class=\"{'focus': ui.markdownEditorActive}\">\r\n\t\t<div class='editor-bar'>\r\n\t\t\t<span>Markdown</span>\r\n\t\t\t<div id='editor-formatting'>\r\n\t\t\t\t<i id='me-bold' v-on:click='bold()' title='Bold' class='fa fa-bold'></i>\r\n\t\t\t\t<i id='me-italic' v-on:click='italic()' title='Italic' class='fa fa-italic'></i>\r\n\t\t\t\t<i id='me-link' v-on:click='link()' title='Link' class='fa fa-link'></i>\r\n\t\t\t\t<i id='me-list-ul' v-on:click='bulletPoint()' title='Bullet-point' class='fa fa-list-ul'></i>\r\n\t\t\t\t<i id='me-picture' v-on:click='image()' title='Image' class=\"fa fa-picture-o\"></i>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<textarea v-on:focus='toggleFocusMarkdownEditor' v-on:blur='toggleFocusMarkdownEditor'  v-model='markdown' placeholder=\"Write your blog post in markdown here\"></textarea>\r\n\t</div>\r\n\t<div id='display'>\r\n\t\t<div class='editor-bar'>\r\n\t\t\t<span>Display</span>\r\n\t\t\t<div id='word-count'>\r\n\t\t\t\t{{wordCountString}}\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div id='display-output'>\r\n\t\t\t<template v-if='html.length'>{{{html}}}</template>\r\n\t\t\t<span id='display-output-none' v-else>See the HTML output here</span>\r\n\t\t</div>\r\n\t</div>\r\n\t<div id='options'>\r\n\t\t<div \r\n\t\t\tid='post-options'\r\n\t\t\tclass='button btn-load'\r\n\t\t\tv-bind:class='{\"btn-disabled\": ui.savingOptions}'\r\n\t\t\tv-show='ui.isSavedPost'\r\n\t\t\tv-el:options\r\n\t\t>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tPost options\r\n\t\t</div>\r\n\t\t<div v-on:click.self='saveDraft()' v-el:save-draft v-bind:class='{\"btn-disabled\": ui.saving}' v-show='!published' class='button btn-load btn-green'>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tSave draft\r\n\t\t\t<i id='save_draft_more' class='fa fa-caret-down btn-icon'></i>\r\n\t\t</div>\r\n\t\t<div v-on:click.self='saveDraft()' v-el:save-published v-bind:class='{\"btn-disabled\": ui.saving}' v-show='published' class='button btn-green btn-load'>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tSave changes\r\n\t\t\t<i id='save_published_more' class='fa fa-caret-down btn-icon'></i>\r\n\t\t</div>\r\n\t</div>\r\n</div>\r\n<tag-bar></tag-bar>";
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var modals = __webpack_require__(14);
 	var Tooltip = __webpack_require__(5);
-	var Errors = __webpack_require__(28);
+	var Errors = __webpack_require__(15);
 
 	module.exports = function (Vue) {
 		return Vue.extend({
-			template: __webpack_require__(32),
+			template: __webpack_require__(33),
 			data: function() {
 				return {
 					categories: [
@@ -21500,21 +21711,21 @@
 	}
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports) {
 
-	module.exports = "<div id='comments-selection'>\r\n\t<div class='option' v-on:click='selectCategory(category.name)' v-bind:class='{\"selected\": category.selected}' v-for='category in categories'>\r\n\t\t<i class='fa fa-fw fa-{{category.icon}}'></i> {{category.name}}\r\n\t</div>\r\n</div>\r\n<div id='comments-box'>\r\n\t<div id='comment-box-bar' v-if='filteredComments.length'>\r\n\t\t<span>Sort by: {{sortBy}}&nbsp;<i class='fa fa-caret-down'></i></span>\r\n\t</div>\r\n\t<div class='loading-box no-select' v-if='!filteredComments.length'>\r\n\t\t{{loadingText}}\r\n\t</div>\r\n\t<div class='comment' v-for='comment in filteredComments'>\r\n\t\t<div class='comment-status' v-bind:class='\"comment-\" + comment.status'></div>\r\n\t\t<div class='center-column'>\r\n\t\t\t<div class='title-bar'>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<span class='name' data-title='Name of commenter'>{{comment.name}}</span>\r\n\t\t\t\t\t<span class='reply' data-title='Replying to \\\"{{comment.repliesName}}\\\"' v-if='comment.repliesName'>\r\n\t\t\t\t\t\t<i class='fa fa-long-arrow-right fa-fw'></i>{{comment.repliesName}}\r\n\t\t\t\t\t</span>\r\n\t\t\t\t\tin post\r\n\t\t\t\t\t<span class='post-title' v-on:click='openPost(comment.postId)' data-title='Title of post - click to open in new tab'>\"{{comment.postTitle}}\"</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<span class='date-created'>{{comment.dateCreated | prettyDate 'and time'}}</span>\r\n\t\t\t</div>\r\n\t\t\t<div class='comment-body'>\r\n\t\t\t\t{{comment.commentBody}}\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div class='comment-buttons'>\r\n\t\t\t<div class='button btn-green' v-on:click='moderate(comment._id, $index, \"approved\")' v-if='comment.status === \"pending\" || comment.status === \"removed\"'>Approve</div>\r\n\t\t\t<div class='button btn-red'  v-on:click='moderate(comment._id, $index, \"removed\")'  v-if='comment.status === \"pending\" || comment.status === \"approved\"'>Remove</div>\r\n\t\t\t<div class='button btn-red'  v-on:click='deletePost(comment._id, comment)'  v-if='comment.status === \"removed\"'>Delete</div>\r\n\t\t</div>\r\n\t</div>\r\n</div>";
+	module.exports = "<div id='comments-selection'>\r\n\t<div class='option' v-on:click='selectCategory(category.name)' v-bind:class='{\"selected\": category.selected}' v-for='category in categories'>\r\n\t\t<i class='fa fa-fw fa-{{category.icon}}'></i> {{category.name}}\r\n\t</div>\r\n</div>\r\n<div id='comments-box'>\r\n\t<div id='comment-box-bar' v-if='filteredComments.length'>\r\n\t\t<span>Sort by: {{sortBy}}&nbsp;<i class='fa fa-caret-down'></i></span>\r\n\t</div>\r\n\t<div class='loading-box no-select' v-if='!filteredComments.length'>\r\n\t\t{{loadingText}}\r\n\t</div>\r\n\t<div class='comment' v-for='comment in filteredComments'>\r\n\t\t<div class='comment-status' v-bind:class='\"comment-\" + comment.status'></div>\r\n\t\t<div class='center-column'>\r\n\t\t\t<div class='title-bar'>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<span class='fa fa-pencil' v-if='comment.author' data-title='Comment by blog author'></span>\r\n\t\t\t\t\t<span class='name' data-title='Name of commenter'>{{comment.name}}</span>\r\n\t\t\t\t\t<span class='reply' data-title='Replying to \\\"{{comment.repliesName}}\\\"' v-if='comment.repliesName'>\r\n\t\t\t\t\t\t<i class='fa fa-long-arrow-right fa-fw'></i>{{comment.repliesName}}\r\n\t\t\t\t\t</span>\r\n\t\t\t\t\tin post\r\n\t\t\t\t\t<span class='post-title' v-on:click='openPost(comment.postId)' data-title='Title of post - click to open in new tab'>\"{{comment.postTitle}}\"</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<span class='date-created'>{{comment.dateCreated | prettyDate 'and time'}}</span>\r\n\t\t\t</div>\r\n\t\t\t<div class='comment-body'>\r\n\t\t\t\t{{comment.commentBody}}\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div class='comment-buttons'>\r\n\t\t\t<div class='button btn-green' v-on:click='moderate(comment._id, $index, \"approved\")' v-if='comment.status === \"pending\" || comment.status === \"removed\"'>Approve</div>\r\n\t\t\t<div class='button btn-red'  v-on:click='moderate(comment._id, $index, \"removed\")'  v-if='comment.status === \"pending\" || comment.status === \"approved\"'>Remove</div>\r\n\t\t\t<div class='button btn-red'  v-on:click='deletePost(comment._id, comment)'  v-if='comment.status === \"removed\"'>Delete</div>\r\n\t\t</div>\r\n\t</div>\r\n</div>";
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var modals = __webpack_require__(14);
-	var Errors = __webpack_require__(28);
+	var Errors = __webpack_require__(15);
 
 	module.exports = function(Vue) {
 		return Vue.extend({
-			template: __webpack_require__(34),
+			template: __webpack_require__(35),
 			data: function() {
 				return {
 					blogTitle: '',
@@ -21582,25 +21793,25 @@
 	};
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports) {
 
 	module.exports = "<div id='settings'>\r\n\t<div class='settings-section'>\r\n\t\t<h2>General</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog title: </td>\r\n\t\t\t\t\t<td><input v-model='blogTitle'></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog description: </td>\r\n\t\t\t\t\t<td><textarea v-model='blogDescription'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog side-bar: <i data-title=\"You can format this using markdown\" style=\"cursor: pointer;\" class=\"fa fa-question-circle\"></i></td>\r\n\t\t\t\t\t<td><textarea v-model='blogSidebar'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t</div>\r\n\t<div class='settings-section'>\r\n\t\t<h2>Comment settings</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Allow comments:</td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<label class='checkbox'>\r\n\t\t\t\t\t\t\t<input type=\"checkbox\" v-model='commentsAllowed'>\r\n\t\t\t\t\t\t\t<span></span>\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Moderate comments: <i data-title=\"By selecting to moderate blog comments, all new comments will not show until individually approved\" style=\"cursor: pointer;\" class=\"fa fa-question-circle\"></i></td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<label class='checkbox'>\r\n\t\t\t\t\t\t\t<input type='checkbox' v-model='commentsModerated'>\r\n\t\t\t\t\t\t\t<span></span>\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Message above comment<br/>box (optional): </td>\r\n\t\t\t\t\t<td><textarea v-model='commentsMessage'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t</div>\r\n</div>\r\n\r\n<div class='settings-section' id='settings-save'>\r\n\t<div class='button btn-green btn-load' v-bind:class='{\"btn-disabled\": loading}' v-on:click='saveSettings()' v-el:save>\r\n\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\tSave settings\r\n\t</div>\r\n</div>";
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var modals = __webpack_require__(14);
-	var Errors = __webpack_require__(28);
+	var Errors = __webpack_require__(15);
 
-	var flexBoxGridCorrect = __webpack_require__(36);
-	var pageViewsGraph = __webpack_require__(37);
-	var browserPieChart = __webpack_require__(40);
+	var flexBoxGridCorrect = __webpack_require__(37);
+	var pageViewsGraph = __webpack_require__(38);
+	var browserPieChart = __webpack_require__(41);
 		
 	module.exports = function(Vue) {
 		return Vue.extend({
-			template: __webpack_require__(41),
+			template: __webpack_require__(42),
 			data: function() {
 				return {
 					ui: {
@@ -21942,7 +22153,7 @@
 	};
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports) {
 
 	function removeHiddenFlexBoxChidren(parentString, childClass) {
@@ -22026,11 +22237,11 @@
 	}
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var rem = __webpack_require__(38);
-	var d3 = __webpack_require__(39);
+	var rem = __webpack_require__(39);
+	var d3 = __webpack_require__(40);
 
 	var svg;
 	var data;
@@ -22063,7 +22274,7 @@
 			.range([xMargin, tWidth - xMargin]);
 
 		var xScaleAxis = d3.scaleTime()
-			.domain([data[0].date, data.slice(-2)[0].date])
+			.domain([data[0].date, data.slice(-1)[0].date])
 			.range([xMargin, tWidth - xMargin])
 			.nice(data.length);
 
@@ -22144,7 +22355,7 @@
 			.range([xMargin, tWidth - xMargin]);
 
 		var xScaleAxis = d3.scaleTime()
-			.domain([data[0].date, data.slice(-2)[0].date])
+			.domain([data[0].date, data.slice(-1)[0].date])
 			.range([xMargin, tWidth - xMargin])
 			.nice(data.length);
 
@@ -22265,7 +22476,7 @@
 	module.exports.width = resizeWidth;
 
 /***/ },
-/* 38 */
+/* 39 */
 /***/ function(module, exports) {
 
 	var div = document.createElement('div');
@@ -22281,7 +22492,7 @@
 	}
 
 /***/ },
-/* 39 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// https://d3js.org Version 4.2.1. Copyright 2016 Mike Bostock.
@@ -38514,11 +38725,11 @@
 	}));
 
 /***/ },
-/* 40 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var d3 = __webpack_require__(39);
-	var rem = __webpack_require__(38);
+	var d3 = __webpack_require__(40);
+	var rem = __webpack_require__(39);
 
 	var data,
 	    height,
@@ -38784,18 +38995,18 @@
 	module.exports.width = resizeWidth;
 
 /***/ },
-/* 41 */
+/* 42 */
 /***/ function(module, exports) {
 
 	module.exports = "<div id='widgets-holder'>\r\n\t<div class='widget'>\r\n\t\t<div id='time-now'>\r\n\t\t\t<div class='time'>{{ui.time}}</div>\r\n\t\t\t<div class='date'>{{ui.date | prettyDate}}</div>\r\n\t\t\tWelcome back, {{cookies.author}}\r\n\t\t</div>\r\n\t\t<div class='description'>Time right now</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<svg id='page-views'></svg>\r\n\t\t<div class='description'>\r\n\t\t\tPage views in the last 10 days:&nbsp;\r\n\t\t\t<span id='page-views-menu' class='menu'>\r\n\t\t\t\t{{analytics.currentGraph}} <i class=\"fa fa-caret-down\"></i>\r\n\t\t\t</span>\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<svg id='browser-pie-chart'></svg>\r\n\t\t<div class='description'>\r\n\t\t\tTotal unique page views by browser\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<div class='widget-section'>\r\n\t\t\t<div class='widget-section-number'>{{latestPost.comments}}</div>\r\n\t\t\t<div class='widget-section-description'>{{\"comment\" | pluralize latestPost.comments}} on most recent post</div>\r\n\t\t</div>\r\n\t\t<div class='widget-section'>\r\n\t\t\t<div class='widget-section-number'>{{latestPost.views}}</div>\r\n\t\t\t<div class='widget-section-description'>page {{\"view\" | pluralize latestPost.views}} on most recent post</div>\r\n\t\t</div>\r\n\t\t<div class='widget-section'>\r\n\t\t\t<div id='widget-section-published' v-bind:style='{\"flex-grow\": posts.published}'>\r\n\t\t\t\t<div class='widget-section-number'>{{posts.published}}</div>\r\n\t\t\t\t<div class='widget-section-description'>published {{\"post\" | pluralize posts.published}}</div>\r\n\t\t\t</div>\r\n\t\t\t<div id='widget-section-drafts' v-bind:style='{\"flex-grow\": posts.drafts}'>\r\n\t\t\t\t<div class='widget-section-number'>{{posts.drafts}}</div>\r\n\t\t\t\t<div class='widget-section-description'>{{\"draft\" | pluralize posts.drafts}}</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<ol id='most-viewed-posts'>\r\n\t\t\t<template  v-for='n in 3'>\r\n\t\t\t\t<li \r\n\t\t\t\t\tv-if='posts.views[n]'\r\n\t\t\t\t\tv-on:click='openPost(posts.views[n].slug)'\r\n\t\t\t\t\tv-bind:class='{\"most-viewed\": n===0}'\r\n\t\t\t\t>\r\n\t\t\t\t\t<div data-title=\"Open post '@content'\" data-test='Open post'>{{posts.views[n].title}}</div>\r\n\t\t\t\t\t<span>{{posts.views[n].views}} {{\"view\" | pluralize posts.views[n].views}}</span>\r\n\t\t\t\t</li>\r\n\t\t\t\t<li v-else class='no-show'></li>\r\n\t\t\t</template>\r\n\t\t</ol>\r\n\t\t<div class='description'>\r\n\t\t\tMost viewed posts\r\n\t\t</div>\r\n\t</div>\r\n</div>";
 
 /***/ },
-/* 42 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(Vue) {
 		return Vue.extend({
-			template: __webpack_require__(43),
+			template: __webpack_require__(44),
 			data: function() {
 				return {
 					selected: 'a',
@@ -38815,222 +39026,10 @@
 	};
 
 /***/ },
-/* 43 */
+/* 44 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class='template-infobox'>\r\n\tSelect a blog template from the left-hand box to customise fonts, colours, etc.\r\n</div>\r\n<div class='template-select'>\r\n\t<div \r\n\t\tclass='template-item'\r\n\t\tv-for='template in templates'\r\n\t\tv-bind:class='{\"template-item-selected\": selected === template.name}'\r\n\t\tv-on:click='select(template.name)'\r\n\t>\r\n\t\t{{template.name}}\r\n\t</div>\r\n</div>\r\n<div class='template-options'>\r\n\t<div class='preview-image'>\r\n\t\t<div class='button'>Preview</div>\r\n\t</div>\r\n</div>";
-
-/***/ },
-/* 44 */,
-/* 45 */,
-/* 46 */
-/***/ function(module, exports) {
-
-	var Request = {};
-
-	Request.serializeData = function(object) {
-		var temp = '';
-		var serializedString = '';
-		for(var key in object) {
-			if(object[key] === undefined) continue;
-			if(typeof object[key] === 'object') {
-				temp = '&' + key + '=' + encodeURIComponent(JSON.stringify(object[key]));
-			} else {
-				temp = '&' + key + '=' + encodeURIComponent(object[key]);
-			}
-			serializedString += temp;
-		}
-		return serializedString.slice(1);
-	};
-	Request.request = function(method, url, data, cb) {
-		var http = new XMLHttpRequest();
-
-		http.addEventListener('load', function() {
-			var json;
-
-			try {
-				json = JSON.parse(this.responseText)
-			} catch(err) {
-				console.log(err);
-				console.log(this.responseText);
-				cb(err)
-			}
-
-			if(cb) {
-				cb(null, json);
-			}
-		})
-
-		http.open(method, url, true);
-
-		if(data instanceof File) {
-			var formData = new FormData();
-			formData.append('image', data);
-
-			http.send(formData);
-		} else if(typeof data !== 'function') {
-			http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-			http.send(this.serializeData(data));
-		} else {
-			http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-			http.send();
-		}
-	}
-	Request.post = function(url, data, cb) {
-		this.request('post', url, data, cb);
-	};
-	Request.delete = function(url, data, cb) {
-		this.request('delete', url, data, cb);
-	};
-	Request.put = function(url, data, cb) {
-		this.request('put', url, data, cb);
-	};
-	Request.get = function(url, data, cb) {
-		var http = new XMLHttpRequest();
-
-		http.addEventListener('load', function() {
-			if(cb) {
-				cb(JSON.parse(this.responseText));
-			}
-		})
-
-		http.open('GET', url + '/?' + this.serializeData(data || {}), true);
-		http.send();
-	};
-
-	var Model = {
-		getType: function(val) {
-			if(typeof val !== 'object') {
-				return typeof val;
-			} else if(Array.isArray(val)) {
-				return 'array';
-			} else if(val === null) {
-				return 'null';
-			} else {
-				return typeof val;
-			}
-		},
-		new: function(modelName, modelDefn, updateDelay, updateFunction) {
-			var modelFactory = function(params) {
-				var self = this;
-				var _data = {};
-
-				this.data = {};
-				this.changedObject = {};
-
-				if(updateFunction) {
-					this.updateFunction = updateFunction.bind(this);
-				}
-
-				this.save = function(cb) {
-					var url = Model.rootUrl + '/' + modelFactory.modelName;
-					var dataNoUndefined = {};
-
-					for(var key in _data) {
-						if(_data[key] !== undefined) {
-							dataNoUndefined[key] = _data[key];
-						}
-					}
-
-					Request.post(url, dataNoUndefined, function(modelInstance) {
-						if(modelInstance._id) {
-							self.data._id = modelInstance._id;
-						}
-						cb(modelInstance.error, modelInstance);
-					})
-				}
-
-				this.delete = function(cb) {
-					if(!this.data[modelFactory.primaryKey]) {
-						throw new Error('Model instance does not have primary key field "' + modelFactory.primaryKey + '"');
-						return;
-					}
-					var url = Model.rootUrl + '/' + modelFactory.modelName + '/' + this.data[modelFactory.primaryKey];
-					Request.delete(url, function(result) {
-						cb(result.error, result);
-					})
-				}
-
-				this.update = function(cb, specificData) {
-					if(!this.data[modelFactory.primaryKey]) {
-						throw new Error('Model instance does not have primary key field "' + modelFactory.primaryKey + '"');
-						return;
-					}
-					var url = Model.rootUrl + '/' + modelFactory.modelName + '/' + this.data[modelFactory.primaryKey];
-					Request.put(url, specificData || _data, function(modelInstance) {
-						cb(modelInstance.error, modelInstance);
-					})
-				}
-				
-
-				this.post = function(url, cb) {	
-					var url = Model.rootUrl + '/' + modelFactory.modelName + '/' + url;
-					Request.post(url, _data, cb);
-				}
-
-				//Create getter/setter for each field
-				// which checks type on setting
-				function getSetProp(proxyObj, prop, originalObj, type) {
-					Object.defineProperty(proxyObj, prop, {
-						get: function() {
-							return originalObj[prop];
-						},
-						set: function(val) {
-							if(Model.getType(val) !== type) {
-								throw new TypeError('Field "' + prop + '" must be of type "' + type + '"');
-							} else {
-								originalObj[prop] = val;
-								self.changedObject[prop] = val;
-							}
-						}
-					})
-				}
-				for(var prop in modelDefn) {
-					var type = modelDefn[prop].type || modelDefn[prop];
-
-					if(modelDefn[prop].primaryKey) {
-						modelFactory.primaryKey = prop;
-					}
-
-					if(typeof params[prop] !== undefined) {
-						_data[prop] = params[prop];
-					}
-
-					getSetProp(self.data, prop, _data, type);
-				}
-
-				setInterval(function() {
-					if(Object.keys(self.changedObject).length && self.updateFunction) {
-						self.update(self.updateFunction, self.changedObject)
-						self.changedObject = {};
-					}
-				}, modelFactory.updateDelay)
-			};
-
-			modelFactory.modelName = modelName;
-
-			modelFactory.get = function(idOrCb, cb) {
-				var url = Model.rootUrl + '/' + modelFactory.modelName;
-				if(typeof idOrCb !== 'function') {
-					url += '/' + idOrCb;
-				}
-				
-				Request.get(url, {}, function(modelInstances) {
-					if(cb) {
-						cb(modelInstances.error, modelInstances);
-					} else {
-						idOrCb(modelInstances.error, modelInstances);
-					}
-				})
-			};
-
-			modelFactory.updateDelay = updateDelay;
-			
-			return modelFactory;
-		}
-	};
-
-	module.exports = Request;
 
 /***/ }
 /******/ ]);

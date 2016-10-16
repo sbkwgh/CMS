@@ -25,11 +25,13 @@ $font-header: 'Roboto', sans-serif !default;
 	input, textarea {
 		width: 15rem;
 		font-family: sans-serif;
+		outline: none;
 		font-weight: 300;
 		border-radius: 0.125rem;
 		border: thin solid gray;
 		padding: 0.25rem 0.375rem;
 		font-size: 0.8rem;
+		
 		&:focus {
 			border-color: #1699e0;
 		}
@@ -47,6 +49,9 @@ $font-header: 'Roboto', sans-serif !default;
 		margin-left: 6.75rem;
 	}
 
+	#author-commenting {
+		margin-left: 6.75rem;
+	}
 	label {
 		width: 6.5rem;
 		display: inline-block;
@@ -192,6 +197,9 @@ $font-header: 'Roboto', sans-serif !default;
 
 		.last-label {
 			position: static;
+		}
+		b {
+			margin: 0;
 		}
 
 		input, textarea {

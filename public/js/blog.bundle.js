@@ -71,7 +71,7 @@
 		);
 	});
 
-	Vue.component('post-comments', __webpack_require__(44)(Vue));
+	Vue.component('post-comments', __webpack_require__(45)(Vue));
 
 	var App = new Vue({
 		el: '#app'
@@ -11693,7 +11693,7 @@
 
 /***/ },
 
-/***/ 28:
+/***/ 15:
 /***/ function(module, exports) {
 
 	var Errors = {
@@ -11719,7 +11719,7 @@
 
 /***/ },
 
-/***/ 38:
+/***/ 39:
 /***/ function(module, exports) {
 
 	var div = document.createElement('div');
@@ -11736,15 +11736,15 @@
 
 /***/ },
 
-/***/ 44:
+/***/ 45:
 /***/ function(module, exports, __webpack_require__) {
 
-	var Errors = __webpack_require__(28);
-	var rem = __webpack_require__(38);
+	var Errors = __webpack_require__(15);
+	var rem = __webpack_require__(39);
 
 	module.exports = function(Vue) {
 		return Vue.extend({
-			template: __webpack_require__(45),
+			template: __webpack_require__(46),
 			props: ['postId', 'commentsMessage'],
 			data: function() {
 				return {
@@ -11759,6 +11759,17 @@
 						_id: '',
 						name: ''
 					},
+
+					cookies: (function() {
+						var cookies = {};
+						decodeURIComponent(document.cookie)
+							.split(';')
+							.forEach(c => {
+								var temp = c.split('=');
+								cookies[temp[0].trim()] = temp[1];
+							});
+						return cookies;
+					})(),
 
 					ui: {
 						savingComment: false,
@@ -11794,6 +11805,7 @@
 			},
 			methods: {
 				addComment: function() {
+					if(this.cookies.author) this.name = this.cookies.author;
 					if(!this.name.trim().length || !this.commentBody.trim().length) return;
 
 					var commentObj = {
@@ -11959,10 +11971,10 @@
 
 /***/ },
 
-/***/ 45:
+/***/ 46:
 /***/ function(module, exports) {
 
-	module.exports = "<div id='comments' v-if='commentsAllowed'>\r\n\t<h1>Comments</h1>\r\n\t<div id='comments-flex'>\r\n\t\t<div id='form-box'>\r\n\t\t\t<div id='comments-message' v-if='commentsMessage.length'>{{commentsMessage}}</div>\r\n\t\t\t<div><label>Your name:</label> <input v-model='name'></div>\r\n\t\t\t<div class='replies-bar' v-if='replies._id.length'>\r\n\t\t\t\t<div>Replying to <b>{{replies.name}}</b></div>\r\n\t\t\t\t<span v-on:click='cancelReply()'>Cancel</span>\r\n\t\t\t</div>\r\n\t\t\t<div><label class='last-label'>Your comment:</label> <textarea v-model='commentBody'></textarea></div>\r\n\t\t\t<div class='button btn-green btn-load' style='line-height: 1.75rem;' v-on:click='addComment()' v-el:add-comment v-bind:class='{\"btn-disabled\": ui.savingComment}'>\r\n\t\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\t\tAdd comment\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div class='comments-box'>\r\n\t\t\t<div v-if='!sortedComments.length' class='comment'>{{ui.loadingMessage}}</div>\r\n\t\t\t<div class='comment' v-bind:class='{\"comment-indent\": comment.head, \"comment-highlight\": highlight===comment._id}' v-for='comment in sortedComments'>\r\n\t\t\t\t<div class='comment-reply' v-if='comment.status === \"approved\"' v-on:click='replyComment(this)'>Reply to this comment</div>\r\n\t\t\t\t<div class='comment-header'>\r\n\t\t\t\t\t<div class='comment-name' v-if='comment.status === \"approved\"'>{{comment.name}}</div>\r\n\t\t\t\t\t<span class='comment-reply-name' data-title='Replying to \\\"{{comment.repliesName}}\\\" - click to highlight' v-if='comment.status === \"approved\" && comment.replies' v-on:click='highlightComment(comment.replies)'>\r\n\t\t\t\t\t\t<i class='fa fa-long-arrow-right fa-fw'></i>{{comment.repliesName}}\r\n\t\t\t\t\t</span>\r\n\t\t\t\t\t<div class='comment-time'>{{comment.dateCreated|timeString}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class='comment-comment'>\r\n\t\t\t\t\t<template v-if='comment.status !== \"approved\"'>\r\n\t\t\t\t\t\t{{{comment.moderatedMessage}}}\r\n\t\t\t\t\t</template>\r\n\t\t\t\t\t<template v-else>\r\n\t\t\t\t\t\t{{comment.commentBody}}\r\n\t\t\t\t\t</template>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n</div>";
+	module.exports = "<div id='comments' v-if='commentsAllowed'>\r\n\t<h1>Comments</h1>\r\n\t<div id='comments-flex'>\r\n\t\t<div id='form-box'>\r\n\t\t\t<div id='comments-message' v-if='commentsMessage.length'>{{commentsMessage}}</div>\r\n\t\t\t<div>\r\n\t\t\t\t<template v-if='cookies.author'>\r\n\t\t\t\t\t<b id='author-commenting'>Commenting as {{cookies.author}}</b>\r\n\t\t\t\t</template>\r\n\t\t\t\t<template v-else>\r\n\t\t\t\t\t<label>Your name:</label> <input v-model='name'>\r\n\t\t\t\t</template>\r\n\t\t\t</div>\r\n\t\t\t<div class='replies-bar' v-if='replies._id.length'>\r\n\t\t\t\t<div>Replying to <b>{{replies.name}}</b></div>\r\n\t\t\t\t<span v-on:click='cancelReply()'>Cancel</span>\r\n\t\t\t</div>\r\n\t\t\t<div><label class='last-label'>Your comment:</label> <textarea v-model='commentBody'></textarea></div>\r\n\t\t\t<div class='button btn-green btn-load' style='line-height: 1.75rem;' v-on:click='addComment()' v-el:add-comment v-bind:class='{\"btn-disabled\": ui.savingComment}'>\r\n\t\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\t\tAdd comment\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div class='comments-box'>\r\n\t\t\t<div v-if='!sortedComments.length' class='comment'>{{ui.loadingMessage}}</div>\r\n\t\t\t<div class='comment' v-bind:class='{\"comment-indent\": comment.head, \"comment-highlight\": highlight===comment._id}' v-for='comment in sortedComments'>\r\n\t\t\t\t<div class='comment-reply' v-if='comment.status === \"approved\"' v-on:click='replyComment(this)'>Reply to this comment</div>\r\n\t\t\t\t<div class='comment-header'>\r\n\t\t\t\t\t<div class='comment-name' v-if='comment.status === \"approved\"'>\r\n\t\t\t\t\t\t<span class='fa fa-pencil' v-if='comment.author' data-title='Comment by blog author'></span>\r\n\t\t\t\t\t\t{{comment.name}}\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<span class='comment-reply-name' data-title='Replying to \\\"{{comment.repliesName}}\\\" - click to highlight' v-if='comment.status === \"approved\" && comment.replies' v-on:click='highlightComment(comment.replies)'>\r\n\t\t\t\t\t\t<i class='fa fa-long-arrow-right fa-fw'></i>{{comment.repliesName}}\r\n\t\t\t\t\t</span>\r\n\t\t\t\t\t<div class='comment-time'>{{comment.dateCreated|timeString}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class='comment-comment'>\r\n\t\t\t\t\t<template v-if='comment.status !== \"approved\"'>\r\n\t\t\t\t\t\t{{{comment.moderatedMessage}}}\r\n\t\t\t\t\t</template>\r\n\t\t\t\t\t<template v-else>\r\n\t\t\t\t\t\t{{comment.commentBody}}\r\n\t\t\t\t\t</template>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n</div>";
 
 /***/ }
 

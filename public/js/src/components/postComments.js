@@ -19,6 +19,17 @@ module.exports = function(Vue) {
 					name: ''
 				},
 
+				cookies: (function() {
+					var cookies = {};
+					decodeURIComponent(document.cookie)
+						.split(';')
+						.forEach(c => {
+							var temp = c.split('=');
+							cookies[temp[0].trim()] = temp[1];
+						});
+					return cookies;
+				})(),
+
 				ui: {
 					savingComment: false,
 					loadingMessage: 'Loading...'
@@ -53,6 +64,7 @@ module.exports = function(Vue) {
 		},
 		methods: {
 			addComment: function() {
+				if(this.cookies.author) this.name = this.cookies.author;
 				if(!this.name.trim().length || !this.commentBody.trim().length) return;
 
 				var commentObj = {

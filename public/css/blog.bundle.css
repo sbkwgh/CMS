@@ -316,6 +316,7 @@ header {
   #comments input, #comments textarea {
     width: 15rem;
     font-family: sans-serif;
+    outline: none;
     font-weight: 300;
     border-radius: 0.125rem;
     border: thin solid gray;
@@ -330,6 +331,8 @@ header {
   #comments #comments-message {
     font-weight: 300;
     padding-bottom: 1rem;
+    margin-left: 6.75rem; }
+  #comments #author-commenting {
     margin-left: 6.75rem; }
   #comments label {
     width: 6.5rem;
@@ -437,6 +440,8 @@ header {
     flex-direction: column; }
     #comments #form-box div .last-label {
       position: static; }
+    #comments #form-box div b {
+      margin: 0; }
     #comments #form-box div input, #comments #form-box div textarea {
       width: calc(100% - 1rem);
       outline: none; }

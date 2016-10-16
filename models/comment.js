@@ -10,7 +10,8 @@ var commentSchema = mongoose.Schema({
 	head: ObjectId,
 	replies: ObjectId,
 	repliesName: String,
-	status: {type: String, required: true}
+	status: {type: String, required: true},
+	author: {type: Boolean, default: false}
 });
 
 var Comment = mongoose.model('Comment', commentSchema);
