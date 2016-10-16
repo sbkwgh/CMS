@@ -32,7 +32,7 @@ var update = function(width, updatedData) {
 		.range([xMargin, tWidth - xMargin]);
 
 	var xScaleAxis = d3.scaleTime()
-		.domain([data[0].date, data.slice(-2)[0].date])
+		.domain([data[0].date, data.slice(-1)[0].date])
 		.range([xMargin, tWidth - xMargin])
 		.nice(data.length);
 
@@ -113,7 +113,7 @@ var make = function(ajaxData) {
 		.range([xMargin, tWidth - xMargin]);
 
 	var xScaleAxis = d3.scaleTime()
-		.domain([data[0].date, data.slice(-2)[0].date])
+		.domain([data[0].date, data.slice(-1)[0].date])
 		.range([xMargin, tWidth - xMargin])
 		.nice(data.length);
 
