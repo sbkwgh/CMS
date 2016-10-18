@@ -27,7 +27,7 @@
 				<div class='comment-reply' v-if='comment.status === "approved"' v-on:click='replyComment(this)'>Reply to this comment</div>
 				<div class='comment-header'>
 					<div class='comment-name' v-if='comment.status === "approved"'>
-						<span class='fa fa-pencil' v-if='comment.author' data-title='Comment by blog author'></span>
+						<span class='fa fa-pencil' style='cursor: default;' v-if='comment.author' data-title='Comment by blog author'></span>
 						{{comment.name}}
 					</div>
 					<span class='comment-reply-name' data-title='Replying to \"{{comment.repliesName}}\" - click to highlight' v-if='comment.status === "approved" && comment.replies' v-on:click='highlightComment(comment.replies)'>
