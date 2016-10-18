@@ -61,8 +61,8 @@ router.get('/:id', function(req, res) {
 	});
 
 	function findPost(err, post) {
-		if(err) {
-			console.log(err);
+		if(err || !post) {
+			console.log(err || post);
 			res.json({error: Errors.unknown});
 		} else if(!post.commentsAllowed) {
 			res.json({error: Errors.commentsDisabled});
