@@ -5,6 +5,8 @@ var Errors = require('../../errors.js');
 var paramsValidator = require('../../paramsValidator.js');
 var router = express.Router();
 
+var validObjectId = require('mongoose').Types.ObjectId.isValid;
+
 var validator = paramsValidator({
 	title: {type: 'string', required: true},
 	markdown: {type: 'string', required: true},
@@ -42,6 +44,11 @@ router.all('*', function(req, res, next) {
 
 router.get('/:id', function(req, res) {
 	var id = req.params.id;
+
+	if(!validObjectId(id)) {
+		res.json({error: Errors.invalidId});
+		return;
+	}
 	
 	Post.findPostById(id, function(err, post) {
 		if(err) {
@@ -54,6 +61,11 @@ router.get('/:id', function(req, res) {
 
 router.get('/:id/redirect', function(req, res) {
 	var id = req.params.id;
+
+	if(!validObjectId(id)) {
+		res.json({error: Errors.invalidId});
+		return;
+	}
 	
 	Post.findPostById(id, function(err, post) {
 		if(err) {
@@ -97,7 +109,7 @@ router.put('/:id', function(req, res) {
 		postObject.published = req.body.published;
 	}
 
-	if(!id.match(/^[0-9a-fA-F]{24}$/)) {
+	if(!validObjectId(id)) {
 		res.json({error: Errors.invalidId});
 		return;
 	}
@@ -115,29 +127,35 @@ router.put('/:id', function(req, res) {
 
 router.delete('/:id', function(req, res) {
 	var id = req.params.id;
+
+	if(!validObjectId(id)) {
+		res.json({error: Errors.invalidId});
+		return;
+	}
 	
 	Post.findPostById(id, function(err, post) {
 		if(err) {
 			res.json({error: err});
 		} else {
-			post.remove(function(err) {
+			post.remove(removePostComments);
+		}
+	});
+
+	function removePostComments(err) {
+		if(err) {
+			console.log(err)
+			res.json({error: Errors.unknown});
+		} else {
+			Comment.remove({postId: id}, function(err, success) {
 				if(err) {
 					console.log(err)
-					res.json({error: Errors.unknown});
+					res.json({error: 'unknown error'})
 				} else {
-					Comment.remove({postId: id}, function(err, success) {
-						if(err) {
-							console.log(err)
-							res.json({error: 'unknown error'})
-						} else {
-							res.json({success: true});
-						}
-					})
+					res.json({success: true});
 				}
-			});
+			})
 		}
-	
-	});
+	}
 });
 
 
