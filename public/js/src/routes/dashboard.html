@@ -7,8 +7,12 @@
 		</div>
 		<div class='description'>Time right now</div>
 	</div>
-	<div class='widget'>
-		<svg id='page-views'></svg>
+	<div class='widget' style='background-color: #FCC342;'>
+		<svg v-bind:class='{"hidden": !analytics.all.length && analytics.loaded}' id='page-views'></svg>
+		<div v-bind:class='{"hidden": analytics.all.length  && analytics.loaded}' class='widget-no_analytics'>
+			<i class='fa fa-line-chart'></i>
+			No page views yet
+		</div>
 		<div class='description'>
 			Page views in the last 10 days:&nbsp;
 			<span id='page-views-menu' class='menu'>
@@ -16,46 +20,62 @@
 			</span>
 		</div>
 	</div>
-	<div class='widget'>
-		<svg id='browser-pie-chart'></svg>
+	<div class='widget' style='background-color: rgb(174, 122, 195);'>
+		<svg v-bind:class='{"hidden": !analytics.all.length && analytics.loaded}' id='browser-pie-chart'></svg>
+		<div v-bind:class='{"hidden": analytics.all.length && analytics.loaded}' class='widget-no_analytics'>
+			<i class='fa fa-pie-chart'></i>
+			No page views yet
+		</div>
 		<div class='description'>
 			Total unique page views by browser
 		</div>
 	</div>
 	<div class='widget'>
-		<div class='widget-section'>
-			<div class='widget-section-number'>{{latestPost.comments}}</div>
-			<div class='widget-section-description'>{{"comment" | pluralize latestPost.comments}} on most recent post</div>
-		</div>
-		<div class='widget-section'>
-			<div class='widget-section-number'>{{latestPost.views}}</div>
-			<div class='widget-section-description'>page {{"view" | pluralize latestPost.views}} on most recent post</div>
-		</div>
-		<div class='widget-section'>
-			<div id='widget-section-published' v-bind:style='{"flex-grow": posts.published}'>
-				<div class='widget-section-number'>{{posts.published}}</div>
-				<div class='widget-section-description'>published {{"post" | pluralize posts.published}}</div>
+		<template v-if='posts.all.length'>
+			<div class='widget-section'>
+				<div class='widget-section-number'>{{latestPost.comments}}</div>
+				<div class='widget-section-description'>{{"comment" | pluralize latestPost.comments}} on most recent post</div>
 			</div>
-			<div id='widget-section-drafts' v-bind:style='{"flex-grow": posts.drafts}'>
-				<div class='widget-section-number'>{{posts.drafts}}</div>
-				<div class='widget-section-description'>{{"draft" | pluralize posts.drafts}}</div>
+			<div class='widget-section'>
+				<div class='widget-section-number'>{{latestPost.views}}</div>
+				<div class='widget-section-description'>page {{"view" | pluralize latestPost.views}} on most recent post</div>
 			</div>
+			<div class='widget-section'>
+				<div id='widget-section-published' v-bind:style='{"flex-grow": posts.published}'>
+					<div class='widget-section-number'>{{posts.published}}</div>
+					<div class='widget-section-description'>published {{"post" | pluralize posts.published}}</div>
+				</div>
+				<div id='widget-section-drafts' v-bind:style='{"flex-grow": posts.drafts}'>
+					<div class='widget-section-number'>{{posts.drafts}}</div>
+					<div class='widget-section-description'>{{"draft" | pluralize posts.drafts}}</div>
+				</div>
+			</div>
+		</template>
+		<div v-else class='widget-no_analytics' style='background-color: #2ecc71; height: 100%;'>
+			<i class='fa fa-file-text'></i>
+			No post statistics
 		</div>
 	</div>
 	<div class='widget'>
-		<ol id='most-viewed-posts'>
-			<template  v-for='n in 3'>
-				<li 
-					v-if='posts.views[n]'
-					v-on:click='openPost(posts.views[n].slug)'
-					v-bind:class='{"most-viewed": n===0}'
-				>
-					<div data-title="Open post '@content'" data-test='Open post'>{{posts.views[n].title}}</div>
-					<span>{{posts.views[n].views}} {{"view" | pluralize posts.views[n].views}}</span>
-				</li>
-				<li v-else class='no-show'></li>
-			</template>
-		</ol>
+		<template v-if='posts.published.length'>
+			<ol id='most-viewed-posts'>
+				<template  v-for='n in 3'>
+					<li 
+						v-if='posts.views[n]'
+						v-on:click='openPost(posts.views[n].slug)'
+						v-bind:class='{"most-viewed": n===0}'
+					>
+						<div data-title="Open post '@content'" data-test='Open post'>{{posts.views[n].title}}</div>
+						<span>{{posts.views[n].views}} {{"view" | pluralize posts.views[n].views}}</span>
+					</li>
+					<li v-else class='no-show'></li>
+				</template>
+			</ol>
+		</template>
+		<div v-else class='widget-no_analytics' style='background-color: rgb(170, 170, 170);'>
+			<i class='fa fa-list-ol'></i>
+			No page views on any posts
+		</div>
 		<div class='description'>
 			Most viewed posts
 		</div>

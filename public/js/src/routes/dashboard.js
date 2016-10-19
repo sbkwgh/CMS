@@ -38,7 +38,9 @@ module.exports = function(Vue) {
 					pageViews: null,
 					uniquePageViews: null,
 					currentGraph: 'total',
-					processed: {}
+					processed: {},
+					all: [],
+					loaded: false
 				}
 			}
 		},
@@ -74,14 +76,14 @@ module.exports = function(Vue) {
 				}
 
 				function errorCb(err, param, showUnknownError) {
-					done(param, null);
-
 					if(showUnknownError) {
 						console.log(err);
 						modals.alert(Errors.unknown.message);
 					} else {
 						modals.alert(err.message);
 					}
+
+					done(param, null);
 				}
 
 				function getCommentsData(data) {
@@ -94,6 +96,11 @@ module.exports = function(Vue) {
 
 							break;
 						}
+					}
+
+					if(!postId) {
+						done('latestPost.comments', 0);
+						return;
 					}
 
 					self.latestPost.slug = postSlug;
@@ -180,6 +187,12 @@ module.exports = function(Vue) {
 				var pageViews = data;
 				var pageViewsAddedDays = [];
 
+				//If there are no analytics data, give one piece of
+				//dummy data to allow program to work
+				if(!pageViews[0]) {
+					return data;
+				}
+
 				//If the last page hit is not the current date, fill in the array
 				//with items going up to the current date
 				var daysBetweenLastViewAndCurrentDate = getDaysInBetween(pageViews[0].date, new Date());
@@ -265,9 +278,10 @@ module.exports = function(Vue) {
 					return new Date(b.date) - new Date(a.date);
 				});
 
-
 				this.analytics.processed.unique = this.processData(uniquePageViews);
 				this.analytics.processed.total = this.processData(totalPageViews);
+
+
 			},
 			changePageViewsGraph: function(type) {
 				if(type === 'total') {
@@ -342,6 +356,8 @@ module.exports = function(Vue) {
 
 					this.getPageViewsPerDay();
 					pageViewsGraph.make(this.analytics.processed.total);
+
+					this.analytics.loaded = true;
 				}.bind(this));
 			}
 		}

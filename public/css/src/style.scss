@@ -173,6 +173,10 @@ strong {
 	box-sizing: border-box;
 }
 
+.hidden {
+	display: none !important;
+}
+
 #main-container {
 	width: calc(100% - 10rem);
 	height: calc(100% - 2.5rem);

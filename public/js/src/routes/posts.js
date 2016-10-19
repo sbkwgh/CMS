@@ -41,7 +41,7 @@ module.exports = function(Vue) {
 						}));
 
 						if(!res.data.length) {
-							this.noPostsMessageMain = `You haven't written any posts yet. <a v-link="{path: '/posts/new'}">Write one</a>`;
+							this.noPostsMessageMain = `You haven't written any posts yet.`;
 							this.noPostsMessageBox = 'No post selected';
 						}
 					}

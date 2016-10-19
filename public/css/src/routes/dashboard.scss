@@ -15,9 +15,45 @@
 		width: calc(100% / 3 - 1.5rem);
 		height: 16rem;
 		margin: 0.5rem;
-		overflow-x: hidden;
-		overflow-y: auto;
+		overflow: hidden;
 		text-align: center;
+
+		.widget-no_analytics {
+			width: 100%;
+			height: calc(100% - 2.5rem);
+			color: rgba(255, 255, 255, 0.9);
+			font-family: $font-header;
+			font-size: 1rem;
+			display: flex;
+			flex-direction: column;
+			position: absolute;
+			z-index: 1;
+			top: 0;
+			left: 0;
+			justify-content: center;
+
+			i {
+				font-size: 8rem;
+				margin-bottom: 0.75rem;
+				text-align: center;
+				text-shadow: 1px 1px 1px #80808033;
+				display: block;
+			}
+		}
+		.widget-loading {
+			width: 100%;
+			height: calc(100% - 2.5rem);
+			color: rgba(255, 255, 255, 0.9);
+			font-size: 3rem;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+
+			i {
+				text-shadow: 1px 1px 1px #80808033;
+				display: block;
+			}
+		}
 
 		.description {
 			background-color: #f2f1f3;
@@ -222,6 +258,10 @@
 
 svg {
 	background-color: #fff;
+	position: absolute;
+	z-index: 1;
+	top: 0;
+	left: 0;
 
 	text {
 		font-family: 'Roboto', sans-serif;

@@ -8,12 +8,14 @@ var data,
 
 var resizeWidth = function() {
 	var width = document
-	.querySelector('#browser-pie-chart')
+	.querySelector('#browser-pie-chart');
+
+	if(!width) return 0;
+	
+	return (width
 	.parentElement
 	.getBoundingClientRect()
-	.width;
-
-	return width;
+	.width);
 }
 
 var update = function(width) {

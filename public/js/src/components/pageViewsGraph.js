@@ -9,17 +9,21 @@ var yAxis;
 
 var resizeWidth = function() {
 	var width = document
-	.querySelector('#page-views')
+	.querySelector('#page-views');
+
+	if(!width) return 0;
+
+	return (width
 	.parentElement
 	.getBoundingClientRect()
-	.width;
-
-	return width;
+	.width);
 }
 
 var update = function(width, updatedData) {
 	if(!data) return; 
 	if(updatedData) data = updatedData;
+
+	if(!data.length) return;
 	
 	var max = d3.max(data.map(d => d.hits));
 	var tHeight = rem(13.5);
@@ -87,6 +91,8 @@ var make = function(ajaxData) {
 	svg = d3.select('#page-views');
 
 	data = ajaxData;
+
+	if(!data.length) return;
 
 	var max = d3.max(data.map(d => d.hits));
 	var tHeight = rem(13.5);
