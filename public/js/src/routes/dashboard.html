@@ -8,11 +8,11 @@
 		<div class='description'>Time right now</div>
 	</div>
 	<div class='widget' style='background-color: #FCC342;'>
-		<svg v-bind:class='{"hidden": !analytics.all.length && analytics.loaded}' id='page-views'></svg>
 		<div v-bind:class='{"hidden": analytics.all.length  && analytics.loaded}' class='widget-no_analytics'>
 			<i class='fa fa-line-chart'></i>
 			No page views yet
 		</div>
+		<svg v-bind:class='{"hidden": !analytics.all.length && analytics.loaded}' id='page-views'></svg>
 		<div class='description'>
 			Page views in the last 10 days:&nbsp;
 			<span id='page-views-menu' class='menu'>
@@ -21,11 +21,11 @@
 		</div>
 	</div>
 	<div class='widget' style='background-color: rgb(174, 122, 195);'>
-		<svg v-bind:class='{"hidden": !analytics.all.length && analytics.loaded}' id='browser-pie-chart'></svg>
 		<div v-bind:class='{"hidden": analytics.all.length && analytics.loaded}' class='widget-no_analytics'>
 			<i class='fa fa-pie-chart'></i>
 			No page views yet
 		</div>
+		<svg v-bind:class='{"hidden": !analytics.all.length && analytics.loaded}' id='browser-pie-chart'></svg>
 		<div class='description'>
 			Total unique page views by browser
 		</div>

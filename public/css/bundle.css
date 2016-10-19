@@ -927,10 +927,6 @@ input, textarea {
       font-size: 1rem;
       display: flex;
       flex-direction: column;
-      position: absolute;
-      z-index: 1;
-      top: 0;
-      left: 0;
       justify-content: center; }
       #widgets-holder .widget .widget-no_analytics i {
         font-size: 8rem;
@@ -1101,11 +1097,7 @@ input, textarea {
   padding: 0; }
 
 svg {
-  background-color: #fff;
-  position: absolute;
-  z-index: 1;
-  top: 0;
-  left: 0; }
+  background-color: #fff; }
   svg text {
     font-family: 'Roboto', sans-serif;
     font-size: 0.8rem;
