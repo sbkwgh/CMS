@@ -28,12 +28,6 @@ function getPageNumbers(posts, currentPage) {
 	return {total: totalPages, next: nextPage, previous: previousPage};
 }
 
-getPageNumbers([0,1,2], 0);
-getPageNumbers([0,1,2], 1);
-
-getPageNumbers([0,1,2,3,4,5,6], 0);
-getPageNumbers([0,1,2,3,4,5,6], 1);
-
 router.get('/', function(req, res) {
 	settings.get(req.app.locals.db, function(err, settingsDoc) {
 			Post.find({published: true}, null, {sort: '-date'}, function(err, posts) {
