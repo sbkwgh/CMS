@@ -14700,6 +14700,7 @@
 										console.log(res.data.error)
 									} else if(res.data.success) {
 										this.posts.$remove(this.posts[selectedIndex]);
+										this.selectPost(this.posts[0].slug)
 									}
 								}, function(err) {
 									console.log(err);
@@ -17654,17 +17655,6 @@
 				}
 			},
 			methods: {
-				buttonMessage: function(button, message) {
-					if(button === 'save') {
-						if(this.published) {
-							titleTooltip(this.$els.savePublished, message, 3000);
-						} else {
-							titleTooltip(this.$els.saveDraft, message, 3000);
-						}
-					} else {
-						titleTooltip(this.$els[button], message, 3000);
-					}
-				},
 				bold: function() {
 					this.$set('markdown', replaceSelectedText("__", "__"));
 				},
@@ -17698,10 +17688,27 @@
 						}
 					}, 'green');
 				},
+				saveButton: function() {
+					if(this.$route.path === '/posts/new') {
+						this.createPost();
+					} else {
+						this.updatePost({}, {button: 'save', message: 'All changes saved'});
+					}
+				},
 				toggleFocusMarkdownEditor: function() {
 					this.ui.markdownEditorActive = !this.ui.markdownEditorActive;
 				},
-				saveDraft(postObjAdditions, message) {
+
+				buttonMessage: function(button, message) {
+					if(button === 'save') {
+						titleTooltip(this.$els.saveButton, message, 3000);
+					} else if(button === 'options') {
+						titleTooltip(this.$els.optionsButton, message, 3000);
+					}
+				},
+
+				updatePost(postObjAdditions, message) {
+					var id = this.$route.params.id;
 					var postObj = {
 						title: this.title,
 						markdown: this.markdown,
@@ -17712,44 +17719,54 @@
 						postObj[key] = postObjAdditions[key];
 					}
 
-					//This Vue instance is the same for the 'new post' page, as well as saved posts
-					//The difference here is if we put (update) or post (create) a new post
-					var id = this.$route.params.id;
-					this.ui.saving = true;
-					if(id) {
-						this.$http.put('/api/posts/' + id, postObj).then(function(res) {
-							if(res.data.error) {
-								modals.alert(res.data.error.message);
-							} else if(message) {
-								this.buttonMessage(message.button, message.message);
-							} else {
-								if(res.data.published === false) {
-									this.buttonMessage('save', 'Post unpublished');	
-								} else {
-									this.buttonMessage('save', 'Saved published post');	
-								}
-							}
-							this.ui.saving = false;
-						}, function(err) {
-							console.log(err);
-							modals.alert(Errors.unknown.message);
-							this.ui.saving = false;
-						});
-					} else {
-						this.$http.post('/api/posts', postObj).then(function(res) {
-							if(res.data.error) {
-								modals.alert(res.data.error.message);
-							} else {
-								this.buttonMessage('saveDraft', 'Draft saved');
-								this.$router.go('/posts/post/' + res.data._id);
-							}
-							this.ui.saving = false;
-						}, function(err) {
-							console.log(err);
-							modals.alert(Errors.unknown.message);
-							this.ui.saving = false;
-						});
+					var toggleSaving = () => {
+						if(message && message.button !== 'save') {
+							this.ui.savingOptions = !this.ui.savingOptions;
+						} else {
+							this.ui.saving = !this.ui.saving;
+						}
+					};
+
+					toggleSaving();
+					this.$http.put('/api/posts/' + id, postObj).then(function(res) {
+						if(res.data.error) {
+							modals.alert(res.data.error.message);
+						} else if(message) {
+							this.buttonMessage(message.button, message.message);
+						}
+						toggleSaving();
+					}, function(err) {
+						console.log(err);
+						modals.alert(Errors.unknown.message);
+						toggleSaving();
+					});
+				},
+				createPost(postObjAdditions, message) {
+					var postObj = {
+						title: this.title,
+						markdown: this.markdown,
+						tags: this.tags,
+						commentsAllowed: this.commentsAllowed
+					};
+					for(var key in postObjAdditions) {
+						postObj[key] = postObjAdditions[key];
 					}
+
+					this.ui.saving = true;
+					
+					this.$http.post('/api/posts', postObj).then(function(res) {
+						if(res.data.error) {
+							modals.alert(res.data.error.message);
+						} else {
+							this.buttonMessage('save', 'Draft saved');
+							this.$router.go('/posts/post/' + res.data._id);
+						}
+						this.ui.saving = false;
+					}, function(err) {
+						console.log(err);
+						modals.alert(Errors.unknown.message);
+						this.ui.saving = false;
+					});
 				},
 				deletePost: function() {
 					modals.confirm(
@@ -17771,6 +17788,13 @@
 						}.bind(this),
 						'red'
 					);
+				},
+				togglePublished: function() {
+					var status = !this.published;
+					var message = status ? 'Post published' : 'Post unpublished';
+
+					this.updatePost({published: status}, {button: 'options', message: message});
+					this.published = status;
 				},
 				toggleComments: function() {
 					var id = this.$route.params.id;
@@ -17795,35 +17819,12 @@
 			ready: function() {
 				var self = this;
 
-				tooltip('#save_draft_more', {
-					items: [
-						{title: 'Publish post', click: function() {
-							self.saveDraft({published: true});
-							self.published = true;
-						}},
-					]
-				});
-				tooltip('#save_published_more', {
-					items: [
-						{
-							title: 'Unpublish post',
-							click: function() {
-								self.saveDraft({published: false});
-								self.published = false;
-							}
-						},
-						{
-							title: 'View post on blog',
-							click: function() {
-								window.open('/blog/post/' + self.slug);
-							}
-						}
-					]
-				});
 				tooltip('#post-options', {
 					items: [
 						{title: 'Delete post', click: this.deletePost},
-						{title: () => this.commentsAllowed ? 'Disable comments' : 'Enable comments', click: this.toggleComments}
+						{title: 'Preview blog post', click: ()=>{window.open('/blog/post/' + self.slug)} },
+						{title: () => this.commentsAllowed ? 'Disable comments' : 'Enable comments', click: this.toggleComments},
+						{title: () => this.published ? 'Unpublish post' : 'Publish draft', click: this.togglePublished}
 					]
 				})
 
@@ -21565,7 +21566,7 @@
 /* 31 */
 /***/ function(module, exports) {
 
-	module.exports = "<div id='title-bar'>\r\n\t<input id='post-title' v-model='title' placeholder='Post title' spellcheck=\"false\">\r\n</div>\r\n<div id='editor'>\r\n\t<div id='markdown-editor' v-bind:class=\"{'focus': ui.markdownEditorActive}\">\r\n\t\t<div class='editor-bar'>\r\n\t\t\t<span>Markdown</span>\r\n\t\t\t<div id='editor-formatting'>\r\n\t\t\t\t<i id='me-bold' v-on:click='bold()' title='Bold' class='fa fa-bold'></i>\r\n\t\t\t\t<i id='me-italic' v-on:click='italic()' title='Italic' class='fa fa-italic'></i>\r\n\t\t\t\t<i id='me-link' v-on:click='link()' title='Link' class='fa fa-link'></i>\r\n\t\t\t\t<i id='me-list-ul' v-on:click='bulletPoint()' title='Bullet-point' class='fa fa-list-ul'></i>\r\n\t\t\t\t<i id='me-picture' v-on:click='image()' title='Image' class=\"fa fa-picture-o\"></i>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<textarea v-on:focus='toggleFocusMarkdownEditor' v-on:blur='toggleFocusMarkdownEditor'  v-model='markdown' placeholder=\"Write your blog post in markdown here\"></textarea>\r\n\t</div>\r\n\t<div id='display'>\r\n\t\t<div class='editor-bar'>\r\n\t\t\t<span>Display</span>\r\n\t\t\t<div id='word-count'>\r\n\t\t\t\t{{wordCountString}}\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div id='display-output'>\r\n\t\t\t<template v-if='html.length'>{{{html}}}</template>\r\n\t\t\t<span id='display-output-none' v-else>See the HTML output here</span>\r\n\t\t</div>\r\n\t</div>\r\n\t<div id='options'>\r\n\t\t<div \r\n\t\t\tid='post-options'\r\n\t\t\tclass='button btn-load'\r\n\t\t\tv-bind:class='{\"btn-disabled\": ui.savingOptions}'\r\n\t\t\tv-show='ui.isSavedPost'\r\n\t\t\tv-el:options\r\n\t\t>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tPost options\r\n\t\t</div>\r\n\t\t<div v-on:click.self='saveDraft()' v-el:save-draft v-bind:class='{\"btn-disabled\": ui.saving}' v-show='!published' class='button btn-load btn-green'>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tSave draft\r\n\t\t\t<i id='save_draft_more' class='fa fa-caret-down btn-icon'></i>\r\n\t\t</div>\r\n\t\t<div v-on:click.self='saveDraft()' v-el:save-published v-bind:class='{\"btn-disabled\": ui.saving}' v-show='published' class='button btn-green btn-load'>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tSave changes\r\n\t\t\t<i id='save_published_more' class='fa fa-caret-down btn-icon'></i>\r\n\t\t</div>\r\n\t</div>\r\n</div>\r\n<tag-bar></tag-bar>";
+	module.exports = "<div id='title-bar'>\r\n\t<input id='post-title' v-model='title' placeholder='Post title' spellcheck=\"false\">\r\n</div>\r\n<div id='editor'>\r\n\t<div id='markdown-editor' v-bind:class=\"{'focus': ui.markdownEditorActive}\">\r\n\t\t<div class='editor-bar'>\r\n\t\t\t<span>Markdown</span>\r\n\t\t\t<div id='editor-formatting'>\r\n\t\t\t\t<i id='me-bold' v-on:click='bold()' title='Bold' class='fa fa-bold'></i>\r\n\t\t\t\t<i id='me-italic' v-on:click='italic()' title='Italic' class='fa fa-italic'></i>\r\n\t\t\t\t<i id='me-link' v-on:click='link()' title='Link' class='fa fa-link'></i>\r\n\t\t\t\t<i id='me-list-ul' v-on:click='bulletPoint()' title='Bullet-point' class='fa fa-list-ul'></i>\r\n\t\t\t\t<i id='me-picture' v-on:click='image()' title='Image' class=\"fa fa-picture-o\"></i>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<textarea\r\n\t\t\tv-on:focus='toggleFocusMarkdownEditor()'\r\n\t\t\tv-on:blur='toggleFocusMarkdownEditor()' \r\n\t\t\tv-model='markdown'\r\n\t\t\tplaceholder=\"Write your blog post in markdown here\">\r\n\t\t</textarea>\r\n\t</div>\r\n\t<div id='display'>\r\n\t\t<div class='editor-bar'>\r\n\t\t\t<span>Display</span>\r\n\t\t\t<div id='word-count'>\r\n\t\t\t\t{{wordCountString}}\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div id='display-output'>\r\n\t\t\t<template v-if='html.length'>{{{html}}}</template>\r\n\t\t\t<span id='display-output-none' v-else>See the HTML output here</span>\r\n\t\t</div>\r\n\t</div>\r\n\t<div id='options'>\r\n\t\t<div \r\n\t\t\tid='post-options'\r\n\t\t\tclass='button btn-load'\r\n\t\t\tv-bind:class='{\"btn-disabled\": ui.savingOptions}'\r\n\t\t\tv-show='ui.isSavedPost'\r\n\t\t\tv-el:options-button\r\n\t\t>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tPost options\r\n\t\t</div>\r\n\t\t<div\r\n\t\t\tv-on:click.self='saveButton()'\r\n\t\t\tv-el:save-button\r\n\t\t\tv-bind:class='{\"btn-disabled\": ui.saving}'\r\n\t\t\tclass='button btn-load btn-green'\r\n\t\t>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tSave changes\r\n\t\t</div>\r\n\t</div>\r\n</div>\r\n<tag-bar></tag-bar>";
 
 /***/ },
 /* 32 */
