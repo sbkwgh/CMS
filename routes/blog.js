@@ -18,7 +18,7 @@ function getPageNumbers(posts, currentPage) {
 	nextPage = currentPage+1;
 	previousPage = currentPage-1;
 
-	if(nextPage > totalPages) {
+	if(nextPage >= totalPages) {
 		nextPage = null;
 	}
 	if(previousPage < 0) {
@@ -27,6 +27,12 @@ function getPageNumbers(posts, currentPage) {
 
 	return {total: totalPages, next: nextPage, previous: previousPage};
 }
+
+getPageNumbers([0,1,2], 0);
+getPageNumbers([0,1,2], 1);
+
+getPageNumbers([0,1,2,3,4,5,6], 0);
+getPageNumbers([0,1,2,3,4,5,6], 1);
 
 router.get('/', function(req, res) {
 	settings.get(req.app.locals.db, function(err, settingsDoc) {
