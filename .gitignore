@@ -1,6 +1,7 @@
 node_modules
 *.css.map
 **/.sass-cache
-**/.sass-cache/*
+**/.sass-cache/**
+**/.sass-cache/*/*
 public/img/uploads/*
-tmp
+tmp/*
