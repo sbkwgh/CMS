@@ -42,7 +42,6 @@ var update = function(width) {
 															 
 	g.selectAll('path')
 		.data(arcs)
-		.transition()
 		.attr('d', arc);
 
 	g.selectAll('.sector-label')
