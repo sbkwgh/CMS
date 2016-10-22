@@ -125,17 +125,6 @@ module.exports = function (Vue) {
 			}
 		},
 		methods: {
-			buttonMessage: function(button, message) {
-				if(button === 'save') {
-					if(this.published) {
-						titleTooltip(this.$els.savePublished, message, 3000);
-					} else {
-						titleTooltip(this.$els.saveDraft, message, 3000);
-					}
-				} else {
-					titleTooltip(this.$els[button], message, 3000);
-				}
-			},
 			bold: function() {
 				this.$set('markdown', replaceSelectedText("__", "__"));
 			},
@@ -169,10 +158,27 @@ module.exports = function (Vue) {
 					}
 				}, 'green');
 			},
+			saveButton: function() {
+				if(this.$route.path === '/posts/new') {
+					this.createPost();
+				} else {
+					this.updatePost({}, {button: 'save', message: 'All changes saved'});
+				}
+			},
 			toggleFocusMarkdownEditor: function() {
 				this.ui.markdownEditorActive = !this.ui.markdownEditorActive;
 			},
-			saveDraft(postObjAdditions, message) {
+
+			buttonMessage: function(button, message) {
+				if(button === 'save') {
+					titleTooltip(this.$els.saveButton, message, 3000);
+				} else if(button === 'options') {
+					titleTooltip(this.$els.optionsButton, message, 3000);
+				}
+			},
+
+			updatePost(postObjAdditions, message) {
+				var id = this.$route.params.id;
 				var postObj = {
 					title: this.title,
 					markdown: this.markdown,
@@ -183,44 +189,54 @@ module.exports = function (Vue) {
 					postObj[key] = postObjAdditions[key];
 				}
 
-				//This Vue instance is the same for the 'new post' page, as well as saved posts
-				//The difference here is if we put (update) or post (create) a new post
-				var id = this.$route.params.id;
-				this.ui.saving = true;
-				if(id) {
-					this.$http.put('/api/posts/' + id, postObj).then(function(res) {
-						if(res.data.error) {
-							modals.alert(res.data.error.message);
-						} else if(message) {
-							this.buttonMessage(message.button, message.message);
-						} else {
-							if(res.data.published === false) {
-								this.buttonMessage('save', 'Post unpublished');	
-							} else {
-								this.buttonMessage('save', 'Saved published post');	
-							}
-						}
-						this.ui.saving = false;
-					}, function(err) {
-						console.log(err);
-						modals.alert(Errors.unknown.message);
-						this.ui.saving = false;
-					});
-				} else {
-					this.$http.post('/api/posts', postObj).then(function(res) {
-						if(res.data.error) {
-							modals.alert(res.data.error.message);
-						} else {
-							this.buttonMessage('saveDraft', 'Draft saved');
-							this.$router.go('/posts/post/' + res.data._id);
-						}
-						this.ui.saving = false;
-					}, function(err) {
-						console.log(err);
-						modals.alert(Errors.unknown.message);
-						this.ui.saving = false;
-					});
+				var toggleSaving = () => {
+					if(message && message.button !== 'save') {
+						this.ui.savingOptions = !this.ui.savingOptions;
+					} else {
+						this.ui.saving = !this.ui.saving;
+					}
+				};
+
+				toggleSaving();
+				this.$http.put('/api/posts/' + id, postObj).then(function(res) {
+					if(res.data.error) {
+						modals.alert(res.data.error.message);
+					} else if(message) {
+						this.buttonMessage(message.button, message.message);
+					}
+					toggleSaving();
+				}, function(err) {
+					console.log(err);
+					modals.alert(Errors.unknown.message);
+					toggleSaving();
+				});
+			},
+			createPost(postObjAdditions, message) {
+				var postObj = {
+					title: this.title,
+					markdown: this.markdown,
+					tags: this.tags,
+					commentsAllowed: this.commentsAllowed
+				};
+				for(var key in postObjAdditions) {
+					postObj[key] = postObjAdditions[key];
 				}
+
+				this.ui.saving = true;
+				
+				this.$http.post('/api/posts', postObj).then(function(res) {
+					if(res.data.error) {
+						modals.alert(res.data.error.message);
+					} else {
+						this.buttonMessage('save', 'Draft saved');
+						this.$router.go('/posts/post/' + res.data._id);
+					}
+					this.ui.saving = false;
+				}, function(err) {
+					console.log(err);
+					modals.alert(Errors.unknown.message);
+					this.ui.saving = false;
+				});
 			},
 			deletePost: function() {
 				modals.confirm(
@@ -242,6 +258,13 @@ module.exports = function (Vue) {
 					}.bind(this),
 					'red'
 				);
+			},
+			togglePublished: function() {
+				var status = !this.published;
+				var message = status ? 'Post published' : 'Post unpublished';
+
+				this.updatePost({published: status}, {button: 'options', message: message});
+				this.published = status;
 			},
 			toggleComments: function() {
 				var id = this.$route.params.id;
@@ -266,35 +289,12 @@ module.exports = function (Vue) {
 		ready: function() {
 			var self = this;
 
-			tooltip('#save_draft_more', {
-				items: [
-					{title: 'Publish post', click: function() {
-						self.saveDraft({published: true});
-						self.published = true;
-					}},
-				]
-			});
-			tooltip('#save_published_more', {
-				items: [
-					{
-						title: 'Unpublish post',
-						click: function() {
-							self.saveDraft({published: false});
-							self.published = false;
-						}
-					},
-					{
-						title: 'View post on blog',
-						click: function() {
-							window.open('/blog/post/' + self.slug);
-						}
-					}
-				]
-			});
 			tooltip('#post-options', {
 				items: [
 					{title: 'Delete post', click: this.deletePost},
-					{title: () => this.commentsAllowed ? 'Disable comments' : 'Enable comments', click: this.toggleComments}
+					{title: 'Preview blog post', click: ()=>{window.open('/blog/post/' + self.slug)} },
+					{title: () => this.commentsAllowed ? 'Disable comments' : 'Enable comments', click: this.toggleComments},
+					{title: () => this.published ? 'Unpublish post' : 'Publish draft', click: this.togglePublished}
 				]
 			})
 

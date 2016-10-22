@@ -13,7 +13,12 @@
 				<i id='me-picture' v-on:click='image()' title='Image' class="fa fa-picture-o"></i>
 			</div>
 		</div>
-		<textarea v-on:focus='toggleFocusMarkdownEditor' v-on:blur='toggleFocusMarkdownEditor'  v-model='markdown' placeholder="Write your blog post in markdown here"></textarea>
+		<textarea
+			v-on:focus='toggleFocusMarkdownEditor()'
+			v-on:blur='toggleFocusMarkdownEditor()' 
+			v-model='markdown'
+			placeholder="Write your blog post in markdown here">
+		</textarea>
 	</div>
 	<div id='display'>
 		<div class='editor-bar'>
@@ -33,20 +38,19 @@
 			class='button btn-load'
 			v-bind:class='{"btn-disabled": ui.savingOptions}'
 			v-show='ui.isSavedPost'
-			v-el:options
+			v-el:options-button
 		>
 			<i class='fa fa-refresh fa-spin loading-icon'></i>
 			Post options
 		</div>
-		<div v-on:click.self='saveDraft()' v-el:save-draft v-bind:class='{"btn-disabled": ui.saving}' v-show='!published' class='button btn-load btn-green'>
-			<i class='fa fa-refresh fa-spin loading-icon'></i>
-			Save draft
-			<i id='save_draft_more' class='fa fa-caret-down btn-icon'></i>
-		</div>
-		<div v-on:click.self='saveDraft()' v-el:save-published v-bind:class='{"btn-disabled": ui.saving}' v-show='published' class='button btn-green btn-load'>
+		<div
+			v-on:click.self='saveButton()'
+			v-el:save-button
+			v-bind:class='{"btn-disabled": ui.saving}'
+			class='button btn-load btn-green'
+		>
 			<i class='fa fa-refresh fa-spin loading-icon'></i>
 			Save changes
-			<i id='save_published_more' class='fa fa-caret-down btn-icon'></i>
 		</div>
 	</div>
 </div>
