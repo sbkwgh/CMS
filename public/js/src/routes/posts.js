@@ -85,6 +85,7 @@ module.exports = function(Vue) {
 									console.log(res.data.error)
 								} else if(res.data.success) {
 									this.posts.$remove(this.posts[selectedIndex]);
+									this.selectPost(this.posts[0].slug)
 								}
 							}, function(err) {
 								console.log(err);
