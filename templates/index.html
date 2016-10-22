@@ -14,7 +14,7 @@
 	<div id="content">
 		<div id='posts'>
 				{% if !posts.length %}
-					<h1 class='content-message' id='no-posts'>No posts to show here</h1>
+					<h1 class='content-message' id='no-posts'>No blog posts published</h1>
 				{% endif %}
 				{% if tags %}
 					<h1 class='content-message'>Showing all posts with the tag{% if tags.split(', ').length !== 1 %}s{% endif %} "{{tags}}"</h1>
@@ -42,12 +42,16 @@
 			{% endfor %}
 			
 		</div>
-		<div id='sidebar'><div>{% autoescape false %}{{settings.blogSidebarHTML}}{% endautoescape %}</div></div>
+		{% if settings.blogSidebarHTML.length %}
+			<div id='sidebar'>
+				<div>{% autoescape false %}{{settings.blogSidebarHTML}}{% endautoescape %}</div>
+			</div>
+		{% endif %}
 	</div>
 	<div id='pagination'>
-		{% if pageNumbers.previous %}<a href='/blog/page/{{pageNumbers.previous}}'>&laquo; Newer posts</a> ...{% endif %}
+		{% if pageNumbers.previous !== null %}<a href='/blog/page/{{pageNumbers.previous}}'>&laquo; Newer posts</a> ...{% endif %}
 		<a href='/blog'>Home</a>
-		{% if pageNumbers.next %}... <a href='/blog/page/{{pageNumbers.next}}'>Older posts &raquo;</a>{% endif %}
+		{% if pageNumbers.next !== null %}... <a href='/blog/page/{{pageNumbers.next}}'>Older posts &raquo;</a>{% endif %}
 	</div>
 </body>
 </html>

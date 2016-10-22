@@ -5,7 +5,8 @@ $font-content: 'Source Sans Pro', sans-serif;
 
 html, body {
 	width: 100%;
-	height: calc(100% - 1.25rem);
+	min-height: 100%;
+	position: relative;
 	padding: 0;
 	margin: 0;
 	font-family: $font-content;
@@ -36,10 +37,6 @@ a:visited {
 }
 #no-posts {
 	text-align: center;
-	position: relative;
-	transform: translateY(50%);
-	margin: 0px;
-	top: 40%;
 }
 
 blockquote {
@@ -147,7 +144,7 @@ header {
 		width: 17.5rem;
 		margin-left: 3rem;
 		margin-top: 1.5rem;
-		margin-bottom: 2rem;
+		margin-bottom: 3rem;
 
 		div:first-child {
 			border: thin solid rgb(233, 233, 233);
@@ -174,7 +171,10 @@ header {
 	text-align: center;
 	font-size: 1.125rem;
 	font-weight: 300;
-	margin: 2rem;
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	margin: 1rem 0;
 
 	a {
 		margin: 0 1rem;

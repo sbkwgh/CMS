@@ -66,7 +66,7 @@ router.get('/page/:page', function(req, res) {
 					});
 				}
 				res.render('index.html', {
-					posts: JSONPosts.splice(+req.params.page*postsPerPage, 3),
+					posts: JSONPosts.splice(+req.params.page*postsPerPage, postsPerPage),
 					pageNumbers: getPageNumbers(JSONPosts, +req.params.page),
 					settings: settingsDoc
 				});
