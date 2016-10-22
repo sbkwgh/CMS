@@ -16,46 +16,38 @@ function addFlexBoxChildren(parentString, childClass) {
 	function getChildren() {
 		return [].map.call(container.getElementsByClassName(childClass), function(el) { return el; });
 	}
+	function lastTwoChildrenOnSameLine() {
+		var children = getChildren();
 
-	var children = getChildren();
-	var childrenPerLine, childrenOnLastLine;
-
-	children.forEach(function(child, index, arr) {
-		var childBottom = child.getBoundingClientRect().bottom;
-		var prevChild = arr[index-1];
-		var prevChildBottom;
-
-		if(!prevChild || childrenPerLine) {
-			return;
-		}
-
-		prevChildBottom = prevChild.getBoundingClientRect().bottom;
-
-		if(childBottom !== prevChildBottom) {
-			childrenPerLine = index;
-		}
-	});
-
-	childrenOnLastLine = children.length % childrenPerLine || 1;
-
-	//Keep adding invisible div's until the last div and
-	//and the penunltimate div are on different lines
-	children = getChildren();
-	while (
-		children.slice(-1)[0].getBoundingClientRect().bottom ==
-		children.slice(-2)[0].getBoundingClientRect().bottom
-		
-	) {
+		return (
+			children.slice(-1)[0].getBoundingClientRect().bottom ==
+			children.slice(-2)[0].getBoundingClientRect().bottom
+		);
+	}
+	function addChild() {
 		var div = document.createElement('div');
 		
 		div.classList.add(childClass);
 		div.style.visibility = 'hidden';
 
 		container.appendChild(div);
-
-		children = getChildren()
 	}
+
+
+	//Since there is only one div on the last line therefore
+	//Add another one to allow for the next comparison
+	if(!lastTwoChildrenOnSameLine()) {
+		addChild();
+	}
+
+	//Keep adding invisible div's until the last div and
+	//and the penunltimate div are on different lines
+	while (lastTwoChildrenOnSameLine()) {
+		addChild();
+	}
+
 	//Then remove last (additional) div
+	var children = getChildren();
 	if(children.slice(-1)[0].style.visibility === 'hidden') {
 		container.removeChild(children.slice(-1)[0]);
 	}
