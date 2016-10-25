@@ -10292,7 +10292,8 @@
 			'borderRadius': '0.2rem',
 			'opacity': '0',
 			'max-width': '15rem',
-			'transition': 'all 0.25s'
+			'transition': 'all 0.25s',
+			'pointer-events': 'none'
 		});
 		
 		var arrow = document.createElement('div');
@@ -10302,35 +10303,59 @@
 			'borderTop': '0.5rem solid rgb(60,60,60)',
 			'position': 'absolute',
 			'left': 'calc(50% - 0.45rem)',
-			'bottom': '-0.4rem'
+			'bottom': '-0.4rem',
+			'pointer-events': 'none'
 		});
 
 		span.appendChild(arrow);
 		document.body.appendChild(span);
-		
-		var coordsSpan = span.getBoundingClientRect();
-		var coordsEl = el.getBoundingClientRect();
-		var body = document.body.getBoundingClientRect();
 
-		var elCenter = coordsEl.left + coordsEl.width/2;
+		function positionTooltip() {
+			var coordsSpan = span.getBoundingClientRect();
+			var coordsEl = el.getBoundingClientRect();
+			var elMarginTop = +getComputedStyle(el).marginTop.slice(0,-2);
+			var body = document.body.getBoundingClientRect();
 
-		span.style.left = "calc(" + elCenter + "px - " + coordsSpan.width/2 + "px)";
-		span.style.top = coordsEl.top + window.pageYOffset - document.documentElement.clientTop - (coordsSpan.height+6) + 'px';
-		
-		coordsSpan = span.getBoundingClientRect();
-		coordsEl = el.getBoundingClientRect();
-		var coordsArrow = arrow.getBoundingClientRect();
-		
-		if(coordsSpan.left <= 0) {
-			span.style.left = '8px';
-			arrow.style.left = "calc(" + elCenter + "px - " + coordsArrow.width + "px)";
+			var elCenter = coordsEl.left + coordsEl.width/2;
+
+			span.style.left = "calc(" + elCenter + "px - " + coordsSpan.width/2 + "px)";
+			span.style.top = (window.pageYOffset || document.documentElement.clientTop) + coordsEl.top +  - 2*coordsSpan.height + 'px';
+			
+			coordsSpan = span.getBoundingClientRect();
+			coordsEl = el.getBoundingClientRect();
+			var coordsArrow = arrow.getBoundingClientRect();
+			
+			if(coordsSpan.left <= 0) {
+				span.style.left = '8px';
+				arrow.style.left = "calc(" + elCenter + "px - " + coordsArrow.width + "px)";
+			}
+			if(coordsSpan.right >= body.width) {
+				span.style.left = null;
+				span.style.right = '8px';
+				arrow.style.left = null;
+				arrow.style.right = (coordsEl.y + coordsArrow.width) + "px";
+			}
 		}
-		if(coordsSpan.right >= body.width) {
-			span.style.left = null;
-			span.style.right = '8px';
-			arrow.style.left = null;
-			arrow.style.right = (coordsEl.y + coordsArrow.width) + "px";
+		positionTooltip();
+
+		var previousCoords = el.getBoundingClientRect();
+		var pollElementInterval;
+		function pollElement() {
+			if(!document.body.contains(span)) { 
+				clearInterval(pollElementInterval); 
+			}
+
+			var currentCoords = el.getBoundingClientRect();
+			if(
+				previousCoords.left !== currentCoords.left ||
+				previousCoords.width !== currentCoords.width ||
+				previousCoords.top !== currentCoords.top ||
+				previousCoords.height !== currentCoords.height
+			) {
+				positionTooltip();
+			}
 		}
+		pollElementInterval = setInterval(pollElement, 5);
 		
 		if(timeLimit) {
 			setTimeout(function() {
@@ -10339,7 +10364,7 @@
 		}
 
 		setTimeout(function() {
-			span.style.opacity = '1';
+			span.style.opacity = '0.95';
 		}, 250);
 
 		return span;
@@ -10356,7 +10381,7 @@
 		var title = ev.target.getAttribute('data-title');
 		
 		if(title) {
-		 document.body.removeChild(document.querySelector('.title-tooltip'));
+			document.body.removeChild(document.querySelector('.title-tooltip'));
 		}
 	});
 
@@ -11853,6 +11878,7 @@
 					this.replies._id = comment.comment._id;
 
 					this.head = comment.comment.head || comment.comment._id;
+					location.hash = 'form-box';
 				},
 				cancelReply: function() {
 					this.replies.name = '';
