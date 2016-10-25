@@ -112,6 +112,7 @@ module.exports = function(Vue) {
 				this.replies._id = comment.comment._id;
 
 				this.head = comment.comment.head || comment.comment._id;
+				location.hash = 'form-box';
 			},
 			cancelReply: function() {
 				this.replies.name = '';
