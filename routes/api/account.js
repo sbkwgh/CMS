@@ -27,6 +27,9 @@ router.post('/', function(req, res) {
 					res.json({error: Errors.unknown});
 				} else {
 					req.session.loggedIn = true;
+					req.session.author = user.author;
+					req.session.authorId = user.authorId;
+
 					res.cookie('author', req.body.author);
 
 					res.json({success: true})
@@ -47,6 +50,9 @@ router.post('/:username', function(req, res) {
 			return;
 		} else if(verified) {
 			req.session.loggedIn = true;
+			req.session.author = user.author;
+			req.session.authorId = user.authorId;
+
 			res.cookie('author', user.author);
 
 			res.json({success: true});
@@ -54,6 +60,37 @@ router.post('/:username', function(req, res) {
 			res.json({success: false, error: Errors.incorrectCredentials});
 		}
 	})
+});
+
+router.get('/:username', function(req, res) {
+	var username = req.params.username;
+
+	User.findOne({username: username}, function(err, user) {
+		if(err) {
+			console.log(err)
+			res.json({error: Errors.unknown});
+		} else {
+			var JSONUser = user.toJSON({virtuals: true});
+
+			if(req.query.posts) {
+				getPosts(user);
+			} else {
+				res.json(JSONUser);
+			}
+		}
+	});
+
+	function getPosts(user) {
+		user.findPostsByUser(function(err, posts) {
+			if(err) {
+				console.log(err)
+				res.json({error: Errors.unknown});
+			} else {
+				JSONUser.posts = posts;
+				res.json(JSONUser);
+			}
+		})
+	}
 });
 
 router.all('*', function(req, res, next) {
