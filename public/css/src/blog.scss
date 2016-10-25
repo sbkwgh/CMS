@@ -1,7 +1,8 @@
-@import 'https://fonts.googleapis.com/css?family=Playfair+Display:400,900|Source+Sans+Pro:300,400';
+/*@import 'https://fonts.googleapis.com/css?family=Playfair+Display:400,900|Source+Sans+Pro:300,400';*/
+@import url('https://fonts.googleapis.com/css?family=Hind+Siliguri:300,400,500|Playfair+Display:400,900');
 
 $font-header: 'Playfair Display', serif;
-$font-content: 'Source Sans Pro', sans-serif;
+$font-content: 'Hind Siliguri', sans-serif;
 
 html, body {
 	width: 100%;
@@ -11,12 +12,10 @@ html, body {
 	margin: 0;
 	font-family: $font-content;
 	padding-top: 1.25rem;
+	color: #333;
 }
 
-header a:visited, header a:active, header a{
-	color: #595959;
-}
-a:active {
+a:active {	
 	color: #8EB7CB;
 }
 a:hover {
@@ -53,14 +52,14 @@ header {
 	text-align: center;
 
 	a {
-		color:  #6C7172;
+		color:  #333 !important;
 		text-decoration: none;
 		font-weight: 900;
 		font-family: $font-header;
 	}
 	div {
 		font-size: 0.9rem;
-		
+		margin-top: -0.75rem;
 		color: #4D4D4D;
 	}
 }
@@ -94,6 +93,7 @@ header {
 
 				.post-date-author-bar {
 					color: gray;
+					margin-bottom: -0.5rem;
 					.post-date-created, .post-author {
 						display: inline-block;
 						font-size: 0.9rem;
@@ -101,19 +101,21 @@ header {
 				}
 				.post-title {
 					font-size: 2rem;
-					color: black;
+					color: #333;
 					text-decoration: none;
 					font-family: $font-header;
-					font-weight: 400 !important;
+					font-weight: 600 !important;
 				}
 			}
 			.post-body {
 				text-align: justify;
 				margin-bottom: 0.5rem;
+				line-height: 1.5rem;
 				font-weight: 300;
+				font-size: 1.25rem;
 			}
 			.post-tags {
-				min-height: 1.5rem;
+				min-height: 2rem;
 				line-height: 1.75rem;
 
 				a {
@@ -143,7 +145,7 @@ header {
 	#sidebar {
 		width: 17.5rem;
 		margin-left: 3rem;
-		margin-top: 1.5rem;
+		margin-top: 1rem;
 		margin-bottom: 3rem;
 
 		div:first-child {
@@ -162,6 +164,10 @@ header {
 
 			&:first-child {
 				margin-top: 0;
+			}
+
+			h1:first-child, h2:first-child {
+				font-family: $font-header;
 			}
 		}
 	}
