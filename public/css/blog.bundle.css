@@ -1,15 +1,14 @@
-@import "https://fonts.googleapis.com/css?family=Playfair+Display:400,900|Source+Sans+Pro:300,400";
+/*@import 'https://fonts.googleapis.com/css?family=Playfair+Display:400,900|Source+Sans+Pro:300,400';*/
+@import url("https://fonts.googleapis.com/css?family=Hind+Siliguri:300,400,500|Playfair+Display:400,900");
 html, body {
   width: 100%;
   min-height: 100%;
   position: relative;
   padding: 0;
   margin: 0;
-  font-family: "Source Sans Pro", sans-serif;
-  padding-top: 1.25rem; }
-
-header a:visited, header a:active, header a {
-  color: #595959; }
+  font-family: "Hind Siliguri", sans-serif;
+  padding-top: 1.25rem;
+  color: #333; }
 
 a:active {
   color: #8EB7CB; }
@@ -42,12 +41,13 @@ header {
   font-size: 3rem;
   text-align: center; }
   header a {
-    color: #6C7172;
+    color: #333 !important;
     text-decoration: none;
     font-weight: 900;
     font-family: "Playfair Display", serif; }
   header div {
     font-size: 0.9rem;
+    margin-top: -0.75rem;
     color: #4D4D4D; }
 
 #content {
@@ -70,22 +70,25 @@ header {
       margin-bottom: 0.5rem;
       border-bottom: 1px solid #E9E9E9; }
       #content #posts .post .post-header .post-date-author-bar {
-        color: gray; }
+        color: gray;
+        margin-bottom: -0.5rem; }
         #content #posts .post .post-header .post-date-author-bar .post-date-created, #content #posts .post .post-header .post-date-author-bar .post-author {
           display: inline-block;
           font-size: 0.9rem; }
       #content #posts .post .post-header .post-title {
         font-size: 2rem;
-        color: black;
+        color: #333;
         text-decoration: none;
         font-family: "Playfair Display", serif;
-        font-weight: 400 !important; }
+        font-weight: 600 !important; }
     #content #posts .post .post-body {
       text-align: justify;
       margin-bottom: 0.5rem;
-      font-weight: 300; }
+      line-height: 1.5rem;
+      font-weight: 300;
+      font-size: 1.25rem; }
     #content #posts .post .post-tags {
-      min-height: 1.5rem;
+      min-height: 2rem;
       line-height: 1.75rem; }
       #content #posts .post .post-tags a {
         border: 1px solid #ADA9A9;
@@ -105,7 +108,7 @@ header {
   #content #sidebar {
     width: 17.5rem;
     margin-left: 3rem;
-    margin-top: 1.5rem;
+    margin-top: 1rem;
     margin-bottom: 3rem; }
     #content #sidebar div:first-child {
       border: thin solid #e9e9e9;
@@ -118,6 +121,8 @@ header {
         font-weight: 400; }
       #content #sidebar div:first-child:first-child {
         margin-top: 0; }
+      #content #sidebar div:first-child h1:first-child, #content #sidebar div:first-child h2:first-child {
+        font-family: "Playfair Display", serif; }
 
 #pagination {
   text-align: center;
@@ -298,7 +303,7 @@ header {
   background-color: #C33E3B; }
 
 #comments {
-  font-family: "Source Sans Pro", sans-serif;
+  font-family: "Hind Siliguri", sans-serif;
   font-size: 0.9rem;
   width: 100%;
   background-color: #f6f5f4;
@@ -377,9 +382,9 @@ header {
 .comment {
   width: 45rem;
   background-color: #fff;
-  font-family: "Source Sans Pro", sans-serif;
+  font-family: "Hind Siliguri", sans-serif;
   font-weight: 300;
-  font-size: 0.9rem;
+  font-size: 1rem;
   padding: 0.5rem 1rem;
   position: relative;
   box-sizing: border-box;
