@@ -7,7 +7,8 @@ var userSchema = mongoose.Schema({
 	username: {type: String, required: true},
 	author: {type: String, required: true},
 	authorId: String,
-	hash: {type: String, required: true}
+	hash: {type: String, required: true},
+	biography: String
 });
 
 userSchema.options.toJSON = {
