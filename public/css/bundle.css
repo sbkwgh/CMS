@@ -893,21 +893,14 @@ input, textarea {
     box-shadow: 0px 0px 0.125rem rgba(100, 100, 100, 0.15); }
   .settings-section h1, .settings-section h2 {
     font-weight: 300; }
+  .settings-section .button {
+    margin-bottom: 0.5rem; }
 
-#settings, #account {
-  height: calc(100% - 6rem);
+#settings {
+  height: 100%;
   overflow-y: auto; }
-  #settings td, #account td {
+  #settings td {
     vertical-align: top; }
-
-#settings-save {
-  position: absolute;
-  bottom: 0; }
-  #settings-save .button {
-    margin: 0.5rem 0; }
-
-#account-save .button {
-  margin: 0.5rem 0; }
 
 #widgets-holder {
   display: flex;
