@@ -7,6 +7,8 @@ var Errors = require('../errors.js');
 var postSchema = mongoose.Schema({
 	title: {type: String, required: true, trim: true},
 	markdown: String,
+	author: {type: String, required: true},
+	authorId: {type: String, required: true},
 	date: {
 		default: Date.now,
 		type: Date

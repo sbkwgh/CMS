@@ -5,18 +5,27 @@
 			<table>
 				<tr>
 					<td>Blog title: </td>
-					<td><input v-model='blogTitle'></td>
+					<td><input v-model='general.blogTitle'></td>
 				</tr>
 				<tr>
 					<td>Blog description: </td>
-					<td><textarea v-model='blogDescription'></textarea></td>
+					<td><textarea v-model='general.blogDescription'></textarea></td>
 				</tr>
 				<tr>
 					<td>Blog side-bar: <i data-title="You can format this using markdown" style="cursor: pointer;" class="fa fa-question-circle"></i></td>
-					<td><textarea v-model='blogSidebar'></textarea></td>
+					<td><textarea v-model='general.blogSidebar'></textarea></td>
 				</tr>
 			</table>
 		</p>
+		<div
+			class='button btn-green btn-load'
+			v-bind:class='{"btn-disabled": general.saving.general}'
+			v-on:click='saveGeneralSettings("general", $event)'
+			v-el:general
+		>
+			<i class='fa fa-refresh fa-spin loading-icon'></i>
+			Save settings
+		</div>
 	</div>
 	<div class='settings-section'>
 		<h2>Comment settings</h2>
@@ -26,7 +35,7 @@
 					<td>Allow comments:</td>
 					<td>
 						<label class='checkbox'>
-							<input type="checkbox" v-model='commentsAllowed'>
+							<input type="checkbox" v-model='general.commentsAllowed'>
 							<span></span>
 						</label>
 					</td>
@@ -35,7 +44,7 @@
 					<td>Moderate comments: <i data-title="By selecting to moderate blog comments, all new comments will not show until individually approved" style="cursor: pointer;" class="fa fa-question-circle"></i></td>
 					<td>
 						<label class='checkbox'>
-							<input type='checkbox' v-model='commentsModerated'>
+							<input type='checkbox' v-model='general.commentsModerated'>
 							<span></span>
 						</label>
 					</td>
@@ -43,16 +52,54 @@
 			
 				<tr>
 					<td>Message above comment<br/>box (optional): </td>
-					<td><textarea v-model='commentsMessage'></textarea></td>
+					<td><textarea v-model='general.commentsMessage'></textarea></td>
 				</tr>
 			</table>
 		</p>
+		<div
+			class='button btn-green btn-load'
+			v-bind:class='{"btn-disabled": general.saving.comments}'
+			v-on:click='saveGeneralSettings("comments", $event)'
+			v-el:comments
+		>
+			<i class='fa fa-refresh fa-spin loading-icon'></i>
+			Save settings
+		</div>
 	</div>
-</div>
 
-<div class='settings-section' id='settings-save'>
-	<div class='button btn-green btn-load' v-bind:class='{"btn-disabled": loading}' v-on:click='saveSettings()' v-el:save>
-		<i class='fa fa-refresh fa-spin loading-icon'></i>
-		Save settings
+	<div class='settings-section'>
+		<h2>Account</h2>
+		<p>
+			<table>
+				<tr>
+					<td>Author name: </td>
+					<td><input v-model='account.author'></td>
+				</tr>
+				<tr>
+					<td>Biography: <i data-title="This is displayed on your profile page" style="cursor: pointer;" class="fa fa-question-circle"></i></td>
+					<td><textarea v-model='account.biography'></textarea></td>
+				</tr>
+				<tr>
+					<td>Password:</td>
+					<td>
+						<input type='password' placeholder='Password' v-model='account.password' style='margin-bottom: 0.5rem;'><br/>
+						<input type='password' placeholder='Confirm password' v-model='account.confirmPassowrd'><br/>
+						<div class='button btn-load' v-bind:class='{"btn-disabled": account.saving.password}'>
+							<i class='fa fa-refresh fa-spin loading-icon'></i>
+							Change password
+						</div>
+					</td>
+				</tr>
+			</table>
+		</p>
+		<div
+			class='button btn-green btn-load'
+			v-bind:class='{"btn-disabled": account.saving.settings}'
+			v-on:click='saveAccountSettings()'
+			v-el:account
+		>
+			<i class='fa fa-refresh fa-spin loading-icon'></i>
+			Save settings
+		</div>
 	</div>
 </div>

@@ -14,15 +14,19 @@
 	<div id="content">
 		<div id='posts'>
 			{% if !post %}
-				<h1 class='content-message' id='no-posts'>The requested post does not exist</h1>
+				<div class='content-box' id='no-posts'>
+					<h2>The requested post does not exist</h2>
+					<p>Either the url was mistyped or the post was deleted</p>
+				</div>
 			{% endif %}
 			{% if post %}
 				<div class='post'>
 					<div class='post-header'>
+						<a href='/blog/post/{{post.slug}}' class='post-title'>{{post.title}}</a>
 						<div class='post-date-author-bar'>
+							<a href='/blog/profile/{{post.authorId}}' class='post-author'>By {{post.author}}</a>
 							<div class='post-date-created'>{{post.dateString}}</div>
 						</div>
-						<a href='/blog/post/{{post.slug}}' class='post-title'>{{post.title}}</a>
 					</div>
 					<div class='post-body'>
 						{% autoescape false %}{{post.bodyHTML}}{% endautoescape %}

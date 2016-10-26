@@ -27,6 +27,9 @@ router.post('/', function(req, res) {
 					res.json({error: Errors.unknown});
 				} else {
 					req.session.loggedIn = true;
+					req.session.author = user.author;
+					req.session.authorId = user.authorId;
+
 					res.cookie('author', req.body.author);
 
 					res.json({success: true})
@@ -47,6 +50,9 @@ router.post('/:username', function(req, res) {
 			return;
 		} else if(verified) {
 			req.session.loggedIn = true;
+			req.session.author = user.author;
+			req.session.authorId = user.authorId;
+
 			res.cookie('author', user.author);
 
 			res.json({success: true});
@@ -62,7 +68,19 @@ router.all('*', function(req, res, next) {
 	} else {
 		next();
 	}
-})
+});
+
+router.get('/', function(req, res) {
+	User.findOne({authorId: req.session.authorId}, function(err, user) {
+		if(err) {
+			console.log(err)
+			res.json({error: Errors.unknown});
+		} else {
+			var JSONUser = user.toJSON({virtuals: true});
+			res.json(JSONUser);
+		}
+	});
+});
 
 router.delete('/:username', function(req, res) {
 	var username = req.params.username;

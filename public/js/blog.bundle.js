@@ -10292,8 +10292,9 @@
 			'borderRadius': '0.2rem',
 			'opacity': '0',
 			'max-width': '15rem',
-			'transition': 'all 0.25s',
-			'pointer-events': 'none'
+			'transition': 'opacity 0.25s, margin-top 0.25s',
+			'pointer-events': 'none',
+			'marginTop': '0.3rem'
 		});
 		
 		var arrow = document.createElement('div');
@@ -10319,7 +10320,12 @@
 			var elCenter = coordsEl.left + coordsEl.width/2;
 
 			span.style.left = "calc(" + elCenter + "px - " + coordsSpan.width/2 + "px)";
-			span.style.top = (window.pageYOffset || document.documentElement.clientTop) + coordsEl.top +  - 2*coordsSpan.height + 'px';
+
+			if(window.pageYOffset) {
+				span.style.top = (window.pageYOffset || document.documentElement.clientTop) + coordsEl.top +  - 2*coordsSpan.height + 'px';
+			} else {
+				span.style.top = coordsEl.top +  - 6 - coordsSpan.height + 'px';
+			}
 			
 			coordsSpan = span.getBoundingClientRect();
 			coordsEl = el.getBoundingClientRect();
@@ -10365,6 +10371,7 @@
 
 		setTimeout(function() {
 			span.style.opacity = '0.95';
+			span.style.marginTop = '0';
 		}, 250);
 
 		return span;

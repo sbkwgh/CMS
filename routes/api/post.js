@@ -78,11 +78,17 @@ router.get('/:id/redirect', function(req, res) {
 
 router.post('/', function(req, res) {
 	var postObject = validator(req.body);
+
 	if(postObject === null) {
 		res.json({error: Errors.invalidParams});
 		return;
 	}
-	if(req.body.published) postObject.published = req.body.published;
+	if(req.body.published) {
+		postObject.published = req.body.published;
+	}
+	
+	postObject.author = req.session.author;
+	postObject.authorId = req.session.authorId;
 	
 	var post = new Post(postObject);
 	post.save(function(err, savedPost) {

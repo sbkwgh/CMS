@@ -1,26 +1,31 @@
 .settings-section {
-	@include card(auto, calc(100% - 3rem), 1.5rem);
+	@include card(auto, calc(100% - 3rem), 0.75rem 1.5rem);
 	padding: 0 1rem;
+	margin-bottom: 0rem;
 	box-sizing: border-box;
 
 	h1, h2 {
 		font-weight: 300;
+		margin: 0.75rem 0 -0.75rem 0;
+	}
+
+	.button {
+		margin-bottom: 0.5rem;
+	}
+
+	&:first-child {
+		margin-top: 1.5rem;
+	}
+	&:last-child {
+		margin-bottom: 1.5rem;
 	}
 }
 
 #settings {
-	height: calc(100% - 6rem);
+	height: 100%;
 	overflow-y: auto;
 
 	td {
 		vertical-align: top;
-	}
-}
-#settings-save {
-	position: absolute;
-	bottom: 0;
-
-	.button {
-		margin: 0.5rem 0;
 	}
 }

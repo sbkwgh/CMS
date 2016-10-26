@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var Post = require('.././models/post.js');
+var User = require('.././models/user.js');
 var settings = require('.././models/settings.js');
 
 var postsPerPage = 3;
@@ -107,6 +108,22 @@ router.get('/tags/:tags', function(req, res) {
 				
 				res.render('index.html', {posts: JSONPosts, tags: tags.join(', '), settings: settingsDoc});
 			}
+		});
+	});
+});
+
+router.get('/profile/:authorId', function(req, res) {
+	var authorId = req.params.authorId;
+
+	User.findPostsByUser(authorId, function(err, userAndPosts) {
+		if(err) return;
+
+		var resObj = userAndPosts;
+
+		settings.get(req.app.locals.db, function(err, settingsDoc) {
+			resObj.settings = settingsDoc;
+
+			res.render('index.html', resObj);
 		});
 	});
 });
