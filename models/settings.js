@@ -9,7 +9,7 @@ module.exports = {
 			updateObj.blogSidebarHTML = markdown.parse(updateObj.blogSidebar);
 		}
 		
-		db.collection('settings').update({}, updateObj, cb);
+		db.collection('settings').update({}, { $set: updateObj }, cb);
 	},
 	init: function(db) {
 		var settings = db.collection('settings');

@@ -1,8 +1,14 @@
 var express = require('express');
 var User = require('../../models/user.js');
 var Errors = require('../../errors.js');
+var paramsValidator = require('../../paramsValidator.js');
 
 var router = express.Router();
+
+var updateValidator = paramsValidator({
+	biography: 'string',
+	author: 'string'
+});
 
 router.post('/', function(req, res) {
 	User.findOne({}, function(err, user) {
@@ -80,6 +86,23 @@ router.get('/', function(req, res) {
 			res.json(JSONUser);
 		}
 	});
+});
+
+router.put('/', function(req, res) {
+	var params = updateValidator(req.body);
+
+	if(!params) {
+		res.json({error: Errors.invalidParams});
+	} else {
+		User.findOneAndUpdate({authorId: req.session.authorId}, params, {}, function(err) {
+			if(err) {
+				console.log(err)
+				res.json({error: Errors.unknown});
+			} else {
+				res.json({success: true});
+			}
+		});
+	}
 });
 
 router.delete('/:username', function(req, res) {
