@@ -62,44 +62,25 @@ router.post('/:username', function(req, res) {
 	})
 });
 
-router.get('/:username', function(req, res) {
-	var username = req.params.username;
-
-	User.findOne({username: username}, function(err, user) {
-		if(err) {
-			console.log(err)
-			res.json({error: Errors.unknown});
-		} else {
-			var JSONUser = user.toJSON({virtuals: true});
-
-			if(req.query.posts) {
-				getPosts(user);
-			} else {
-				res.json(JSONUser);
-			}
-		}
-	});
-
-	function getPosts(user) {
-		user.findPostsByUser(function(err, posts) {
-			if(err) {
-				console.log(err)
-				res.json({error: Errors.unknown});
-			} else {
-				JSONUser.posts = posts;
-				res.json(JSONUser);
-			}
-		})
-	}
-});
-
 router.all('*', function(req, res, next) {
 	if(!req.session.loggedIn) {
 		res.json({error: Errors.notAuthorised});
 	} else {
 		next();
 	}
-})
+});
+
+router.get('/', function(req, res) {
+	User.findOne({authorId: req.session.authorId}, function(err, user) {
+		if(err) {
+			console.log(err)
+			res.json({error: Errors.unknown});
+		} else {
+			var JSONUser = user.toJSON({virtuals: true});
+			res.json(JSONUser);
+		}
+	});
+});
 
 router.delete('/:username', function(req, res) {
 	var username = req.params.username;
