@@ -101,9 +101,6 @@
 		'/settings': {
 			component: __webpack_require__(34)(Vue)
 		},
-		'/account': {
-			component: __webpack_require__(36)(Vue)
-		},
 		'/dashboard': {
 			component: __webpack_require__(38)(Vue)
 		},
@@ -14616,8 +14613,7 @@
 						{name: 'Blog posts', route: '/posts', icon: 'pencil-square', selected: false},
 						{name: 'Comments', route: '/comments', icon: 'comments', selected: false},
 						{name: 'Design', route: '/design', icon: 'paint-brush', selected: false},
-						{name: 'Settings', route: '/settings', icon: 'cogs', selected: false},
-						{name: 'Account', route: '/account', icon: 'user', selected: false}
+						{name: 'Settings', route: '/settings', icon: 'cogs', selected: false}
 					]
 				}
 			},
@@ -21895,82 +21891,8 @@
 	module.exports = "<div id='settings'>\r\n\t<div class='settings-section'>\r\n\t\t<h2>General</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog title: </td>\r\n\t\t\t\t\t<td><input v-model='general.blogTitle'></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog description: </td>\r\n\t\t\t\t\t<td><textarea v-model='general.blogDescription'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog side-bar: <i data-title=\"You can format this using markdown\" style=\"cursor: pointer;\" class=\"fa fa-question-circle\"></i></td>\r\n\t\t\t\t\t<td><textarea v-model='general.blogSidebar'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t\t<div\r\n\t\t\tclass='button btn-green btn-load'\r\n\t\t\tv-bind:class='{\"btn-disabled\": general.saving.general}'\r\n\t\t\tv-on:click='saveGeneralSettings(\"general\", $event)'\r\n\t\t\tv-el:general\r\n\t\t>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tSave settings\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='settings-section'>\r\n\t\t<h2>Comment settings</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Allow comments:</td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<label class='checkbox'>\r\n\t\t\t\t\t\t\t<input type=\"checkbox\" v-model='general.commentsAllowed'>\r\n\t\t\t\t\t\t\t<span></span>\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Moderate comments: <i data-title=\"By selecting to moderate blog comments, all new comments will not show until individually approved\" style=\"cursor: pointer;\" class=\"fa fa-question-circle\"></i></td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<label class='checkbox'>\r\n\t\t\t\t\t\t\t<input type='checkbox' v-model='general.commentsModerated'>\r\n\t\t\t\t\t\t\t<span></span>\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Message above comment<br/>box (optional): </td>\r\n\t\t\t\t\t<td><textarea v-model='general.commentsMessage'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t\t<div\r\n\t\t\tclass='button btn-green btn-load'\r\n\t\t\tv-bind:class='{\"btn-disabled\": general.saving.comments}'\r\n\t\t\tv-on:click='saveGeneralSettings(\"comments\", $event)'\r\n\t\t\tv-el:comments\r\n\t\t>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tSave settings\r\n\t\t</div>\r\n\t</div>\r\n\r\n\t<div class='settings-section'>\r\n\t\t<h2>Account</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Author name: </td>\r\n\t\t\t\t\t<td><input v-model='account.author'></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Biography: <i data-title=\"This is displayed on your profile page\" style=\"cursor: pointer;\" class=\"fa fa-question-circle\"></i></td>\r\n\t\t\t\t\t<td><textarea v-model='account.biography'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Password:</td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<input type='password' placeholder='Password' v-model='account.password' style='margin-bottom: 0.5rem;'><br/>\r\n\t\t\t\t\t\t<input type='password' placeholder='Confirm password' v-model='account.confirmPassowrd'><br/>\r\n\t\t\t\t\t\t<div class='button btn-load' v-bind:class='{\"btn-disabled\": account.saving.password}'>\r\n\t\t\t\t\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\t\t\t\t\tChange password\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t\t<div\r\n\t\t\tclass='button btn-green btn-load'\r\n\t\t\tv-bind:class='{\"btn-disabled\": account.saving.settings}'\r\n\t\t\tv-on:click='saveAccountSettings()'\r\n\t\t\tv-el:account\r\n\t\t>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tSave settings\r\n\t\t</div>\r\n\t</div>\r\n</div>";
 
 /***/ },
-/* 36 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var modals = __webpack_require__(14);
-	var Errors = __webpack_require__(15);
-
-	module.exports = function(Vue) {
-		return Vue.extend({
-			template: __webpack_require__(37),
-			data: function() {
-				return {
-					author: '',
-					biography: '',
-					password: '',
-					confirmPassword: '',
-					loading: false
-				}
-			},
-			methods: {
-				saveSettings: function() {
-					this.loading = true;
-
-					this.$http
-						.put('/api/settings', {
-							blogTitle: this.blogTitle,
-							blogDescription: this.blogDescription,
-							blogSidebar: this.blogSidebar,
-							commentsModerated: this.commentsModerated,
-							commentsMessage: this.commentsMessage,
-							commentsAllowed: this.commentsAllowed
-						})
-						.then(function(res) {
-							this.loading = false;
-
-							if(res.data.error) {
-								titleTooltip(this.$els.save, res.data.error.message, 5000);
-							} else {
-								titleTooltip(this.$els.save, 'Settings saved', 5000);
-							}
-						}, function(err) {
-							this.loading = false;
-							console.log(err);
-							titleTooltip(this.$els.save, Errors.unknown.message, 5000);
-						});
-				}
-			},
-			route: {
-				data: function(transition) {
-					this.$http
-						.get('/api/account')
-						.then(function(res) {
-							if(res.data.error) {
-								modals.alert(res.data.error.message);
-							} else {
-								this.author = res.data.author;
-								this.biography = res.data.biography || '';
-							}
-
-							transition.next();
-						}, function(err) {
-							console.log(err);
-							modals.alert(Errors.unknown.message);
-							transition.next();
-						});
-				}
-			}
-		});
-	};
-
-/***/ },
-/* 37 */
-/***/ function(module, exports) {
-
-	module.exports = "<div class='settings-section' id='account-save'>\r\n\t<div class='button btn-green btn-load' v-bind:class='{\"btn-disabled\": loading}' v-on:click='saveSettings()' v-el:save>\r\n\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\tSave account settings\r\n\t</div>\r\n</div>\r\n\r\n<div id='account'>\r\n\t<div class='settings-section'>\r\n\t\t<h2>General</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Author name: </td>\r\n\t\t\t\t\t<td><input v-model='author'></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Biography: <i data-title=\"This is displayed on your profile page\" style=\"cursor: pointer;\" class=\"fa fa-question-circle\"></i></td>\r\n\t\t\t\t\t<td><textarea v-model='biography'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Password:</td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<input type='password' placeholder='Password' v-model='password' style='margin-bottom: 0.5rem;'><br/>\r\n\t\t\t\t\t\t<input type='password' placeholder='Confirm password' v-model='confirmPassowrd'><br/>\r\n\t\t\t\t\t\t<div class='button btn-green' v-bind:class='{\"btn-disabled\": savingPassword}'>\r\n\t\t\t\t\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\t\t\t\t\tChange password\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t</div>\r\n</div>";
-
-/***/ },
+/* 36 */,
+/* 37 */,
 /* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
