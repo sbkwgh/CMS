@@ -66,4 +66,40 @@
 			Save settings
 		</div>
 	</div>
+
+	<div class='settings-section'>
+		<h2>Account</h2>
+		<p>
+			<table>
+				<tr>
+					<td>Author name: </td>
+					<td><input v-model='account.author'></td>
+				</tr>
+				<tr>
+					<td>Biography: <i data-title="This is displayed on your profile page" style="cursor: pointer;" class="fa fa-question-circle"></i></td>
+					<td><textarea v-model='account.biography'></textarea></td>
+				</tr>
+				<tr>
+					<td>Password:</td>
+					<td>
+						<input type='password' placeholder='Password' v-model='account.password' style='margin-bottom: 0.5rem;'><br/>
+						<input type='password' placeholder='Confirm password' v-model='account.confirmPassowrd'><br/>
+						<div class='button btn-load' v-bind:class='{"btn-disabled": account.saving.password}'>
+							<i class='fa fa-refresh fa-spin loading-icon'></i>
+							Change password
+						</div>
+					</td>
+				</tr>
+			</table>
+		</p>
+		<div
+			class='button btn-green btn-load'
+			v-bind:class='{"btn-disabled": account.saving.settings}'
+			v-on:click='saveAccountSettings()'
+			v-el:account
+		>
+			<i class='fa fa-refresh fa-spin loading-icon'></i>
+			Save settings
+		</div>
+	</div>
 </div>

@@ -19,17 +19,20 @@ module.exports = function(Vue) {
 					}
 				},
 				account: {
+					author: '',
 					biography: '',
-					username: '',
 					password: '',
 					confirmPassword: '',
-					saving: false
+					saving: {
+						settings: false,
+						password: false
+					}
 				}
 			}
 		},
 		methods: {
 			saveAccountSettings: function() {
-				this.account.saving = true;
+				this.account.saving.settings = true;
 
 				this.$http
 					.put('/api/account', {
@@ -37,7 +40,7 @@ module.exports = function(Vue) {
 						biography: this.biography.trim()
 					})
 					.then(function(res) {
-						this.account.saving = false;
+						this.account.saving.settings = false;
 
 						if(res.data.error) {
 							titleTooltip(this.$els.account, res.data.error.message, 5000);
@@ -45,7 +48,7 @@ module.exports = function(Vue) {
 							titleTooltip(this.$els.account, 'Settings saved', 5000);
 						}
 					}, function(err) {
-						this.account.saving = false;
+						this.account.saving.settings = false;
 						console.log(err);
 						titleTooltip(this.$els.account, Errors.unknown.message, 5000);
 					});

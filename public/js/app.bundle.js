@@ -21778,17 +21778,20 @@
 						}
 					},
 					account: {
+						author: '',
 						biography: '',
-						username: '',
 						password: '',
 						confirmPassword: '',
-						saving: false
+						saving: {
+							settings: false,
+							password: false
+						}
 					}
 				}
 			},
 			methods: {
 				saveAccountSettings: function() {
-					this.account.saving = true;
+					this.account.saving.settings = true;
 
 					this.$http
 						.put('/api/account', {
@@ -21796,7 +21799,7 @@
 							biography: this.biography.trim()
 						})
 						.then(function(res) {
-							this.account.saving = false;
+							this.account.saving.settings = false;
 
 							if(res.data.error) {
 								titleTooltip(this.$els.account, res.data.error.message, 5000);
@@ -21804,7 +21807,7 @@
 								titleTooltip(this.$els.account, 'Settings saved', 5000);
 							}
 						}, function(err) {
-							this.account.saving = false;
+							this.account.saving.settings = false;
 							console.log(err);
 							titleTooltip(this.$els.account, Errors.unknown.message, 5000);
 						});
@@ -21889,7 +21892,7 @@
 /* 35 */
 /***/ function(module, exports) {
 
-	module.exports = "<div id='settings'>\r\n\t<div class='settings-section'>\r\n\t\t<h2>General</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog title: </td>\r\n\t\t\t\t\t<td><input v-model='general.blogTitle'></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog description: </td>\r\n\t\t\t\t\t<td><textarea v-model='general.blogDescription'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog side-bar: <i data-title=\"You can format this using markdown\" style=\"cursor: pointer;\" class=\"fa fa-question-circle\"></i></td>\r\n\t\t\t\t\t<td><textarea v-model='general.blogSidebar'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t\t<div\r\n\t\t\tclass='button btn-green btn-load'\r\n\t\t\tv-bind:class='{\"btn-disabled\": general.saving.general}'\r\n\t\t\tv-on:click='saveGeneralSettings(\"general\", $event)'\r\n\t\t\tv-el:general\r\n\t\t>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tSave settings\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='settings-section'>\r\n\t\t<h2>Comment settings</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Allow comments:</td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<label class='checkbox'>\r\n\t\t\t\t\t\t\t<input type=\"checkbox\" v-model='general.commentsAllowed'>\r\n\t\t\t\t\t\t\t<span></span>\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Moderate comments: <i data-title=\"By selecting to moderate blog comments, all new comments will not show until individually approved\" style=\"cursor: pointer;\" class=\"fa fa-question-circle\"></i></td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<label class='checkbox'>\r\n\t\t\t\t\t\t\t<input type='checkbox' v-model='general.commentsModerated'>\r\n\t\t\t\t\t\t\t<span></span>\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Message above comment<br/>box (optional): </td>\r\n\t\t\t\t\t<td><textarea v-model='general.commentsMessage'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t\t<div\r\n\t\t\tclass='button btn-green btn-load'\r\n\t\t\tv-bind:class='{\"btn-disabled\": general.saving.comments}'\r\n\t\t\tv-on:click='saveGeneralSettings(\"comments\", $event)'\r\n\t\t\tv-el:comments\r\n\t\t>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tSave settings\r\n\t\t</div>\r\n\t</div>\r\n</div>";
+	module.exports = "<div id='settings'>\r\n\t<div class='settings-section'>\r\n\t\t<h2>General</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog title: </td>\r\n\t\t\t\t\t<td><input v-model='general.blogTitle'></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog description: </td>\r\n\t\t\t\t\t<td><textarea v-model='general.blogDescription'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog side-bar: <i data-title=\"You can format this using markdown\" style=\"cursor: pointer;\" class=\"fa fa-question-circle\"></i></td>\r\n\t\t\t\t\t<td><textarea v-model='general.blogSidebar'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t\t<div\r\n\t\t\tclass='button btn-green btn-load'\r\n\t\t\tv-bind:class='{\"btn-disabled\": general.saving.general}'\r\n\t\t\tv-on:click='saveGeneralSettings(\"general\", $event)'\r\n\t\t\tv-el:general\r\n\t\t>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tSave settings\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='settings-section'>\r\n\t\t<h2>Comment settings</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Allow comments:</td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<label class='checkbox'>\r\n\t\t\t\t\t\t\t<input type=\"checkbox\" v-model='general.commentsAllowed'>\r\n\t\t\t\t\t\t\t<span></span>\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Moderate comments: <i data-title=\"By selecting to moderate blog comments, all new comments will not show until individually approved\" style=\"cursor: pointer;\" class=\"fa fa-question-circle\"></i></td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<label class='checkbox'>\r\n\t\t\t\t\t\t\t<input type='checkbox' v-model='general.commentsModerated'>\r\n\t\t\t\t\t\t\t<span></span>\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Message above comment<br/>box (optional): </td>\r\n\t\t\t\t\t<td><textarea v-model='general.commentsMessage'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t\t<div\r\n\t\t\tclass='button btn-green btn-load'\r\n\t\t\tv-bind:class='{\"btn-disabled\": general.saving.comments}'\r\n\t\t\tv-on:click='saveGeneralSettings(\"comments\", $event)'\r\n\t\t\tv-el:comments\r\n\t\t>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tSave settings\r\n\t\t</div>\r\n\t</div>\r\n\r\n\t<div class='settings-section'>\r\n\t\t<h2>Account</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Author name: </td>\r\n\t\t\t\t\t<td><input v-model='account.author'></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Biography: <i data-title=\"This is displayed on your profile page\" style=\"cursor: pointer;\" class=\"fa fa-question-circle\"></i></td>\r\n\t\t\t\t\t<td><textarea v-model='account.biography'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Password:</td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<input type='password' placeholder='Password' v-model='account.password' style='margin-bottom: 0.5rem;'><br/>\r\n\t\t\t\t\t\t<input type='password' placeholder='Confirm password' v-model='account.confirmPassowrd'><br/>\r\n\t\t\t\t\t\t<div class='button btn-load' v-bind:class='{\"btn-disabled\": account.saving.password}'>\r\n\t\t\t\t\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\t\t\t\t\tChange password\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t\t<div\r\n\t\t\tclass='button btn-green btn-load'\r\n\t\t\tv-bind:class='{\"btn-disabled\": account.saving.settings}'\r\n\t\t\tv-on:click='saveAccountSettings()'\r\n\t\t\tv-el:account\r\n\t\t>\r\n\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\tSave settings\r\n\t\t</div>\r\n\t</div>\r\n</div>";
 
 /***/ },
 /* 36 */
