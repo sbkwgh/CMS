@@ -27,7 +27,7 @@ function addTitleTooltip(el, text, timeLimit) {
 		'borderRadius': '0.2rem',
 		'opacity': '0',
 		'max-width': '15rem',
-		'transition': 'all 0.25s',
+		'transition': 'opacity 0.25s, margin-top 0.25s',
 		'pointer-events': 'none',
 		'marginTop': '0.3rem'
 	});
