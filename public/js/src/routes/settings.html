@@ -17,6 +17,10 @@
 				</tr>
 			</table>
 		</p>
+		<div class='button btn-green btn-load' v-bind:class='{"btn-disabled": loading}' v-on:click='saveSettings()' v-el:save>
+			<i class='fa fa-refresh fa-spin loading-icon'></i>
+			Save settings
+		</div>
 	</div>
 	<div class='settings-section'>
 		<h2>Comment settings</h2>
@@ -47,12 +51,9 @@
 				</tr>
 			</table>
 		</p>
-	</div>
-</div>
-
-<div class='settings-section' id='settings-save'>
-	<div class='button btn-green btn-load' v-bind:class='{"btn-disabled": loading}' v-on:click='saveSettings()' v-el:save>
-		<i class='fa fa-refresh fa-spin loading-icon'></i>
-		Save settings
+		<div class='button btn-green btn-load' v-bind:class='{"btn-disabled": loading}' v-on:click='saveSettings()' v-el:save>
+			<i class='fa fa-refresh fa-spin loading-icon'></i>
+			Save settings
+		</div>
 	</div>
 </div>
