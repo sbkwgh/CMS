@@ -102,10 +102,10 @@
 			component: __webpack_require__(34)(Vue)
 		},
 		'/dashboard': {
-			component: __webpack_require__(36)(Vue)
+			component: __webpack_require__(38)(Vue)
 		},
 		'/design': {
-			component: __webpack_require__(43)(Vue)
+			component: __webpack_require__(45)(Vue)
 		}
 	});
 
@@ -21825,19 +21825,21 @@
 	module.exports = "<div id='settings'>\r\n\t<div class='settings-section'>\r\n\t\t<h2>General</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog title: </td>\r\n\t\t\t\t\t<td><input v-model='blogTitle'></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog description: </td>\r\n\t\t\t\t\t<td><textarea v-model='blogDescription'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Blog side-bar: <i data-title=\"You can format this using markdown\" style=\"cursor: pointer;\" class=\"fa fa-question-circle\"></i></td>\r\n\t\t\t\t\t<td><textarea v-model='blogSidebar'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t</div>\r\n\t<div class='settings-section'>\r\n\t\t<h2>Comment settings</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Allow comments:</td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<label class='checkbox'>\r\n\t\t\t\t\t\t\t<input type=\"checkbox\" v-model='commentsAllowed'>\r\n\t\t\t\t\t\t\t<span></span>\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Moderate comments: <i data-title=\"By selecting to moderate blog comments, all new comments will not show until individually approved\" style=\"cursor: pointer;\" class=\"fa fa-question-circle\"></i></td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<label class='checkbox'>\r\n\t\t\t\t\t\t\t<input type='checkbox' v-model='commentsModerated'>\r\n\t\t\t\t\t\t\t<span></span>\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Message above comment<br/>box (optional): </td>\r\n\t\t\t\t\t<td><textarea v-model='commentsMessage'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t</div>\r\n</div>\r\n\r\n<div class='settings-section' id='settings-save'>\r\n\t<div class='button btn-green btn-load' v-bind:class='{\"btn-disabled\": loading}' v-on:click='saveSettings()' v-el:save>\r\n\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\tSave settings\r\n\t</div>\r\n</div>";
 
 /***/ },
-/* 36 */
+/* 36 */,
+/* 37 */,
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var modals = __webpack_require__(14);
 	var Errors = __webpack_require__(15);
 
-	var flexBoxGridCorrect = __webpack_require__(37);
-	var pageViewsGraph = __webpack_require__(38);
-	var browserPieChart = __webpack_require__(41);
+	var flexBoxGridCorrect = __webpack_require__(39);
+	var pageViewsGraph = __webpack_require__(40);
+	var browserPieChart = __webpack_require__(43);
 		
 	module.exports = function(Vue) {
 		return Vue.extend({
-			template: __webpack_require__(42),
+			template: __webpack_require__(44),
 			data: function() {
 				return {
 					ui: {
@@ -22195,7 +22197,7 @@
 	};
 
 /***/ },
-/* 37 */
+/* 39 */
 /***/ function(module, exports) {
 
 	function removeHiddenFlexBoxChidren(parentString, childClass) {
@@ -22271,11 +22273,11 @@
 	}
 
 /***/ },
-/* 38 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var rem = __webpack_require__(39);
-	var d3 = __webpack_require__(40);
+	var rem = __webpack_require__(41);
+	var d3 = __webpack_require__(42);
 
 	var svg;
 	var data;
@@ -22516,7 +22518,7 @@
 	module.exports.width = resizeWidth;
 
 /***/ },
-/* 39 */
+/* 41 */
 /***/ function(module, exports) {
 
 	var div = document.createElement('div');
@@ -22532,7 +22534,7 @@
 	}
 
 /***/ },
-/* 40 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// https://d3js.org Version 4.2.1. Copyright 2016 Mike Bostock.
@@ -38765,11 +38767,11 @@
 	}));
 
 /***/ },
-/* 41 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var d3 = __webpack_require__(40);
-	var rem = __webpack_require__(39);
+	var d3 = __webpack_require__(42);
+	var rem = __webpack_require__(41);
 
 	var data,
 	    height,
@@ -39036,18 +39038,18 @@
 	module.exports.width = resizeWidth;
 
 /***/ },
-/* 42 */
+/* 44 */
 /***/ function(module, exports) {
 
 	module.exports = "<div id='widgets-holder'>\r\n\t<div class='widget'>\r\n\t\t<div id='time-now'>\r\n\t\t\t<div class='time'>{{ui.time}}</div>\r\n\t\t\t<div class='date'>{{ui.date | prettyDate}}</div>\r\n\t\t\tWelcome back, {{cookies.author}}\r\n\t\t</div>\r\n\t\t<div class='description'>Time right now</div>\r\n\t</div>\r\n\t<div class='widget' style='background-color: #FCC342;'>\r\n\t\t<div v-bind:class='{\"hidden\": analytics.all.length  && analytics.loaded}' class='widget-no_analytics'>\r\n\t\t\t<i class='fa fa-line-chart'></i>\r\n\t\t\tNo page views yet\r\n\t\t</div>\r\n\t\t<svg v-bind:class='{\"hidden\": !analytics.all.length && analytics.loaded}' id='page-views'></svg>\r\n\t\t<div class='description'>\r\n\t\t\tPage views in the last 10 days:&nbsp;\r\n\t\t\t<span id='page-views-menu' class='menu'>\r\n\t\t\t\t{{analytics.currentGraph}} <i class=\"fa fa-caret-down\"></i>\r\n\t\t\t</span>\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget' style='background-color: rgb(174, 122, 195);'>\r\n\t\t<div v-bind:class='{\"hidden\": analytics.all.length && analytics.loaded}' class='widget-no_analytics'>\r\n\t\t\t<i class='fa fa-pie-chart'></i>\r\n\t\t\tNo page views yet\r\n\t\t</div>\r\n\t\t<svg v-bind:class='{\"hidden\": !analytics.all.length && analytics.loaded}' id='browser-pie-chart'></svg>\r\n\t\t<div class='description'>\r\n\t\t\tTotal unique page views by browser\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<template v-if='posts.all.length'>\r\n\t\t\t<div class='widget-section'>\r\n\t\t\t\t<div class='widget-section-number'>{{latestPost.comments}}</div>\r\n\t\t\t\t<div class='widget-section-description'>{{\"comment\" | pluralize latestPost.comments}} on most recent post</div>\r\n\t\t\t</div>\r\n\t\t\t<div class='widget-section'>\r\n\t\t\t\t<div class='widget-section-number'>{{latestPost.views}}</div>\r\n\t\t\t\t<div class='widget-section-description'>page {{\"view\" | pluralize latestPost.views}} on most recent post</div>\r\n\t\t\t</div>\r\n\t\t\t<div class='widget-section'>\r\n\t\t\t\t<div id='widget-section-published' v-bind:style='{\"flex-grow\": posts.published}'>\r\n\t\t\t\t\t<div class='widget-section-number'>{{posts.published}}</div>\r\n\t\t\t\t\t<div class='widget-section-description'>published {{\"post\" | pluralize posts.published}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div id='widget-section-drafts' v-bind:style='{\"flex-grow\": posts.drafts}'>\r\n\t\t\t\t\t<div class='widget-section-number'>{{posts.drafts}}</div>\r\n\t\t\t\t\t<div class='widget-section-description'>{{\"draft\" | pluralize posts.drafts}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</template>\r\n\t\t<div v-else class='widget-no_analytics' style='background-color: #2ecc71; height: 100%;'>\r\n\t\t\t<i class='fa fa-file-text'></i>\r\n\t\t\tNo post statistics\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<template v-if='posts.views.length'>\r\n\t\t\t<ol id='most-viewed-posts'>\r\n\t\t\t\t<template  v-for='n in 3'>\r\n\t\t\t\t\t<li \r\n\t\t\t\t\t\tv-if='posts.views[n]'\r\n\t\t\t\t\t\tv-on:click='openPost(posts.views[n].slug)'\r\n\t\t\t\t\t\tv-bind:class='{\"most-viewed\": n===0}'\r\n\t\t\t\t\t>\r\n\t\t\t\t\t\t<div data-title=\"Open post '@content'\" data-test='Open post'>{{posts.views[n].title}}</div>\r\n\t\t\t\t\t\t<span>{{posts.views[n].views}} {{\"view\" | pluralize posts.views[n].views}}</span>\r\n\t\t\t\t\t</li>\r\n\t\t\t\t\t<li v-else class='no-show'></li>\r\n\t\t\t\t</template>\r\n\t\t\t</ol>\r\n\t\t</template>\r\n\t\t<div v-else class='widget-no_analytics' style='background-color: rgb(170, 170, 170);'>\r\n\t\t\t<i class='fa fa-list-ol'></i>\r\n\t\t\tNo page views on any posts\r\n\t\t</div>\r\n\t\t<div class='description'>\r\n\t\t\tMost viewed posts\r\n\t\t</div>\r\n\t</div>\r\n</div>";
 
 /***/ },
-/* 43 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(Vue) {
 		return Vue.extend({
-			template: __webpack_require__(44),
+			template: __webpack_require__(46),
 			data: function() {
 				return {
 					selected: 'a',
@@ -39067,7 +39069,7 @@
 	};
 
 /***/ },
-/* 44 */
+/* 46 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class='template-infobox'>\r\n\tSelect a blog template from the left-hand box to customise fonts, colours, etc.\r\n</div>\r\n<div class='template-select'>\r\n\t<div \r\n\t\tclass='template-item'\r\n\t\tv-for='template in templates'\r\n\t\tv-bind:class='{\"template-item-selected\": selected === template.name}'\r\n\t\tv-on:click='select(template.name)'\r\n\t>\r\n\t\t{{template.name}}\r\n\t</div>\r\n</div>\r\n<div class='template-options'>\r\n\t<div class='preview-image'>\r\n\t\t<div class='button'>Preview</div>\r\n\t</div>\r\n</div>";
