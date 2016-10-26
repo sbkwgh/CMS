@@ -8,7 +8,7 @@
 	}
 }
 
-#settings {
+#settings, #account {
 	height: calc(100% - 6rem);
 	overflow-y: auto;
 
@@ -20,6 +20,11 @@
 	position: absolute;
 	bottom: 0;
 
+	.button {
+		margin: 0.5rem 0;
+	}
+}
+#account-save {
 	.button {
 		margin: 0.5rem 0;
 	}

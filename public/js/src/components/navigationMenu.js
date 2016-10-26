@@ -18,7 +18,8 @@ module.exports = function(Vue, router) {
 					{name: 'Blog posts', route: '/posts', icon: 'pencil-square', selected: false},
 					{name: 'Comments', route: '/comments', icon: 'comments', selected: false},
 					{name: 'Design', route: '/design', icon: 'paint-brush', selected: false},
-					{name: 'Settings', route: '/settings', icon: 'cogs', selected: false}
+					{name: 'Settings', route: '/settings', icon: 'cogs', selected: false},
+					{name: 'Account', route: '/account', icon: 'user', selected: false}
 				]
 			}
 		},

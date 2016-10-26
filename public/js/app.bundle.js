@@ -101,11 +101,14 @@
 		'/settings': {
 			component: __webpack_require__(34)(Vue)
 		},
-		'/dashboard': {
+		'/account': {
 			component: __webpack_require__(36)(Vue)
 		},
+		'/dashboard': {
+			component: __webpack_require__(38)(Vue)
+		},
 		'/design': {
-			component: __webpack_require__(43)(Vue)
+			component: __webpack_require__(45)(Vue)
 		}
 	});
 
@@ -13040,7 +13043,8 @@
 			'opacity': '0',
 			'max-width': '15rem',
 			'transition': 'all 0.25s',
-			'pointer-events': 'none'
+			'pointer-events': 'none',
+			'marginTop': '0.3rem'
 		});
 		
 		var arrow = document.createElement('div');
@@ -13066,7 +13070,12 @@
 			var elCenter = coordsEl.left + coordsEl.width/2;
 
 			span.style.left = "calc(" + elCenter + "px - " + coordsSpan.width/2 + "px)";
-			span.style.top = (window.pageYOffset || document.documentElement.clientTop) + coordsEl.top +  - 2*coordsSpan.height + 'px';
+
+			if(window.pageYOffset) {
+				span.style.top = (window.pageYOffset || document.documentElement.clientTop) + coordsEl.top +  - 2*coordsSpan.height + 'px';
+			} else {
+				span.style.top = coordsEl.top +  - 6 - coordsSpan.height + 'px';
+			}
 			
 			coordsSpan = span.getBoundingClientRect();
 			coordsEl = el.getBoundingClientRect();
@@ -13112,6 +13121,7 @@
 
 		setTimeout(function() {
 			span.style.opacity = '0.95';
+			span.style.marginTop = '0';
 		}, 250);
 
 		return span;
@@ -14606,7 +14616,8 @@
 						{name: 'Blog posts', route: '/posts', icon: 'pencil-square', selected: false},
 						{name: 'Comments', route: '/comments', icon: 'comments', selected: false},
 						{name: 'Design', route: '/design', icon: 'paint-brush', selected: false},
-						{name: 'Settings', route: '/settings', icon: 'cogs', selected: false}
+						{name: 'Settings', route: '/settings', icon: 'cogs', selected: false},
+						{name: 'Account', route: '/account', icon: 'user', selected: false}
 					]
 				}
 			},
@@ -21831,13 +21842,89 @@
 	var modals = __webpack_require__(14);
 	var Errors = __webpack_require__(15);
 
-	var flexBoxGridCorrect = __webpack_require__(37);
-	var pageViewsGraph = __webpack_require__(38);
-	var browserPieChart = __webpack_require__(41);
+	module.exports = function(Vue) {
+		return Vue.extend({
+			template: __webpack_require__(37),
+			data: function() {
+				return {
+					author: '',
+					biography: '',
+					password: '',
+					confirmPassword: '',
+					loading: false
+				}
+			},
+			methods: {
+				saveSettings: function() {
+					this.loading = true;
+
+					this.$http
+						.put('/api/settings', {
+							blogTitle: this.blogTitle,
+							blogDescription: this.blogDescription,
+							blogSidebar: this.blogSidebar,
+							commentsModerated: this.commentsModerated,
+							commentsMessage: this.commentsMessage,
+							commentsAllowed: this.commentsAllowed
+						})
+						.then(function(res) {
+							this.loading = false;
+
+							if(res.data.error) {
+								titleTooltip(this.$els.save, res.data.error.message, 5000);
+							} else {
+								titleTooltip(this.$els.save, 'Settings saved', 5000);
+							}
+						}, function(err) {
+							this.loading = false;
+							console.log(err);
+							titleTooltip(this.$els.save, Errors.unknown.message, 5000);
+						});
+				}
+			},
+			route: {
+				data: function(transition) {
+					this.$http
+						.get('/api/account')
+						.then(function(res) {
+							if(res.data.error) {
+								modals.alert(res.data.error.message);
+							} else {
+								this.author = res.data.author;
+								this.biography = res.data.biography || '';
+							}
+
+							transition.next();
+						}, function(err) {
+							console.log(err);
+							modals.alert(Errors.unknown.message);
+							transition.next();
+						});
+				}
+			}
+		});
+	};
+
+/***/ },
+/* 37 */
+/***/ function(module, exports) {
+
+	module.exports = "<div class='settings-section' id='account-save'>\r\n\t<div class='button btn-green btn-load' v-bind:class='{\"btn-disabled\": loading}' v-on:click='saveSettings()' v-el:save>\r\n\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\tSave account settings\r\n\t</div>\r\n</div>\r\n\r\n<div id='account'>\r\n\t<div class='settings-section'>\r\n\t\t<h2>General</h2>\r\n\t\t<p>\r\n\t\t\t<table>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Author name: </td>\r\n\t\t\t\t\t<td><input v-model='author'></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Biography: <i data-title=\"This is displayed on your profile page\" style=\"cursor: pointer;\" class=\"fa fa-question-circle\"></i></td>\r\n\t\t\t\t\t<td><textarea v-model='biography'></textarea></td>\r\n\t\t\t\t</tr>\r\n\t\t\t\t<tr>\r\n\t\t\t\t\t<td>Password:</td>\r\n\t\t\t\t\t<td>\r\n\t\t\t\t\t\t<input type='password' placeholder='Password' v-model='password' style='margin-bottom: 0.5rem;'><br/>\r\n\t\t\t\t\t\t<input type='password' placeholder='Confirm password' v-model='confirmPassowrd'><br/>\r\n\t\t\t\t\t\t<div class='button btn-green' v-bind:class='{\"btn-disabled\": savingPassword}'>\r\n\t\t\t\t\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\t\t\t\t\tChange password\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t</p>\r\n\t</div>\r\n</div>";
+
+/***/ },
+/* 38 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var modals = __webpack_require__(14);
+	var Errors = __webpack_require__(15);
+
+	var flexBoxGridCorrect = __webpack_require__(39);
+	var pageViewsGraph = __webpack_require__(40);
+	var browserPieChart = __webpack_require__(43);
 		
 	module.exports = function(Vue) {
 		return Vue.extend({
-			template: __webpack_require__(42),
+			template: __webpack_require__(44),
 			data: function() {
 				return {
 					ui: {
@@ -22195,7 +22282,7 @@
 	};
 
 /***/ },
-/* 37 */
+/* 39 */
 /***/ function(module, exports) {
 
 	function removeHiddenFlexBoxChidren(parentString, childClass) {
@@ -22271,11 +22358,11 @@
 	}
 
 /***/ },
-/* 38 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var rem = __webpack_require__(39);
-	var d3 = __webpack_require__(40);
+	var rem = __webpack_require__(41);
+	var d3 = __webpack_require__(42);
 
 	var svg;
 	var data;
@@ -22516,7 +22603,7 @@
 	module.exports.width = resizeWidth;
 
 /***/ },
-/* 39 */
+/* 41 */
 /***/ function(module, exports) {
 
 	var div = document.createElement('div');
@@ -22532,7 +22619,7 @@
 	}
 
 /***/ },
-/* 40 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// https://d3js.org Version 4.2.1. Copyright 2016 Mike Bostock.
@@ -38765,11 +38852,11 @@
 	}));
 
 /***/ },
-/* 41 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var d3 = __webpack_require__(40);
-	var rem = __webpack_require__(39);
+	var d3 = __webpack_require__(42);
+	var rem = __webpack_require__(41);
 
 	var data,
 	    height,
@@ -39036,18 +39123,18 @@
 	module.exports.width = resizeWidth;
 
 /***/ },
-/* 42 */
+/* 44 */
 /***/ function(module, exports) {
 
 	module.exports = "<div id='widgets-holder'>\r\n\t<div class='widget'>\r\n\t\t<div id='time-now'>\r\n\t\t\t<div class='time'>{{ui.time}}</div>\r\n\t\t\t<div class='date'>{{ui.date | prettyDate}}</div>\r\n\t\t\tWelcome back, {{cookies.author}}\r\n\t\t</div>\r\n\t\t<div class='description'>Time right now</div>\r\n\t</div>\r\n\t<div class='widget' style='background-color: #FCC342;'>\r\n\t\t<div v-bind:class='{\"hidden\": analytics.all.length  && analytics.loaded}' class='widget-no_analytics'>\r\n\t\t\t<i class='fa fa-line-chart'></i>\r\n\t\t\tNo page views yet\r\n\t\t</div>\r\n\t\t<svg v-bind:class='{\"hidden\": !analytics.all.length && analytics.loaded}' id='page-views'></svg>\r\n\t\t<div class='description'>\r\n\t\t\tPage views in the last 10 days:&nbsp;\r\n\t\t\t<span id='page-views-menu' class='menu'>\r\n\t\t\t\t{{analytics.currentGraph}} <i class=\"fa fa-caret-down\"></i>\r\n\t\t\t</span>\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget' style='background-color: rgb(174, 122, 195);'>\r\n\t\t<div v-bind:class='{\"hidden\": analytics.all.length && analytics.loaded}' class='widget-no_analytics'>\r\n\t\t\t<i class='fa fa-pie-chart'></i>\r\n\t\t\tNo page views yet\r\n\t\t</div>\r\n\t\t<svg v-bind:class='{\"hidden\": !analytics.all.length && analytics.loaded}' id='browser-pie-chart'></svg>\r\n\t\t<div class='description'>\r\n\t\t\tTotal unique page views by browser\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<template v-if='posts.all.length'>\r\n\t\t\t<div class='widget-section'>\r\n\t\t\t\t<div class='widget-section-number'>{{latestPost.comments}}</div>\r\n\t\t\t\t<div class='widget-section-description'>{{\"comment\" | pluralize latestPost.comments}} on most recent post</div>\r\n\t\t\t</div>\r\n\t\t\t<div class='widget-section'>\r\n\t\t\t\t<div class='widget-section-number'>{{latestPost.views}}</div>\r\n\t\t\t\t<div class='widget-section-description'>page {{\"view\" | pluralize latestPost.views}} on most recent post</div>\r\n\t\t\t</div>\r\n\t\t\t<div class='widget-section'>\r\n\t\t\t\t<div id='widget-section-published' v-bind:style='{\"flex-grow\": posts.published}'>\r\n\t\t\t\t\t<div class='widget-section-number'>{{posts.published}}</div>\r\n\t\t\t\t\t<div class='widget-section-description'>published {{\"post\" | pluralize posts.published}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div id='widget-section-drafts' v-bind:style='{\"flex-grow\": posts.drafts}'>\r\n\t\t\t\t\t<div class='widget-section-number'>{{posts.drafts}}</div>\r\n\t\t\t\t\t<div class='widget-section-description'>{{\"draft\" | pluralize posts.drafts}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</template>\r\n\t\t<div v-else class='widget-no_analytics' style='background-color: #2ecc71; height: 100%;'>\r\n\t\t\t<i class='fa fa-file-text'></i>\r\n\t\t\tNo post statistics\r\n\t\t</div>\r\n\t</div>\r\n\t<div class='widget'>\r\n\t\t<template v-if='posts.views.length'>\r\n\t\t\t<ol id='most-viewed-posts'>\r\n\t\t\t\t<template  v-for='n in 3'>\r\n\t\t\t\t\t<li \r\n\t\t\t\t\t\tv-if='posts.views[n]'\r\n\t\t\t\t\t\tv-on:click='openPost(posts.views[n].slug)'\r\n\t\t\t\t\t\tv-bind:class='{\"most-viewed\": n===0}'\r\n\t\t\t\t\t>\r\n\t\t\t\t\t\t<div data-title=\"Open post '@content'\" data-test='Open post'>{{posts.views[n].title}}</div>\r\n\t\t\t\t\t\t<span>{{posts.views[n].views}} {{\"view\" | pluralize posts.views[n].views}}</span>\r\n\t\t\t\t\t</li>\r\n\t\t\t\t\t<li v-else class='no-show'></li>\r\n\t\t\t\t</template>\r\n\t\t\t</ol>\r\n\t\t</template>\r\n\t\t<div v-else class='widget-no_analytics' style='background-color: rgb(170, 170, 170);'>\r\n\t\t\t<i class='fa fa-list-ol'></i>\r\n\t\t\tNo page views on any posts\r\n\t\t</div>\r\n\t\t<div class='description'>\r\n\t\t\tMost viewed posts\r\n\t\t</div>\r\n\t</div>\r\n</div>";
 
 /***/ },
-/* 43 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(Vue) {
 		return Vue.extend({
-			template: __webpack_require__(44),
+			template: __webpack_require__(46),
 			data: function() {
 				return {
 					selected: 'a',
@@ -39067,7 +39154,7 @@
 	};
 
 /***/ },
-/* 44 */
+/* 46 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class='template-infobox'>\r\n\tSelect a blog template from the left-hand box to customise fonts, colours, etc.\r\n</div>\r\n<div class='template-select'>\r\n\t<div \r\n\t\tclass='template-item'\r\n\t\tv-for='template in templates'\r\n\t\tv-bind:class='{\"template-item-selected\": selected === template.name}'\r\n\t\tv-on:click='select(template.name)'\r\n\t>\r\n\t\t{{template.name}}\r\n\t</div>\r\n</div>\r\n<div class='template-options'>\r\n\t<div class='preview-image'>\r\n\t\t<div class='button'>Preview</div>\r\n\t</div>\r\n</div>";
