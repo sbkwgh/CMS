@@ -31,7 +31,7 @@ function getPageNumbers(posts, currentPage) {
 
 router.get('/', function(req, res) {
 	settings.get(req.app.locals.db, function(err, settingsDoc) {
-			Post.find({published: true}, null, {sort: '-date'}, function(err, posts) {
+			Post.find({published: true}, null, {sort: '-date'}).populate('user').exec(function(err, posts) {
 			if(!err) {
 				var JSONPosts = [];
 
@@ -57,7 +57,7 @@ router.get('/page/0', function(req, res) {
 
 router.get('/page/:page', function(req, res) {
 	settings.get(req.app.locals.db, function(err, settingsDoc) {
-			Post.find({published: true}, null, {sort: '-date'}, function(err, posts) {
+			Post.find({published: true}, null, {sort: '-date'}).populate('user').exec(function(err, posts) {
 			if(!err) {
 				var JSONPosts = [];
 
@@ -79,7 +79,7 @@ router.get('/page/:page', function(req, res) {
 
 router.get('/post/:slug', function(req, res) {
 	settings.get(req.app.locals.db, function(err, settingsDoc) {
-		Post.findOne({published: true, slug: req.params.slug}, function(err, foundPost) {
+		Post.findOne({published: true, slug: req.params.slug}).populate('user').exec(function(err, foundPost) {
 			if(!err) {
 				if(foundPost) {
 					res.render('post.html', {post: foundPost.toJSON({virtuals: true}), settings: settingsDoc});
@@ -96,7 +96,7 @@ router.get('/tags/:tags', function(req, res) {
 	var tags = req.params.tags.split('+');
 
 	settings.get(req.app.locals.db, function(err, settingsDoc) {
-		Post.find({published: true, tags: {$in: tags}}, null, {sort: '-date'}, function(err, posts) {
+		Post.find({published: true, tags: {$in: tags}}, null, {sort: '-date'}).populate('user').exec(function(err, posts) {
 			if(!err) {
 				var JSONPosts = [];
 
