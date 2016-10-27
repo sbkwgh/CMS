@@ -21,7 +21,7 @@
 			class='button btn-green btn-load'
 			v-bind:class='{"btn-disabled": general.saving.general}'
 			v-on:click='saveGeneralSettings("general", $event)'
-			v-el:general
+			ref='general'
 		>
 			<i class='fa fa-refresh fa-spin loading-icon'></i>
 			Save settings
@@ -60,7 +60,7 @@
 			class='button btn-green btn-load'
 			v-bind:class='{"btn-disabled": general.saving.comments}'
 			v-on:click='saveGeneralSettings("comments", $event)'
-			v-el:comments
+			ref='comments'
 		>
 			<i class='fa fa-refresh fa-spin loading-icon'></i>
 			Save settings
@@ -96,7 +96,7 @@
 			class='button btn-green btn-load'
 			v-bind:class='{"btn-disabled": account.saving.settings}'
 			v-on:click='saveAccountSettings()'
-			v-el:account
+			ref='account'
 		>
 			<i class='fa fa-refresh fa-spin loading-icon'></i>
 			Save settings

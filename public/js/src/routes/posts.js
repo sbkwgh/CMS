@@ -22,7 +22,7 @@ module.exports = function(Vue) {
 				});
 			}
 		},
-		ready: function() {
+		mounted: function() {
 			this.getPosts();
 		},
 		methods: {
@@ -63,7 +63,7 @@ module.exports = function(Vue) {
 				var id = this.posts.find(function(post) {
 					return post.selected;
 				})._id;
-				this.$router.go('/posts/post/' + id);
+				this.$router.push({ name: 'posts/post', params: {id: id} });
 			},
 			deletePost: function() {
 				var selected = this.selected;

@@ -24,13 +24,7 @@
 		</template>
 	</div>
 	<div id='post-display_card-html'>
-		<template v-if='posts.length'>
-			{{{selected.bodyHTML}}}
-		</template>
-		<template v-else>
-			<div class='no-post-selected'>
-				{{{noPostsMessageMain}}}
-			</div>
-		</template>
+		<template v-if='posts.length' v-html='selected.bodyHTML'></template>
+		<div class='no-post-selected' v-else v-html='noPostsMessageMain'></div>
 	</div>
 </div>

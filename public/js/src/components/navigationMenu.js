@@ -35,7 +35,7 @@ module.exports = function(Vue, router) {
 				router.go(route);
 			}
 		},
-		ready: function() {
+		mounted: function() {
 			var self = this;
 			
 			router.afterEach(function (transition) {

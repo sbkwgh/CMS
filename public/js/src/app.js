@@ -30,41 +30,23 @@ Vue.filter('prettyDate', function(d, showTime) {
 	return formattedString;
 });
 
-var router = new VueRouter({history: true, root: '/cms'});
+var router = new VueRouter({mode: 'history', base: '/cms'});
+var router = new VueRouter({
+	routes: [
+		{ path: '/posts', component: require('./routes/posts.js')(Vue) },
+		{ path: '/posts/post/:id', component: require('./routes/postsNew.js')(Vue) },
+		{ path: '/posts/new', component: require('./routes/postsNew.js')(Vue) },
+		{ path: '/comments', component: require('./routes/comments.js')(Vue) },
+		{ path: '/settings', component: require('./routes/settings.js')(Vue) },
+		{ path: '/', redirect: '/dashboard', component: require('./routes/dashboard.js')(Vue) },
+		{ path: '/design', component: require('./routes/design.js')(Vue) }
+	]
+})
 
 
-var App = Vue.extend({
+var App = new Vue({
+	router: router,
 	components: {
 		'navigation-menu': require('./components/navigationMenu.js')(Vue, router)
 	}
-});
-
-router.map({
-	'/posts': {
-		component: require('./routes/posts.js')(Vue)
-	},
-	'/posts/post/:id': {
-		component: require('./routes/postsNew.js')(Vue)
-	},
-	'/posts/new': {
-		component: require('./routes/postsNew.js')(Vue)
-	},
-	'/comments': {
-		component: require('./routes/comments.js')(Vue)
-	},
-	'/settings': {
-		component: require('./routes/settings.js')(Vue)
-	},
-	'/dashboard': {
-		component: require('./routes/dashboard.js')(Vue)
-	},
-	'/design': {
-		component: require('./routes/design.js')(Vue)
-	}
-});
-
-router.redirect({
-	'/': '/dashboard'
-});
-
-router.start(App, '#app');
+}).$mount('#app');

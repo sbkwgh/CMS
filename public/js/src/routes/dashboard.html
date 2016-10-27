@@ -34,20 +34,20 @@
 		<template v-if='posts.all.length'>
 			<div class='widget-section'>
 				<div class='widget-section-number'>{{latestPost.comments}}</div>
-				<div class='widget-section-description'>{{"comment" | pluralize latestPost.comments}} on most recent post</div>
+				<div class='widget-section-description'>{{"comment" | pluralize(latestPost.comments)}} on most recent post</div>
 			</div>
 			<div class='widget-section'>
 				<div class='widget-section-number'>{{latestPost.views}}</div>
-				<div class='widget-section-description'>page {{"view" | pluralize latestPost.views}} on most recent post</div>
+				<div class='widget-section-description'>page {{"view" | pluralize(latestPost.views)}} on most recent post</div>
 			</div>
 			<div class='widget-section'>
 				<div id='widget-section-published' v-bind:style='{"flex-grow": posts.published}'>
 					<div class='widget-section-number'>{{posts.published}}</div>
-					<div class='widget-section-description'>published {{"post" | pluralize posts.published}}</div>
+					<div class='widget-section-description'>published {{"post" | pluralize (posts.published)}}</div>
 				</div>
 				<div id='widget-section-drafts' v-bind:style='{"flex-grow": posts.drafts}'>
 					<div class='widget-section-number'>{{posts.drafts}}</div>
-					<div class='widget-section-description'>{{"draft" | pluralize posts.drafts}}</div>
+					<div class='widget-section-description'>{{"draft" | pluralize (posts.drafts)}}</div>
 				</div>
 			</div>
 		</template>
@@ -66,7 +66,7 @@
 						v-bind:class='{"most-viewed": n===0}'
 					>
 						<div data-title="Open post '@content'" data-test='Open post'>{{posts.views[n].title}}</div>
-						<span>{{posts.views[n].views}} {{"view" | pluralize posts.views[n].views}}</span>
+						<span>{{posts.views[n].views}} {{"view" | pluralize(posts.views[n].views)}}</span>
 					</li>
 					<li v-else class='no-show'></li>
 				</template>

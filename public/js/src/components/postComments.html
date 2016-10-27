@@ -14,7 +14,7 @@
 				<span v-on:click='cancelReply()'>Cancel</span>
 			</div>
 			<div><label class='last-label'>Your comment:</label> <textarea v-model='commentBody'></textarea></div>
-			<div class='button btn-green btn-load' style='line-height: 1.75rem;' v-on:click='addComment()' v-el:add-comment v-bind:class='{"btn-disabled": ui.savingComment}'>
+			<div class='button btn-green btn-load' style='line-height: 1.75rem;' v-on:click='addComment()' ref:add-comment v-bind:class='{"btn-disabled": ui.savingComment}'>
 				<i class='fa fa-refresh fa-spin loading-icon'></i>
 				Add comment
 			</div>
@@ -34,8 +34,7 @@
 					<div class='comment-time'>{{comment.dateCreated|timeString}}</div>
 				</div>
 				<div class='comment-comment'>
-					<template v-if='comment.status !== "approved"'>
-						{{{comment.moderatedMessage}}}
+					<template v-html='comment.moderatedMessage' v-if='comment.status !== "approved"'>
 					</template>
 					<template v-else>
 						{{comment.commentBody}}

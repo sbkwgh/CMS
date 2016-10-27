@@ -28,7 +28,7 @@
 			</div>
 		</div>
 		<div id='display-output'>
-			<template v-if='html.length'>{{{html}}}</template>
+			<template v-if='html.length' v-html='html'></template>
 			<span id='display-output-none' v-else>See the HTML output here</span>
 		</div>
 	</div>
@@ -38,14 +38,14 @@
 			class='button btn-load'
 			v-bind:class='{"btn-disabled": ui.savingOptions}'
 			v-show='ui.isSavedPost'
-			v-el:options-button
+			ref='options-button'
 		>
 			<i class='fa fa-refresh fa-spin loading-icon'></i>
 			Post options
 		</div>
 		<div
 			v-on:click.self='saveButton()'
-			v-el:save-button
+			ref='save-button'
 			v-bind:class='{"btn-disabled": ui.saving}'
 			class='button btn-load btn-green'
 		>
@@ -54,4 +54,4 @@
 		</div>
 	</div>
 </div>
-<tag-bar></tag-bar>
+<tag-bar v-bind:raw-tags='_tags'></tag-bar>

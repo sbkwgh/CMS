@@ -83,7 +83,7 @@ module.exports = function(Vue) {
 					.post('/api/comments', commentObj)
 					.then(function(res) {
 						if(res.data.error) {
-							titleTooltip(this.$els.addComment, 'Error saving comment', 5000);
+							titleTooltip(this.$refs.addComment, 'Error saving comment', 5000);
 						} else {
 							res.data.moderatedMessage = 
 								`<i class='fa fa-clock-o fa-fw'></i> This comment is awaiting moderation`;
@@ -95,7 +95,7 @@ module.exports = function(Vue) {
 							this.replies.name = '';
 
 							titleTooltip(
-								this.$els.addComment, 
+								this.$refs.addComment, 
 								'Comment saved' + (res.data.status === 'pending' ? ' - waiting to be approved' : ''), 
 								5000
 							);
@@ -103,7 +103,7 @@ module.exports = function(Vue) {
 
 						this.ui.savingComment = false;
 					}, function(err) {
-						titleTooltip(this.$els.addComment, 'Error saving comment', 5000);
+						titleTooltip(this.$refs.addComment, 'Error saving comment', 5000);
 						this.ui.savingComment = false;
 					});
 			},
@@ -125,62 +125,65 @@ module.exports = function(Vue) {
 				}.bind(this), 1500);
 			}
 		},
-		ready: function() {
-			correctHeaderTop();
+		mounted: function() {
+			this.$nextTick(function() {
+				correctHeaderTop();
 
-			function getComment(node) {
-				if(!node.parentElement) return null;
+				function getComment(node) {
+					if(!node.parentElement) return null;
 
-				if(node.matches('.comment')) {
-					return node;
-				} else {
-					return getComment(node.parentElement);
-				}
-			}
-
-			this.$http
-				.get('/api/comments/' + this.postId)
-				.then(function(res) {
-					if(!res.data.error) {
-						this.comments = res.data.map(function(comment) {
-							if(comment.status === 'pending') {
-								comment.moderatedMessage =
-									`<i class='fa fa-clock-o fa-fw'></i> This comment is awaiting moderation`;
-							} else if(comment.status === 'removed') {
-								comment.moderatedMessage = 
-									`<i class='fa fa-times fa-fw'></i> This comment has been removed by moderators`;
-							}
-
-							return comment;
-						});
-						this.ui.loadingMessage = 'No comments - add yours'
-					} else if(res.data.error.name === 'commentsDisabled') {
-						this.commentsAllowed = false;
+					if(node.matches('.comment')) {
+						return node;
+					} else {
+						return getComment(node.parentElement);
 					}
-					correctHeaderTop();
-				}, function(err) {
-					this.ui.loadingMessage = 'Something went wrong loading comments. Try refreshing the page';
-					console.log(err);
+				}
+
+				this.$http
+					.get('/api/comments/' + this.postId)
+					.then(function(res) {
+						if(!res.data.error) {
+							this.comments = res.data.map(function(comment) {
+								if(comment.status === 'pending') {
+									comment.moderatedMessage =
+										`<i class='fa fa-clock-o fa-fw'></i> This comment is awaiting moderation`;
+								} else if(comment.status === 'removed') {
+									comment.moderatedMessage = 
+										`<i class='fa fa-times fa-fw'></i> This comment has been removed by moderators`;
+								}
+
+								return comment;
+							});
+							this.ui.loadingMessage = 'No comments - add yours'
+						} else if(res.data.error.name === 'commentsDisabled') {
+							this.commentsAllowed = false;
+						}
+						correctHeaderTop();
+					}, function(err) {
+						this.ui.loadingMessage = 'Something went wrong loading comments. Try refreshing the page';
+						console.log(err);
+					});
+
+				document.querySelector('.comments-box').addEventListener('mouseover', function(ev) {
+					var comment = getComment(ev.target);
+					if(!comment) return;
+
+					var reply = comment.querySelector('.comment-reply');
+					if(!reply) return;
+
+					reply.classList.add('show');
 				});
+				document.querySelector('.comments-box').addEventListener('mouseout', function(ev) {
+					var comment = getComment(ev.target);
+					if(!comment) return;
 
-			document.querySelector('.comments-box').addEventListener('mouseover', function(ev) {
-				var comment = getComment(ev.target);
-				if(!comment) return;
+					var reply = comment.querySelector('.comment-reply');
+					if(!reply) return;
 
-				var reply = comment.querySelector('.comment-reply');
-				if(!reply) return;
-
-				reply.classList.add('show');
+					reply.classList.remove('show');
+				});
 			});
-			document.querySelector('.comments-box').addEventListener('mouseout', function(ev) {
-				var comment = getComment(ev.target);
-				if(!comment) return;
 
-				var reply = comment.querySelector('.comment-reply');
-				if(!reply) return;
-
-				reply.classList.remove('show');
-			});
 		}
 	});
 };

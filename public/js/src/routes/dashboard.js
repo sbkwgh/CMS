@@ -319,31 +319,33 @@ module.exports = function(Vue) {
 				window.open('/blog/post/' + slug);
 			}
 		},
-		ready: function() {
-			flexBoxGridCorrect('#widgets-holder', 'widget');
+		mounted: function() {
+			this.nextTick(function() {
+				flexBoxGridCorrect('#widgets-holder', 'widget');
 
-			setInterval(function() {
-				this.ui.time = (new Date()).toTimeString().slice(0,5);
-			}.bind(this), 10000);
+				setInterval(function() {
+					this.ui.time = (new Date()).toTimeString().slice(0,5);
+				}.bind(this), 10000);
 
-			Tooltip('#page-views-menu', {
-				items: [
-					{title: 'Total', click: () => this.changePageViewsGraph('total')},
-					{title: 'Unique sessions', click: () => this.changePageViewsGraph('unique')}
-				]
-			})
+				Tooltip('#page-views-menu', {
+					items: [
+						{title: 'Total', click: () => this.changePageViewsGraph('total')},
+						{title: 'Unique sessions', click: () => this.changePageViewsGraph('unique')}
+					]
+				})
 
-			var ticking = false;
-			window.addEventListener('resize', function() {
-				if(ticking || this.$route.path !== '/dashboard') return;
-				setTimeout(function() {
-					pageViewsGraph.update(pageViewsGraph.width());
-					browserPieChart.update(browserPieChart.width());
+				var ticking = false;
+				window.addEventListener('resize', function() {
+					if(ticking || this.$route.path !== '/dashboard') return;
+					setTimeout(function() {
+						pageViewsGraph.update(pageViewsGraph.width());
+						browserPieChart.update(browserPieChart.width());
 
-					ticking = false;
-				}, 50);
-				ticking = true;
-			}.bind(this));
+						ticking = false;
+					}, 50);
+					ticking = true;
+				}.bind(this));
+			});
 		},
 		route: {
 			data: function(transition) {

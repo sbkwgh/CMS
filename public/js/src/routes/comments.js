@@ -46,7 +46,7 @@ module.exports = function (Vue) {
 		methods: {
 			selectCategory: function(name) {
 				if(name === 'Settings') {
-					this.$router.go('/settings');
+					this.$router.push('settings');
 					return;
 				}
 
@@ -66,7 +66,7 @@ module.exports = function (Vue) {
 						if(res.data.error) {
 							modals.alert(res.data.error.message);
 						} else {
-							this.comments.$set(index, res.data);
+							Vue.set(this.comments, index, res.data);
 						}
 					}, function(err) {
 						console.log(err);
@@ -85,7 +85,8 @@ module.exports = function (Vue) {
 									if(res.data.error) {
 										modals.alert(res.data.error.message);
 									} else {
-										this.comments.$remove(comment);
+										var index = this.comments.indexOf(comment);
+										this.comments.splice(index, 1);
 									}
 								}, function(err) {
 									console.log(err);
@@ -120,18 +121,20 @@ module.exports = function (Vue) {
 					});
 			}
 		},
-		ready: function() {
+		mounted: function() {
 			var self = this;
 
-			Tooltip('#comment-box-bar span', {
-				items: [
-					{title: 'Time', click: function() {
-						self.sortBy = 'time';
-					}},
-					{title: 'Post', click: function() {
-						self.sortBy = 'post';
-					}}
-				]
+			this.nextTick(function() {
+				Tooltip('#comment-box-bar span', {
+					items: [
+						{title: 'Time', click: function() {
+							self.sortBy = 'time';
+						}},
+						{title: 'Post', click: function() {
+							self.sortBy = 'post';
+						}}
+					]
+				});
 			});
 		}
 	});

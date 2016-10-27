@@ -43,14 +43,14 @@ module.exports = function(Vue) {
 						this.account.saving.settings = false;
 
 						if(res.data.error) {
-							titleTooltip(this.$els.account, res.data.error.message, 5000);
+							titleTooltip(this.$refs.account, res.data.error.message, 5000);
 						} else {
-							titleTooltip(this.$els.account, 'Settings saved', 5000);
+							titleTooltip(this.$refs.account, 'Settings saved', 5000);
 						}
 					}, function(err) {
 						this.account.saving.settings = false;
 						console.log(err);
-						titleTooltip(this.$els.account, Errors.unknown.message, 5000);
+						titleTooltip(this.$refs.account, Errors.unknown.message, 5000);
 					});
 			},
 			saveGeneralSettings: function(button, e) {

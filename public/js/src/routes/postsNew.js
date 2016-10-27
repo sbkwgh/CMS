@@ -80,7 +80,7 @@ module.exports = function (Vue) {
 		},
 		data: function() {
 			return {
-				_tags: '',
+				_tags: [],
 				title: '',
 				markdown: '',
 				published: false,
@@ -112,7 +112,6 @@ module.exports = function (Vue) {
 				},
 				set: function(tags) {
 					this._tags = tags;
-					this.$broadcast('tags', tags);
 				}
 			}
 		},
@@ -160,6 +159,7 @@ module.exports = function (Vue) {
 			},
 			saveButton: function() {
 				if(this.$route.path === '/posts/new') {
+					console.log('here')
 					this.createPost();
 				} else {
 					this.updatePost({}, {button: 'save', message: 'All changes saved'});
@@ -171,9 +171,9 @@ module.exports = function (Vue) {
 
 			buttonMessage: function(button, message) {
 				if(button === 'save') {
-					titleTooltip(this.$els.saveButton, message, 3000);
+					titleTooltip(this.$refs.saveButton, message, 3000);
 				} else if(button === 'options') {
-					titleTooltip(this.$els.optionsButton, message, 3000);
+					titleTooltip(this.$refs.optionsButton, message, 3000);
 				}
 			},
 
@@ -198,6 +198,8 @@ module.exports = function (Vue) {
 				};
 
 				console.log(postObj)
+				console.log(this.tags)
+				console.log(postObjAdditions)
 
 				return;
 
@@ -226,6 +228,8 @@ module.exports = function (Vue) {
 					postObj[key] = postObjAdditions[key];
 				}
 
+				console.log(postObj)
+
 				this.ui.saving = true;
 				
 				this.$http.post('/api/posts', postObj).then(function(res) {
@@ -233,7 +237,7 @@ module.exports = function (Vue) {
 						modals.alert(res.data.error.message);
 					} else {
 						this.buttonMessage('save', 'Draft saved');
-						this.$router.go('/posts/post/' + res.data._id);
+							this.$router.push({ name: 'posts/post', params: {id: res.data._id} });
 					}
 					this.ui.saving = false;
 				}, function(err) {
@@ -243,16 +247,21 @@ module.exports = function (Vue) {
 				});
 			},
 			deletePost: function() {
+				var id = this.$route.params.id;
+
+				console.log(this.$route)
+				console.log(this.$router)
+
 				modals.confirm(
 					'Are you sure you want to delete this draft and published post? ' +
 					'<br/>This cannot be undone',
 					function(res) {
 						if(res) {
-							this.$http.delete('/api/posts/' + this.$route.params.id).then(function(res) {
+							this.$http.delete('/api/posts/' + id).then(function(res) {
 								if(res.data.error) {
 									modals.alert(res.data.error.message)
 								} else if(res.data.success) {
-									this.$router.go('/posts');
+									this.$router.push('posts');
 								}
 							}, function(err) {
 								console.log(err);
@@ -290,44 +299,46 @@ module.exports = function (Vue) {
 				});
 			}
 		},
-		ready: function() {
+		mounted: function() {
 			var self = this;
 
-			tooltip('#post-options', {
-				items: [
-					{title: 'Delete post', click: this.deletePost},
-					{title: 'Preview blog post', click: ()=>{window.open('/blog/post/' + self.slug)} },
-					{title: () => this.commentsAllowed ? 'Disable comments' : 'Enable comments', click: this.toggleComments},
-					{title: () => this.published ? 'Unpublish post' : 'Publish draft', click: this.togglePublished}
-				]
-			})
+			this.nextTick(function() {
+				tooltip('#post-options', {
+					items: [
+						{title: 'Delete post', click: this.deletePost},
+						{title: 'Preview blog post', click: ()=>{window.open('/blog/post/' + self.slug)} },
+						{title: () => this.commentsAllowed ? 'Disable comments' : 'Enable comments', click: this.toggleComments},
+						{title: () => this.published ? 'Unpublish post' : 'Publish draft', click: this.togglePublished}
+					]
+				})
 
-			var id = this.$route.params.id;
-			if(id) {
-				this.$http.get('/api/posts/' + id).then(function(res) {
-					if(res.data.error) {
-						modals.alert(res.data.error.message, function() {
-							this.$router.go('/posts')
-						}.bind(this));
-					} else {
-						this.title = res.data.title;
-						this.markdown = res.data.markdown;
-						this.tags = res.data.tags;
-						this.published = res.data.published;
-						this.slug = res.data.slug;
-						if(typeof res.data.commentsAllowed !== 'undefined') {
-							this.commentsAllowed = res.data.commentsAllowed;
+				var id = this.$route.params.id;
+				if(id) {
+					this.$http.get('/api/posts/' + id).then(function(res) {
+						if(res.data.error) {
+							modals.alert(res.data.error.message, function() {
+								this.$router.push('posts')
+							}.bind(this));
+						} else {
+							this.title = res.data.title;
+							this.markdown = res.data.markdown;
+							this.tags = res.data.tags;
+							this.published = res.data.published;
+							this.slug = res.data.slug;
+							if(typeof res.data.commentsAllowed !== 'undefined') {
+								this.commentsAllowed = res.data.commentsAllowed;
+							}
 						}
-					}
-				}, function(err) {
-					if(err) {
-						console.log(err);
-						modals.alert(Errors.unknown.message, function() {
-							this.$router.go('/posts')
-						}.bind(this));
-					}
-				});
-			}
+					}, function(err) {
+						if(err) {
+							console.log(err);
+							modals.alert(Errors.unknown.message, function() {
+								this.$router.push('posts')
+							}.bind(this));
+						}
+					});
+				}
+			});
 		}
 	});
 };
