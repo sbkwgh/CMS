@@ -34,6 +34,14 @@ userSchema.pre('save', function(next) {
 	});
 });
 
+
+//TODO: Change posts with previous author and author id
+userSchema.pre('update', function(next) {
+	this.authorId = author.replace(/\s/g, '-') + '-' + shortid.generate();
+	next();
+});
+
+
 userSchema.statics.findPostsByUser = function(authorId, cb) {
 	User.findOne({authorId: authorId}, function(err, user) {
 		if(err) {
