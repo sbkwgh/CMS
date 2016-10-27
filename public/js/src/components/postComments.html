@@ -4,9 +4,7 @@
 		<div id='form-box'>
 			<div id='comments-message' v-if='commentsMessage.length'>{{commentsMessage}}</div>
 			<div>
-				<template v-if='cookies.author'>
-					<b id='author-commenting'>Commenting as {{cookies.author}}</b>
-				</template>
+				<span v-if='cookies.author' id='author-commenting'>Commenting as {{cookies.author}}</span>
 				<template v-else>
 					<label>Your name:</label> <input v-model='name'>
 				</template>
