@@ -77,7 +77,7 @@ router.all('*', function(req, res, next) {
 });
 
 router.get('/', function(req, res) {
-	User.findOne({authorId: req.session.authorId}, function(err, user) {
+	User.findOne({_id: req.session._id}, function(err, user) {
 		if(err) {
 			console.log(err)
 			res.json({error: Errors.unknown});
@@ -94,15 +94,14 @@ router.put('/', function(req, res) {
 	if(!params) {
 		res.json({error: Errors.invalidParams});
 	} else {
-		User.where({_id: req.session._id})
-		    .update(params, function(err) {
-		    	if(err) {
-		    		console.log(err)
-		    		res.json({error: Errors.unknown});
-		    	} else {
-		    		res.json({success: true});
-		    	}
-		    });
+		User.updateAndSetAuthorId(req.session._id, params, function(err) {
+			if(err) {
+				console.log(err)
+				res.json({error: Errors.unknown});
+			} else {
+				res.json({success: true});
+			}
+		});
 	}
 });
 
