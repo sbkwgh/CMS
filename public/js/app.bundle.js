@@ -17680,10 +17680,10 @@
 			},
 			events: {
 				tags: function(tags) {
-					this.tags = tags;
+					this._tags = tags;
 				},
 				event: function(event) {
-					this[event]();
+					this.events[event]();
 				}
 			},
 			methods: {
@@ -17758,6 +17758,10 @@
 							this.ui.saving = !this.ui.saving;
 						}
 					};
+
+					console.log(postObj)
+
+					return;
 
 					toggleSaving();
 					this.$http.put('/api/posts/' + id, postObj).then(function(res) {
