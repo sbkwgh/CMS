@@ -37,7 +37,7 @@ module.exports = function(Vue) {
 				this.$http
 					.put('/api/account', {
 						author: this.account.author.trim(),
-						biography: this.biography.trim()
+						biography: this.account.biography.trim()
 					})
 					.then(function(res) {
 						this.account.saving.settings = false;

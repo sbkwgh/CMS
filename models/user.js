@@ -34,6 +34,34 @@ userSchema.pre('save', function(next) {
 	});
 });
 
+
+userSchema.statics.updateAndSetAuthorId = function(_id, params, cb) {
+	User.findOne({_id: _id}, function(err, user) {
+		if(err) {
+			cb(err)
+		} else {
+			if(user.author !== params.author) {
+				params.authorId =
+					params.author.replace(/\s/g, '-') +
+					'-' + shortid.generate();
+			}
+
+			updateUser();
+		}
+	});
+
+	function updateUser() {
+		User.where({_id: _id})
+		    .update(params, function(err) {
+		    	if(err) {
+		    		cb(err)
+		    	} else {
+		    		cb(null);
+		    	}
+		    });
+	}
+};
+
 userSchema.statics.findPostsByUser = function(authorId, cb) {
 	User.findOne({authorId: authorId}, function(err, user) {
 		if(err) {
@@ -43,7 +71,7 @@ userSchema.statics.findPostsByUser = function(authorId, cb) {
 		} else {
 			var JSONUser = user.toJSON();
 
-			Post.find({authorId: user.authorId}, function(err, posts) {
+			Post.find({user: user._id}).populate('user').exec(function(err, posts) {
 				if(err) {
 					cb(err);
 				} else {

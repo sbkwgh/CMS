@@ -1,8 +1,14 @@
 var express = require('express');
 var User = require('../../models/user.js');
 var Errors = require('../../errors.js');
+var paramsValidator = require('../../paramsValidator.js');
 
 var router = express.Router();
+
+var updateValidator = paramsValidator({
+	biography: 'string',
+	author: 'string'
+});
 
 router.post('/', function(req, res) {
 	User.findOne({}, function(err, user) {
@@ -28,7 +34,7 @@ router.post('/', function(req, res) {
 				} else {
 					req.session.loggedIn = true;
 					req.session.author = user.author;
-					req.session.authorId = user.authorId;
+					req.session._id = user._id;
 
 					res.cookie('author', req.body.author);
 
@@ -51,7 +57,7 @@ router.post('/:username', function(req, res) {
 		} else if(verified) {
 			req.session.loggedIn = true;
 			req.session.author = user.author;
-			req.session.authorId = user.authorId;
+			req.session._id = user._id;
 
 			res.cookie('author', user.author);
 
@@ -71,7 +77,7 @@ router.all('*', function(req, res, next) {
 });
 
 router.get('/', function(req, res) {
-	User.findOne({authorId: req.session.authorId}, function(err, user) {
+	User.findOne({_id: req.session._id}, function(err, user) {
 		if(err) {
 			console.log(err)
 			res.json({error: Errors.unknown});
@@ -80,6 +86,23 @@ router.get('/', function(req, res) {
 			res.json(JSONUser);
 		}
 	});
+});
+
+router.put('/', function(req, res) {
+	var params = updateValidator(req.body);
+
+	if(!params) {
+		res.json({error: Errors.invalidParams});
+	} else {
+		User.updateAndSetAuthorId(req.session._id, params, function(err) {
+			if(err) {
+				console.log(err)
+				res.json({error: Errors.unknown});
+			} else {
+				res.json({success: true});
+			}
+		});
+	}
 });
 
 router.delete('/:username', function(req, res) {
