@@ -94,14 +94,15 @@ router.put('/', function(req, res) {
 	if(!params) {
 		res.json({error: Errors.invalidParams});
 	} else {
-		User.findOneAndUpdate({authorId: req.session.authorId}, params, {}, function(err) {
-			if(err) {
-				console.log(err)
-				res.json({error: Errors.unknown});
-			} else {
-				res.json({success: true});
-			}
-		});
+		User.where({_id: req.session._id})
+		    .update(params, function(err) {
+		    	if(err) {
+		    		console.log(err)
+		    		res.json({error: Errors.unknown});
+		    	} else {
+		    		res.json({success: true});
+		    	}
+		    });
 	}
 });
 
