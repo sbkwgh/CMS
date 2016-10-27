@@ -34,7 +34,7 @@ router.post('/', function(req, res) {
 				} else {
 					req.session.loggedIn = true;
 					req.session.author = user.author;
-					req.session.authorId = user.authorId;
+					req.session._id = user._id;
 
 					res.cookie('author', req.body.author);
 
@@ -57,7 +57,7 @@ router.post('/:username', function(req, res) {
 		} else if(verified) {
 			req.session.loggedIn = true;
 			req.session.author = user.author;
-			req.session.authorId = user.authorId;
+			req.session._id = user._id;
 
 			res.cookie('author', user.author);
 
