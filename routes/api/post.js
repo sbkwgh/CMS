@@ -87,8 +87,7 @@ router.post('/', function(req, res) {
 		postObject.published = req.body.published;
 	}
 	
-	postObject.author = req.session.author;
-	postObject.authorId = req.session.authorId;
+	postObject.user = req.session._id;
 	
 	var post = new Post(postObject);
 	post.save(function(err, savedPost) {
