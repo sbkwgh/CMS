@@ -19,7 +19,6 @@ var NavigationMenu = Vue.extend({
 				<router-link
 					class='menu-item'
 					v-bind:class='{"selected": selected === menuItem.route}'
-					v-on:click='changeRoute(menuItem.route)'
 					v-bind:to='menuItem.route'
 				>
 					<i class='fa fa-fw' :class='menuItem.icon'></i>
@@ -27,11 +26,6 @@ var NavigationMenu = Vue.extend({
 				</router-link>
 			</template>
 		</div>`,
-	methods: {
-		changeRoute: function(route) {
-			this.selected = route;
-		}
-	},
 	mounted: function() {
 		var self = this;
 
@@ -39,7 +33,9 @@ var NavigationMenu = Vue.extend({
 
 		this.$router.beforeEach(function(to, from, next) {
 			var route = '/'+to.path.split('/')[1];
-			this.selected = '/'+ to.path.split('/')[1];
+			self.selected = route;
+
+			next();
 		});
 	}
 });
