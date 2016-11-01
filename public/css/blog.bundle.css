@@ -349,7 +349,8 @@ header {
     border-radius: 0.125rem;
     border: thin solid gray;
     padding: 0.25rem 0.375rem;
-    font-size: 0.8rem; }
+    font-size: 0.8rem;
+    resize: none; }
     #comments input:focus, #comments textarea:focus {
       border-color: #1699e0; }
   #comments #comments-flex {

@@ -6,7 +6,7 @@
 	<link rel="stylesheet" type="text/css" href="/public/css/blog.bundle.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 </head>
-<body id='app'>
+<body>
 	<header>
 		<a href='/blog'>{{settings.blogTitle}}</a>
 		<div>{{settings.blogDescription}}</div>
@@ -42,7 +42,9 @@
 		<div id='sidebar'><div>{% autoescape false %}{{settings.blogSidebarHTML}}{% endautoescape %}</div></div>
 	</div>
 	{% if post %}
-		<post-comments post-id='{{post._id.toString()}}' comments-message='{{settings.commentsMessage}}'></post-comments>
+		<div id='app'>
+			<post-comments post-id='{{post._id.toString()}}' comments-message='{{settings.commentsMessage}}'></post-comments>
+		</div>
 	{% endif %}
 
 	<script src='/public/js/blog.bundle.js'></script>

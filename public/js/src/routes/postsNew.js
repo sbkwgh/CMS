@@ -146,7 +146,6 @@ var PostsNew = Vue.extend({
 		},
 		saveButton: function() {
 			if(this.$route.path === '/posts/new') {
-				console.log('here')
 				this.createPost();
 			} else {
 				this.updatePost({}, {button: 'save', message: 'All changes saved'});
@@ -157,6 +156,8 @@ var PostsNew = Vue.extend({
 		},
 
 		buttonMessage: function(button, message) {
+			console.log(this.$refs)
+
 			if(button === 'save') {
 				titleTooltip(this.$refs.saveButton, message, 3000);
 			} else if(button === 'options') {
@@ -183,12 +184,6 @@ var PostsNew = Vue.extend({
 					this.ui.saving = !this.ui.saving;
 				}
 			};
-
-			console.log(postObj)
-			console.log(this.tags)
-			console.log(postObjAdditions)
-
-			return;
 
 			toggleSaving();
 			this.$http.put('/api/posts/' + id, postObj).then(function(res) {
@@ -224,7 +219,7 @@ var PostsNew = Vue.extend({
 					modals.alert(res.data.error.message);
 				} else {
 					this.buttonMessage('save', 'Draft saved');
-						this.$router.push({ name: 'posts/post', params: {id: res.data._id} });
+					this.$router.push('post/' + res.data._id);
 				}
 				this.ui.saving = false;
 			}, function(err) {
@@ -235,9 +230,6 @@ var PostsNew = Vue.extend({
 		},
 		deletePost: function() {
 			var id = this.$route.params.id;
-
-			console.log(this.$route)
-			console.log(this.$router)
 
 			modals.confirm(
 				'Are you sure you want to delete this draft and published post? ' +
