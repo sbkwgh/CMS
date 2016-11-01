@@ -17,10 +17,6 @@
     #main-container #editor #display #display-output blockquote p, #post-display_card #post-display_card-html blockquote p {
       padding: 0.5rem; }
 
-.full-width-height {
-  height: 100%;
-  width: 100%; }
-
 .no-select, #main-container #editor #display #display-output #display-output-none {
   -webkit-touch-callout: none;
   /* iOS Safari */
@@ -916,18 +912,18 @@ input, textarea {
   #settings td {
     vertical-align: top; }
 
-#widgets-holder {
+div.widgets-holder {
   display: flex;
   overflow-y: auto;
   max-height: 100%;
   flex-wrap: wrap;
   justify-content: center;
   padding: 0.5rem 0px; }
-  #widgets-holder::after {
+  div.widgets-holder::after {
     content: '';
     height: 0.5rem;
     width: 100%; }
-  #widgets-holder .widget {
+  div.widgets-holder .widget {
     border: 0;
     border-radius: 0.25rem;
     box-shadow: 0px 1px 0.2rem rgba(100, 100, 100, 0.1);
@@ -938,7 +934,7 @@ input, textarea {
     margin: 0.5rem;
     overflow: hidden;
     text-align: center; }
-    #widgets-holder .widget .widget-no_analytics {
+    div.widgets-holder .widget .widget-no_analytics {
       width: 100%;
       height: calc(100% - 2.5rem);
       color: rgba(255, 255, 255, 0.9);
@@ -947,13 +943,13 @@ input, textarea {
       display: flex;
       flex-direction: column;
       justify-content: center; }
-      #widgets-holder .widget .widget-no_analytics i {
+      div.widgets-holder .widget .widget-no_analytics i {
         font-size: 8rem;
         margin-bottom: 0.75rem;
         text-align: center;
         text-shadow: 1px 1px 1px #80808033;
         display: block; }
-    #widgets-holder .widget .widget-loading {
+    div.widgets-holder .widget .widget-loading {
       width: 100%;
       height: calc(100% - 2.5rem);
       color: rgba(255, 255, 255, 0.9);
@@ -961,10 +957,10 @@ input, textarea {
       display: flex;
       flex-direction: column;
       justify-content: center; }
-      #widgets-holder .widget .widget-loading i {
+      div.widgets-holder .widget .widget-loading i {
         text-shadow: 1px 1px 1px #80808033;
         display: block; }
-    #widgets-holder .widget .description {
+    div.widgets-holder .widget .description {
       background-color: #f2f1f3;
       height: 2.5rem;
       display: flex;
@@ -975,11 +971,11 @@ input, textarea {
       width: 100%;
       border-radius: 0px 0px 0.25rem 0.25rem;
       border: thin solid #e0e0e0; }
-      #widgets-holder .widget .description .menu {
+      div.widgets-holder .widget .description .menu {
         cursor: pointer; }
-        #widgets-holder .widget .description .menu:hover {
+        div.widgets-holder .widget .description .menu:hover {
           text-decoration: underline; }
-    #widgets-holder .widget #time-now {
+    div.widgets-holder .widget #time-now {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -987,20 +983,20 @@ input, textarea {
       color: #fff;
       height: calc(100% - 2.5rem);
       flex-direction: column; }
-      #widgets-holder .widget #time-now .time {
+      div.widgets-holder .widget #time-now .time {
         font-size: 4rem;
         font-family: "Montserrat", sans-serif; }
-      #widgets-holder .widget #time-now .date {
+      div.widgets-holder .widget #time-now .date {
         font-size: 2rem;
         font-family: "Roboto", sans-serif; }
-    #widgets-holder .widget #most-viewed-posts {
+    div.widgets-holder .widget #most-viewed-posts {
       padding: 0;
       height: calc(100% - 2.5rem);
       overflow-y: auto;
       margin: 0;
       counter-reset: top-posts;
       list-style-type: none; }
-      #widgets-holder .widget #most-viewed-posts li {
+      div.widgets-holder .widget #most-viewed-posts li {
         margin: 0;
         padding: 0.5rem 0;
         cursor: pointer;
@@ -1009,73 +1005,73 @@ input, textarea {
         text-align: left;
         transition: 0.2s all;
         font-size: 0.9rem; }
-        #widgets-holder .widget #most-viewed-posts li span {
+        div.widgets-holder .widget #most-viewed-posts li span {
           padding: 0 0.5rem; }
-        #widgets-holder .widget #most-viewed-posts li div {
+        div.widgets-holder .widget #most-viewed-posts li div {
           font-size: 1.25rem;
           font-family: "Roboto", sans-serif;
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;
           padding: 0 0.5rem; }
-          #widgets-holder .widget #most-viewed-posts li div::before {
+          div.widgets-holder .widget #most-viewed-posts li div::before {
             counter-increment: top-posts;
             content: counter(top-posts) ". "; }
-        #widgets-holder .widget #most-viewed-posts li:hover {
+        div.widgets-holder .widget #most-viewed-posts li:hover {
           filter: brightness(0.95); }
-      #widgets-holder .widget #most-viewed-posts li.most-viewed {
+      div.widgets-holder .widget #most-viewed-posts li.most-viewed {
         width: auto;
         background-color: #aba9a6;
         color: #fff; }
-        #widgets-holder .widget #most-viewed-posts li.most-viewed div {
+        div.widgets-holder .widget #most-viewed-posts li.most-viewed div {
           font-family: "Montserrat", sans-serif;
           font-size: 1.5rem; }
-      #widgets-holder .widget #most-viewed-posts li:nth-child(2) {
+      div.widgets-holder .widget #most-viewed-posts li:nth-child(2) {
         background-color: #dad8d3; }
-      #widgets-holder .widget #most-viewed-posts li:nth-child(3) {
+      div.widgets-holder .widget #most-viewed-posts li:nth-child(3) {
         background-color: #fbfaf9; }
-      #widgets-holder .widget #most-viewed-posts li.no-show {
+      div.widgets-holder .widget #most-viewed-posts li.no-show {
         cursor: default !important; }
-        #widgets-holder .widget #most-viewed-posts li.no-show::before {
+        div.widgets-holder .widget #most-viewed-posts li.no-show::before {
           content: '' !important; }
-        #widgets-holder .widget #most-viewed-posts li.no-show:hover {
+        div.widgets-holder .widget #most-viewed-posts li.no-show:hover {
           filter: none; }
-    #widgets-holder .widget #page-views {
+    div.widgets-holder .widget #page-views {
       background-color: #FCC342; }
-      #widgets-holder .widget #page-views text {
+      div.widgets-holder .widget #page-views text {
         font-weight: 400;
         fill: #fff; }
-      #widgets-holder .widget #page-views polyline {
+      div.widgets-holder .widget #page-views polyline {
         stroke: #fff;
         stroke-width: 2;
         fill: none; }
-      #widgets-holder .widget #page-views .vertex {
+      div.widgets-holder .widget #page-views .vertex {
         fill: #b4b4b4;
         stroke: #fff;
         stroke-width: 2.25; }
-      #widgets-holder .widget #page-views .vertex-hidden {
+      div.widgets-holder .widget #page-views .vertex-hidden {
         fill: transparent; }
-      #widgets-holder .widget #page-views .vertex-hover {
+      div.widgets-holder .widget #page-views .vertex-hover {
         fill: #f09710; }
-      #widgets-holder .widget #page-views .axis path, #widgets-holder .widget #page-views .axis line {
+      div.widgets-holder .widget #page-views .axis path, div.widgets-holder .widget #page-views .axis line {
         fill: none;
         stroke: #fff;
         shape-rendering: crispEdges; }
-    #widgets-holder .widget #browser-pie-chart text {
+    div.widgets-holder .widget #browser-pie-chart text {
       font-family: 'Roboto', sans-serif;
       font-weight: 300;
       text-anchor: middle;
       font-size: 0.8rem;
       fill: #fff; }
-    #widgets-holder .widget #browser-pie-chart .label-text {
+    div.widgets-holder .widget #browser-pie-chart .label-text {
       font-weight: 200;
       cursor: pointer;
       font-size: 0.75rem; }
-    #widgets-holder .widget #browser-pie-chart .sector-label {
+    div.widgets-holder .widget #browser-pie-chart .sector-label {
       pointer-events: none; }
-    #widgets-holder .widget #browser-pie-chart .sector {
+    div.widgets-holder .widget #browser-pie-chart .sector {
       transition: all 0.2s; }
-      #widgets-holder .widget #browser-pie-chart .sector:hover {
+      div.widgets-holder .widget #browser-pie-chart .sector:hover {
         filter: brightness(112.5%) hue-rotate(20deg); }
 
 .widget-section {
@@ -1133,17 +1129,17 @@ svg {
   padding: 0.125rem 0.5rem; }
 
 @media (max-width: 1000px) {
-  #widgets-holder div.widget:nth-child(2) {
+  div.widgets-holder div.widget:nth-child(2) {
     width: calc(100% * 2/3 - 2rem); } }
 @media (min-width: 1300px) {
-  #widgets-holder div.widget {
+  div.widgets-holder div.widget {
     width: calc(100% / 4 - 1.5rem); }
-  #widgets-holder div.widget:nth-child(2) {
+  div.widgets-holder div.widget:nth-child(2) {
     width: calc(100% * 1/2 - 2rem); } }
 @media (max-width: 850px) {
-  #widgets-holder div.widget {
+  div.widgets-holder div.widget {
     width: calc(100% / 2 - 1.5rem); }
-  #widgets-holder div.widget:nth-child(2) {
+  div.widgets-holder div.widget:nth-child(2) {
     width: calc(100% / 2 - 1.5rem); } }
 .template-infobox {
   border: 0.125rem solid #e0e0e0;
@@ -1232,6 +1228,7 @@ strong {
   top: 2.5rem;
   font-weight: 300;
   font-size: 0.9rem;
+  overflow-y: auto;
   background-color: #f9f8f4; }
 
 /*# sourceMappingURL=bundle.css.map */

@@ -1,4 +1,4 @@
-#widgets-holder {
+div.widgets-holder {
 	display: flex;
 	overflow-y: auto;
 	max-height: 100%;
@@ -280,14 +280,14 @@ svg {
 
 
 @media(max-width: 1000px) {
-	#widgets-holder {
+	div.widgets-holder {
 		div.widget:nth-child(2) {
 			width: calc(100% * 2/3 - 2rem);
 		}
 	}
 }
 @media(min-width: 1300px) {
-	#widgets-holder {
+	div.widgets-holder {
 		div.widget {
 			width: calc(100% / 4 - 1.5rem);
 		}
@@ -297,7 +297,7 @@ svg {
 	}
 }
 @media(max-width: 850px) {
-	#widgets-holder {
+	div.widgets-holder {
 		div.widget {
 			width: calc(100% / 2 - 1.5rem);
 		}

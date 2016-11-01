@@ -334,7 +334,7 @@ var Dashboard = Vue.extend({
 	},
 	mounted: function() {
 		this.$nextTick(function() {
-			flexBoxGridCorrect('#widgets-holder', 'widget');
+			flexBoxGridCorrect('.widgets-holder', 'widget');
 
 			setInterval(function() {
 				this.ui.time = (new Date()).toTimeString().slice(0,5);

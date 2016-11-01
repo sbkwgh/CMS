@@ -74,11 +74,6 @@ $color-red: #D73C2C;
 	}
 }
 
-.full-width-height {
-	height: 100%;
-	width: 100%;
-}
-
 .no-select {
 	-webkit-touch-callout: none; /* iOS Safari */
 	-webkit-user-select: none; /* Chrome/Safari/Opera */
@@ -199,6 +194,6 @@ strong {
 	top: 2.5rem;
 	font-weight: 300;
 	font-size: 0.9rem;
-
+	overflow-y: auto;
 	background-color: #f9f8f4;
 }
