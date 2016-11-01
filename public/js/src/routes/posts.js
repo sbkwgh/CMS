@@ -50,7 +50,7 @@ var Posts = Vue.extend({
 			this.selectedId = id;
 		}, 
 		editPost: function() {
-			this.$router.push({ name: 'posts/post', params: {id: this.selectedId} });
+			this.$router.push('posts/post/' + this.selectedId);
 		},
 		deletePost: function() {
 			var index = this.posts.indexOf(this.selectedPost);
