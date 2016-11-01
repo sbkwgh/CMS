@@ -7,22 +7,24 @@
 	<link href="https://fonts.googleapis.com/css?family=Montserrat|Roboto:300,400,500" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="/public/css/bundle.css">
 </head>
-<body id='app'>
-	<div class='top-bar'>
-		<div id='logo'>
-			CMS
+<body>
+	<div id='app'>
+		<div class='top-bar'>
+			<div id='logo'>
+				CMS
+			</div>
+			<div class='actions'>
+				<router-link class='action' to="posts/new">New post</router-link>
+				<div class='action selected' onclick='window.open("/blog")'>View blog</div>
+			</div>
+			<div id='logout' onclick='location.href="/logout"'>
+				<span>Logout</span>
+			</div>
 		</div>
-		<div class='actions'>
-			<div class='action' v-link="{'path': '/posts/new'}"'>New post</div>
-			<div class='action selected' onclick='window.open("/blog")'>View blog</div>
+		<navigation-menu></navigation-menu>
+		<div id='main-container'>
+			<router-view></router-view>
 		</div>
-		<div id='logout' onclick='location.href="/logout"'>
-			<span>Logout</span>
-		</div>
-	</div>
-	<navigation-menu></navigation-menu>
-	<div id='main-container'>
-		<router-view></router-view>
 	</div>
 	<script type="text/javascript" src="/public/js/app.bundle.js"></script>
 </body>

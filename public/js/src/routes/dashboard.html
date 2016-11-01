@@ -43,11 +43,11 @@
 			<div class='widget-section'>
 				<div id='widget-section-published' v-bind:style='{"flex-grow": posts.published}'>
 					<div class='widget-section-number'>{{posts.published}}</div>
-					<div class='widget-section-description'>published {{"post" | pluralize (posts.published)}}</div>
+					<div class='widget-section-description'>published {{"post" | pluralize(posts.published || 0)}}</div>
 				</div>
 				<div id='widget-section-drafts' v-bind:style='{"flex-grow": posts.drafts}'>
 					<div class='widget-section-number'>{{posts.drafts}}</div>
-					<div class='widget-section-description'>{{"draft" | pluralize (posts.drafts)}}</div>
+					<div class='widget-section-description'>{{"draft" | pluralize(posts.drafts || 0)}}</div>
 				</div>
 			</div>
 		</template>

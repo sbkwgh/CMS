@@ -17,6 +17,10 @@
     #main-container #editor #display #display-output blockquote p, #post-display_card #post-display_card-html blockquote p {
       padding: 0.5rem; }
 
+.full-width-height {
+  height: 100%;
+  width: 100%; }
+
 .no-select, #main-container #editor #display #display-output #display-output-none {
   -webkit-touch-callout: none;
   /* iOS Safari */
@@ -231,7 +235,9 @@ input, textarea {
       font-weight: 300;
       border-radius: 0.25rem;
       transition: all 0.2s;
-      margin: 0 1rem; }
+      margin: 0 1rem;
+      color: #fff;
+      text-decoration: none; }
       .top-bar .actions .action:hover {
         background-color: #4D4D4D; }
   .top-bar #logout {
@@ -262,7 +268,9 @@ input, textarea {
     font-weight: 300;
     color: #fff;
     cursor: default;
-    transition: 0.2s all; }
+    transition: 0.2s all;
+    display: block;
+    text-decoration: none; }
     .navigation-menu .menu-item:hover {
       background-color: #606060; }
     .navigation-menu .menu-item span, .navigation-menu .menu-item i {
@@ -1199,7 +1207,7 @@ svg {
     border-color: #cecece;
     box-shadow: 0px 0px 0.125rem rgba(100, 100, 100, 0.15); }
 
-html, body {
+html, body, #app {
   margin: 0;
   padding: 0;
   font-family: "Roboto", sans-serif;

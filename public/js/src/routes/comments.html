@@ -1,38 +1,40 @@
-<div id='comments-selection'>
-	<div class='option' v-on:click='selectCategory(category.name)' v-bind:class='{"selected": category.selected}' v-for='category in categories'>
-		<i class='fa fa-fw fa-{{category.icon}}'></i> {{category.name}}
-	</div>
-</div>
-<div id='comments-box'>
-	<div id='comment-box-bar' v-if='filteredComments.length'>
-		<span>Sort by: {{sortBy}}&nbsp;<i class='fa fa-caret-down'></i></span>
-	</div>
-	<div class='loading-box no-select' v-if='!filteredComments.length'>
-		{{loadingText}}
-	</div>
-	<div class='comment' v-for='(comment, index) in filteredComments'>
-		<div class='comment-status' v-bind:class='"comment-" + comment.status'></div>
-		<div class='center-column'>
-			<div class='title-bar'>
-				<div>
-					<span class='fa fa-pencil' v-if='comment.author' data-title='Comment by blog author'></span>
-					<span class='name' data-title='Name of commenter'>{{comment.name}}</span>
-					<span class='reply' data-title='Replying to \"{{comment.repliesName}}\"' v-if='comment.repliesName'>
-						<i class='fa fa-long-arrow-right fa-fw'></i>{{comment.repliesName}}
-					</span>
-					in post
-					<span class='post-title' v-on:click='openPost(comment.postId)' data-title='Title of post - click to open in new tab'>"{{comment.postTitle}}"</span>
-				</div>
-				<span class='date-created'>{{comment.dateCreated | prettyDate('and time')}}</span>
-			</div>
-			<div class='comment-body'>
-				{{comment.commentBody}}
-			</div>
+<div class="full-width-height">
+	<div id='comments-selection'>
+		<div class='option' v-on:click='selectCategory(category.name)' v-bind:class='{"selected": category.selected}' v-for='category in categories'>
+			<i class='fa fa-fw' :class='"fa-" + category.icon'></i> {{category.name}}
 		</div>
-		<div class='comment-buttons'>
-			<div class='button btn-green' v-on:click='moderate(comment._id, index, "approved")' v-if='comment.status === "pending" || comment.status === "removed"'>Approve</div>
-			<div class='button btn-red'  v-on:click='moderate(comment._id, index, "removed")'  v-if='comment.status === "pending" || comment.status === "approved"'>Remove</div>
-			<div class='button btn-red'  v-on:click='deletePost(comment._id, comment)'  v-if='comment.status === "removed"'>Delete</div>
+	</div>
+	<div id='comments-box'>
+		<div id='comment-box-bar' v-if='filteredComments.length'>
+			<span>Sort by: {{sortBy}}&nbsp;<i class='fa fa-caret-down'></i></span>
+		</div>
+		<div class='loading-box no-select' v-if='!filteredComments.length'>
+			{{loadingText}}
+		</div>
+		<div class='comment' v-for='(comment, index) in filteredComments'>
+			<div class='comment-status' v-bind:class='"comment-" + comment.status'></div>
+			<div class='center-column'>
+				<div class='title-bar'>
+					<div>
+						<span class='fa fa-pencil' v-if='comment.author' data-title='Comment by blog author'></span>
+						<span class='name' data-title='Name of commenter'>{{comment.name}}</span>
+						<span class='reply' v-bind:data-title="'Replying to \"' + comment.repliesName + '\"'" v-if='comment.repliesName'>
+							<i class='fa fa-long-arrow-right fa-fw'></i>{{comment.repliesName}}
+						</span>
+						in post
+						<span class='post-title' v-on:click='openPost(comment.postId)' data-title='Title of post - click to open in new tab'>"{{comment.postTitle}}"</span>
+					</div>
+					<span class='date-created'>{{comment.dateCreated | prettyDate('and time')}}</span>
+				</div>
+				<div class='comment-body'>
+					{{comment.commentBody}}
+				</div>
+			</div>
+			<div class='comment-buttons'>
+				<div class='button btn-green' v-on:click='moderate(comment._id, index, "approved")' v-if='comment.status === "pending" || comment.status === "removed"'>Approve</div>
+				<div class='button btn-red'  v-on:click='moderate(comment._id, index, "removed")'  v-if='comment.status === "pending" || comment.status === "approved"'>Remove</div>
+				<div class='button btn-red'  v-on:click='deletePost(comment._id, comment)'  v-if='comment.status === "removed"'>Delete</div>
+			</div>
 		</div>
 	</div>
 </div>

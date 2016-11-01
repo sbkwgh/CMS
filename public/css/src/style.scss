@@ -74,6 +74,11 @@ $color-red: #D73C2C;
 	}
 }
 
+.full-width-height {
+	height: 100%;
+	width: 100%;
+}
+
 .no-select {
 	-webkit-touch-callout: none; /* iOS Safari */
 	-webkit-user-select: none; /* Chrome/Safari/Opera */
@@ -165,7 +170,7 @@ input, textarea {
 @import "routes/dashboard";
 @import "routes/design";
 
-html, body {
+html, body, #app {
 	margin: 0;
 	padding: 0;
 	font-family: $font-content;

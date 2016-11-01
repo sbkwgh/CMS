@@ -1,18 +1,20 @@
-<div class='template-infobox'>
-	Select a blog template from the left-hand box to customise fonts, colours, etc.
-</div>
-<div class='template-select'>
-	<div 
-		class='template-item'
-		v-for='template in templates'
-		v-bind:class='{"template-item-selected": selected === template.name}'
-		v-on:click='select(template.name)'
-	>
-		{{template.name}}
+<div>
+	<div class='template-infobox'>
+		Select a blog template from the left-hand box to customise fonts, colours, etc.
 	</div>
-</div>
-<div class='template-options'>
-	<div class='preview-image'>
-		<div class='button'>Preview</div>
+	<div class='template-select'>
+		<div 
+			class='template-item'
+			v-for='template in templates'
+			v-bind:class='{"template-item-selected": selected === template.name}'
+			v-on:click='select(template.name)'
+		>
+			{{template.name}}
+		</div>
+	</div>
+	<div class='template-options'>
+		<div class='preview-image'>
+			<div class='button'>Preview</div>
+		</div>
 	</div>
 </div>

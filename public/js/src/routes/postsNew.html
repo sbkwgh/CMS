@@ -1,57 +1,59 @@
-<div id='title-bar'>
-	<input id='post-title' v-model='title' placeholder='Post title' spellcheck="false">
-</div>
-<div id='editor'>
-	<div id='markdown-editor' v-bind:class="{'focus': ui.markdownEditorActive}">
-		<div class='editor-bar'>
-			<span>Markdown</span>
-			<div id='editor-formatting'>
-				<i id='me-bold' v-on:click='bold()' title='Bold' class='fa fa-bold'></i>
-				<i id='me-italic' v-on:click='italic()' title='Italic' class='fa fa-italic'></i>
-				<i id='me-link' v-on:click='link()' title='Link' class='fa fa-link'></i>
-				<i id='me-list-ul' v-on:click='bulletPoint()' title='Bullet-point' class='fa fa-list-ul'></i>
-				<i id='me-picture' v-on:click='image()' title='Image' class="fa fa-picture-o"></i>
+<div class='full-width-height'>
+	<div id='title-bar'>
+		<input id='post-title' v-model='title' placeholder='Post title' spellcheck="false">
+	</div>
+	<div id='editor'>
+		<div id='markdown-editor' v-bind:class="{'focus': ui.markdownEditorActive}">
+			<div class='editor-bar'>
+				<span>Markdown</span>
+				<div id='editor-formatting'>
+					<i id='me-bold' v-on:click='bold()' title='Bold' class='fa fa-bold'></i>
+					<i id='me-italic' v-on:click='italic()' title='Italic' class='fa fa-italic'></i>
+					<i id='me-link' v-on:click='link()' title='Link' class='fa fa-link'></i>
+					<i id='me-list-ul' v-on:click='bulletPoint()' title='Bullet-point' class='fa fa-list-ul'></i>
+					<i id='me-picture' v-on:click='image()' title='Image' class="fa fa-picture-o"></i>
+				</div>
+			</div>
+			<textarea
+				v-on:focus='toggleFocusMarkdownEditor()'
+				v-on:blur='toggleFocusMarkdownEditor()' 
+				v-model='markdown'
+				placeholder="Write your blog post in markdown here">
+			</textarea>
+		</div>
+		<div id='display'>
+			<div class='editor-bar'>
+				<span>Display</span>
+				<div id='word-count'>
+					{{wordCountString}}
+				</div>
+			</div>
+			<div id='display-output'>
+				<div v-if='html.length' v-html='html'></div>
+				<span id='display-output-none' v-else>See the HTML output here</span>
 			</div>
 		</div>
-		<textarea
-			v-on:focus='toggleFocusMarkdownEditor()'
-			v-on:blur='toggleFocusMarkdownEditor()' 
-			v-model='markdown'
-			placeholder="Write your blog post in markdown here">
-		</textarea>
-	</div>
-	<div id='display'>
-		<div class='editor-bar'>
-			<span>Display</span>
-			<div id='word-count'>
-				{{wordCountString}}
+		<div id='options'>
+			<div 
+				id='post-options'
+				class='button btn-load'
+				v-bind:class='{"btn-disabled": ui.savingOptions}'
+				v-show='ui.isSavedPost'
+				ref='options-button'
+			>
+				<i class='fa fa-refresh fa-spin loading-icon'></i>
+				Post options
+			</div>
+			<div
+				v-on:click.self='saveButton()'
+				ref='save-button'
+				v-bind:class='{"btn-disabled": ui.saving}'
+				class='button btn-load btn-green'
+			>
+				<i class='fa fa-refresh fa-spin loading-icon'></i>
+				Save changes
 			</div>
 		</div>
-		<div id='display-output'>
-			<template v-if='html.length' v-html='html'></template>
-			<span id='display-output-none' v-else>See the HTML output here</span>
-		</div>
 	</div>
-	<div id='options'>
-		<div 
-			id='post-options'
-			class='button btn-load'
-			v-bind:class='{"btn-disabled": ui.savingOptions}'
-			v-show='ui.isSavedPost'
-			ref='options-button'
-		>
-			<i class='fa fa-refresh fa-spin loading-icon'></i>
-			Post options
-		</div>
-		<div
-			v-on:click.self='saveButton()'
-			ref='save-button'
-			v-bind:class='{"btn-disabled": ui.saving}'
-			class='button btn-load btn-green'
-		>
-			<i class='fa fa-refresh fa-spin loading-icon'></i>
-			Save changes
-		</div>
-	</div>
+	<tag-bar v-bind:tags='tags'></tag-bar>
 </div>
-<tag-bar v-bind:raw-tags='_tags'></tag-bar>
