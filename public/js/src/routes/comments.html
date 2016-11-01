@@ -1,6 +1,11 @@
 <div class="full-width-height">
 	<div id='comments-selection'>
-		<div class='option' v-on:click='selectCategory(category.name)' v-bind:class='{"selected": category.selected}' v-for='category in categories'>
+		<div
+			class='option'
+			v-on:click='selectCategory(category.name)'
+			v-bind:class='{"selected": selected === category.name}'
+			v-for='category in categories'
+		>
 			<i class='fa fa-fw' :class='"fa-" + category.icon'></i> {{category.name}}
 		</div>
 	</div>

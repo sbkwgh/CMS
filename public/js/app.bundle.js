@@ -10826,12 +10826,13 @@
 		data: function() {
 			return {
 				categories: [
-					{name: 'All comments', icon: 'comments-o', selected:true},
-					{name: 'Pending', icon: 'clock-o', selected:false},
-					{name: 'Approved', icon: 'check', selected:false},
-					{name: 'Removed', icon: 'times', selected:false},
-					{name: 'Settings', icon: 'cogs', selected:false}
+					{name: 'All comments', icon: 'comments-o'},
+					{name: 'Pending', icon: 'clock-o'},
+					{name: 'Approved', icon: 'check'},
+					{name: 'Removed', icon: 'times'},
+					{name: 'Settings', icon: 'cogs'}
 				],
+				selected: 'All comments',
 				comments: [],
 				sortBy: 'time',
 				loadingText: 'Loading...'
@@ -10839,7 +10840,6 @@
 		},
 		computed: {
 			filteredComments: function() {
-				var selected = this.categories.filter(category => category.selected)[0];
 				var sortedComments = this.comments.sort(function(a, b) {
 					if(this.sortBy === 'time') {
 						return new Date(b.dateCreated) - new Date(a.dateCreated);
@@ -10854,9 +10854,9 @@
 					}
 				}.bind(this));
 
-				if(selected.name === 'All comments') {
+				if(this.selected === 'All comments') {
 					return sortedComments;
-				} else if(selected.name !== 'Settings') {
+				} else if(this.selected !== 'Settings') {
 					return sortedComments.filter(comment => comment.status === selected.name.toLowerCase());
 				}
 			}
@@ -10868,14 +10868,7 @@
 					return;
 				}
 
-				this.categories.map(function(category) {
-					if(category.selected && category.name !== name) category.selected = false;
-					if(category.name === name) category.selected = true;
-
-					return category;
-				});
-
-				this.categories = this.categories;
+				this.selected = name;
 			},
 			moderate: function(id, index, action) {
 				this.$http
@@ -10965,7 +10958,7 @@
 /* 35 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"full-width-height\">\r\n\t<div id='comments-selection'>\r\n\t\t<div class='option' v-on:click='selectCategory(category.name)' v-bind:class='{\"selected\": category.selected}' v-for='category in categories'>\r\n\t\t\t<i class='fa fa-fw' :class='\"fa-\" + category.icon'></i> {{category.name}}\r\n\t\t</div>\r\n\t</div>\r\n\t<div id='comments-box'>\r\n\t\t<div id='comment-box-bar' v-if='filteredComments.length'>\r\n\t\t\t<span>Sort by: {{sortBy}}&nbsp;<i class='fa fa-caret-down'></i></span>\r\n\t\t</div>\r\n\t\t<div class='loading-box no-select' v-if='!filteredComments.length'>\r\n\t\t\t{{loadingText}}\r\n\t\t</div>\r\n\t\t<div class='comment' v-for='(comment, index) in filteredComments'>\r\n\t\t\t<div class='comment-status' v-bind:class='\"comment-\" + comment.status'></div>\r\n\t\t\t<div class='center-column'>\r\n\t\t\t\t<div class='title-bar'>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<span class='fa fa-pencil' v-if='comment.author' data-title='Comment by blog author'></span>\r\n\t\t\t\t\t\t<span class='name' data-title='Name of commenter'>{{comment.name}}</span>\r\n\t\t\t\t\t\t<span class='reply' v-bind:data-title=\"'Replying to \\\"' + comment.repliesName + '\\\"'\" v-if='comment.repliesName'>\r\n\t\t\t\t\t\t\t<i class='fa fa-long-arrow-right fa-fw'></i>{{comment.repliesName}}\r\n\t\t\t\t\t\t</span>\r\n\t\t\t\t\t\tin post\r\n\t\t\t\t\t\t<span class='post-title' v-on:click='openPost(comment.postId)' data-title='Title of post - click to open in new tab'>\"{{comment.postTitle}}\"</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<span class='date-created'>{{comment.dateCreated | prettyDate('and time')}}</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class='comment-body'>\r\n\t\t\t\t\t{{comment.commentBody}}\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class='comment-buttons'>\r\n\t\t\t\t<div class='button btn-green' v-on:click='moderate(comment._id, index, \"approved\")' v-if='comment.status === \"pending\" || comment.status === \"removed\"'>Approve</div>\r\n\t\t\t\t<div class='button btn-red'  v-on:click='moderate(comment._id, index, \"removed\")'  v-if='comment.status === \"pending\" || comment.status === \"approved\"'>Remove</div>\r\n\t\t\t\t<div class='button btn-red'  v-on:click='deletePost(comment._id, comment)'  v-if='comment.status === \"removed\"'>Delete</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n</div>";
+	module.exports = "<div class=\"full-width-height\">\r\n\t<div id='comments-selection'>\r\n\t\t<div\r\n\t\t\tclass='option'\r\n\t\t\tv-on:click='selectCategory(category.name)'\r\n\t\t\tv-bind:class='{\"selected\": selected === category.name}'\r\n\t\t\tv-for='category in categories'\r\n\t\t>\r\n\t\t\t<i class='fa fa-fw' :class='\"fa-\" + category.icon'></i> {{category.name}}\r\n\t\t</div>\r\n\t</div>\r\n\t<div id='comments-box'>\r\n\t\t<div id='comment-box-bar' v-if='filteredComments.length'>\r\n\t\t\t<span>Sort by: {{sortBy}}&nbsp;<i class='fa fa-caret-down'></i></span>\r\n\t\t</div>\r\n\t\t<div class='loading-box no-select' v-if='!filteredComments.length'>\r\n\t\t\t{{loadingText}}\r\n\t\t</div>\r\n\t\t<div class='comment' v-for='(comment, index) in filteredComments'>\r\n\t\t\t<div class='comment-status' v-bind:class='\"comment-\" + comment.status'></div>\r\n\t\t\t<div class='center-column'>\r\n\t\t\t\t<div class='title-bar'>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<span class='fa fa-pencil' v-if='comment.author' data-title='Comment by blog author'></span>\r\n\t\t\t\t\t\t<span class='name' data-title='Name of commenter'>{{comment.name}}</span>\r\n\t\t\t\t\t\t<span class='reply' v-bind:data-title=\"'Replying to \\\"' + comment.repliesName + '\\\"'\" v-if='comment.repliesName'>\r\n\t\t\t\t\t\t\t<i class='fa fa-long-arrow-right fa-fw'></i>{{comment.repliesName}}\r\n\t\t\t\t\t\t</span>\r\n\t\t\t\t\t\tin post\r\n\t\t\t\t\t\t<span class='post-title' v-on:click='openPost(comment.postId)' data-title='Title of post - click to open in new tab'>\"{{comment.postTitle}}\"</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<span class='date-created'>{{comment.dateCreated | prettyDate('and time')}}</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class='comment-body'>\r\n\t\t\t\t\t{{comment.commentBody}}\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class='comment-buttons'>\r\n\t\t\t\t<div class='button btn-green' v-on:click='moderate(comment._id, index, \"approved\")' v-if='comment.status === \"pending\" || comment.status === \"removed\"'>Approve</div>\r\n\t\t\t\t<div class='button btn-red'  v-on:click='moderate(comment._id, index, \"removed\")'  v-if='comment.status === \"pending\" || comment.status === \"approved\"'>Remove</div>\r\n\t\t\t\t<div class='button btn-red'  v-on:click='deletePost(comment._id, comment)'  v-if='comment.status === \"removed\"'>Delete</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n</div>";
 
 /***/ },
 /* 36 */

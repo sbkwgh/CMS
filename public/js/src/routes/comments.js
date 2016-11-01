@@ -8,12 +8,13 @@ var Comments = Vue.extend({
 	data: function() {
 		return {
 			categories: [
-				{name: 'All comments', icon: 'comments-o', selected:true},
-				{name: 'Pending', icon: 'clock-o', selected:false},
-				{name: 'Approved', icon: 'check', selected:false},
-				{name: 'Removed', icon: 'times', selected:false},
-				{name: 'Settings', icon: 'cogs', selected:false}
+				{name: 'All comments', icon: 'comments-o'},
+				{name: 'Pending', icon: 'clock-o'},
+				{name: 'Approved', icon: 'check'},
+				{name: 'Removed', icon: 'times'},
+				{name: 'Settings', icon: 'cogs'}
 			],
+			selected: 'All comments',
 			comments: [],
 			sortBy: 'time',
 			loadingText: 'Loading...'
@@ -21,7 +22,6 @@ var Comments = Vue.extend({
 	},
 	computed: {
 		filteredComments: function() {
-			var selected = this.categories.filter(category => category.selected)[0];
 			var sortedComments = this.comments.sort(function(a, b) {
 				if(this.sortBy === 'time') {
 					return new Date(b.dateCreated) - new Date(a.dateCreated);
@@ -36,9 +36,9 @@ var Comments = Vue.extend({
 				}
 			}.bind(this));
 
-			if(selected.name === 'All comments') {
+			if(this.selected === 'All comments') {
 				return sortedComments;
-			} else if(selected.name !== 'Settings') {
+			} else if(this.selected !== 'Settings') {
 				return sortedComments.filter(comment => comment.status === selected.name.toLowerCase());
 			}
 		}
@@ -50,14 +50,7 @@ var Comments = Vue.extend({
 				return;
 			}
 
-			this.categories.map(function(category) {
-				if(category.selected && category.name !== name) category.selected = false;
-				if(category.name === name) category.selected = true;
-
-				return category;
-			});
-
-			this.categories = this.categories;
+			this.selected = name;
 		},
 		moderate: function(id, index, action) {
 			this.$http
