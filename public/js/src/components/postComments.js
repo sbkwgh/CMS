@@ -108,10 +108,10 @@ var PostsComments = Vue.extend({
 				});
 		},
 		replyComment: function(comment) {
-			this.replies.name = comment.comment.name;
-			this.replies._id = comment.comment._id;
+			this.replies.name = comment.name;
+			this.replies._id = comment._id;
 
-			this.head = comment.comment.head || comment.comment._id;
+			this.head = comment.head || comment._id;
 			location.hash = 'form-box';
 		},
 		cancelReply: function() {

@@ -22,7 +22,7 @@
 		<div class='comments-box'>
 			<div v-if='!sortedComments.length' class='comment'>{{ui.loadingMessage}}</div>
 			<div class='comment' v-bind:class='{"comment-indent": comment.head, "comment-highlight": highlight===comment._id}' v-for='comment in sortedComments'>
-				<div class='comment-reply' v-if='comment.status === "approved"' v-on:click='replyComment(this)'>Reply to this comment</div>
+				<div class='comment-reply' v-if='comment.status === "approved"' v-on:click='replyComment(comment)'>Reply to this comment</div>
 				<div class='comment-header'>
 					<div class='comment-name' v-if='comment.status === "approved"'>
 						<span class='fa fa-pencil' style='cursor: default;' v-if='comment.author' data-title='Comment by blog author'></span>
@@ -39,8 +39,8 @@
 					<div class='comment-time'>{{comment.dateCreated|timeString}}</div>
 				</div>
 				<div class='comment-comment'>
-					<template v-html='comment.moderatedMessage' v-if='comment.status !== "approved"'>
-					</template>
+					<span v-html='comment.moderatedMessage' v-if='comment.status !== "approved"'>
+					</span>
 					<template v-else>
 						{{comment.commentBody}}
 					</template>
