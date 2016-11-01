@@ -18,3 +18,5 @@ var Design = Vue.extend({
 		}
 	}
 });
+
+module.exports = Design;

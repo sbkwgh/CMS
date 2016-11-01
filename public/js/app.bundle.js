@@ -28492,6 +28492,8 @@
 		}
 	});
 
+	module.exports = Design;
+
 /***/ },
 /* 45 */
 /***/ function(module, exports) {
