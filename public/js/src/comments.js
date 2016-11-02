@@ -1,4 +1,4 @@
-var Vue = require('vue');
+var Vue = require('vue/dist/vue.js');
 var VueResource = require('vue-resource');
 
 window.titleTooltip = require('./titleTooltip.js');
@@ -24,7 +24,7 @@ Vue.filter('timeString',  function(value) {
 	);
 });
 
-Vue.component('post-comments', require('./components/postComments.js')(Vue));
+Vue.component('post-comments', require('./components/postComments.js'));
 
 var App = new Vue({
 	el: '#app'

@@ -39,7 +39,7 @@ var Comments = Vue.extend({
 			if(this.selected === 'All comments') {
 				return sortedComments;
 			} else if(this.selected !== 'Settings') {
-				return sortedComments.filter(comment => comment.status === selected.name.toLowerCase());
+				return sortedComments.filter(comment => comment.status === this.selected.toLowerCase());
 			}
 		}
 	},

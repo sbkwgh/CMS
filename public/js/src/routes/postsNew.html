@@ -39,14 +39,14 @@
 				class='button btn-load'
 				v-bind:class='{"btn-disabled": ui.savingOptions}'
 				v-show='ui.isSavedPost'
-				ref='options-button'
+				ref='optionsButton'
 			>
 				<i class='fa fa-refresh fa-spin loading-icon'></i>
 				Post options
 			</div>
 			<div
 				v-on:click.self='saveButton()'
-				ref='save-button'
+				ref='saveButton'
 				v-bind:class='{"btn-disabled": ui.saving}'
 				class='button btn-load btn-green'
 			>

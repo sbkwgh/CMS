@@ -5627,10 +5627,17 @@
 	      /* istanbul ignore if */
 	      if (!hasTransition) {
 	        return false
+<<<<<<< HEAD
 	      }
 	      if (this._hasMove != null) {
 	        return this._hasMove
 	      }
+=======
+	      }
+	      if (this._hasMove != null) {
+	        return this._hasMove
+	      }
+>>>>>>> upgrade-vuejs2
 	      addTransitionClass(el, moveClass);
 	      var info = getTransitionInfo(el);
 	      removeTransitionClass(el, moveClass);
@@ -6848,15 +6855,23 @@
 	      } else {
 	        keys.push(key);
 	      }
+<<<<<<< HEAD
 	    }
 	    if (keys.length) {
 	      code = genKeyFilter(keys) + code;
 	    }
+=======
+	    }
+	    if (keys.length) {
+	      code = genKeyFilter(keys) + code;
+	    }
+>>>>>>> upgrade-vuejs2
 	    var handlerCode = simplePathRE.test(handler.value)
 	      ? handler.value + '($event)'
 	      : handler.value;
 	    return 'function($event){' + code + handlerCode + '}'
 	  }
+<<<<<<< HEAD
 	}
 
 	function genKeyFilter (keys) {
@@ -6893,6 +6908,44 @@
 
 	/*  */
 
+=======
+	}
+
+	function genKeyFilter (keys) {
+	  var code = keys.length === 1
+	    ? normalizeKeyCode(keys[0])
+	    : Array.prototype.concat.apply([], keys.map(normalizeKeyCode));
+	  if (Array.isArray(code)) {
+	    return ("if(" + (code.map(function (c) { return ("$event.keyCode!==" + c); }).join('&&')) + ")return;")
+	  } else {
+	    return ("if($event.keyCode!==" + code + ")return;")
+	  }
+	}
+
+	function normalizeKeyCode (key) {
+	  return (
+	    parseInt(key, 10) || // number keyCode
+	    keyCodes[key] || // built-in alias
+	    ("_k(" + (JSON.stringify(key)) + ")") // custom alias
+	  )
+	}
+
+	/*  */
+
+	function bind$2 (el, dir) {
+	  el.wrapData = function (code) {
+	    return ("_b(" + code + "," + (dir.value) + (dir.modifiers && dir.modifiers.prop ? ',true' : '') + ")")
+	  };
+	}
+
+	var baseDirectives = {
+	  bind: bind$2,
+	  cloak: noop
+	};
+
+	/*  */
+
+>>>>>>> upgrade-vuejs2
 	// configurable state
 	var warn$2;
 	var transforms$1;
@@ -7067,10 +7120,17 @@
 	      hasRuntime = true;
 	      res += "{name:\"" + (dir.name) + "\",rawName:\"" + (dir.rawName) + "\"" + (dir.value ? (",value:(" + (dir.value) + "),expression:" + (JSON.stringify(dir.value))) : '') + (dir.arg ? (",arg:\"" + (dir.arg) + "\"") : '') + (dir.modifiers ? (",modifiers:" + (JSON.stringify(dir.modifiers))) : '') + "},";
 	    }
+<<<<<<< HEAD
 	  }
 	  if (hasRuntime) {
 	    return res.slice(0, -1) + ']'
 	  }
+=======
+	  }
+	  if (hasRuntime) {
+	    return res.slice(0, -1) + ']'
+	  }
+>>>>>>> upgrade-vuejs2
 	}
 
 	function genChildren (el) {
@@ -7243,6 +7303,7 @@
 	  }
 	  return data
 	}
+<<<<<<< HEAD
 
 	var klass$1 = {
 	  staticKeys: ['staticClass'],
@@ -7250,6 +7311,15 @@
 	  genData: genData$1
 	};
 
+=======
+
+	var klass$1 = {
+	  staticKeys: ['staticClass'],
+	  transformNode: transformNode,
+	  genData: genData$1
+	};
+
+>>>>>>> upgrade-vuejs2
 	/*  */
 
 	function transformNode$1 (el) {
@@ -7455,6 +7525,7 @@
 	  text: text,
 	  html: html
 	};
+<<<<<<< HEAD
 
 	/*  */
 
@@ -7483,6 +7554,36 @@
 	  return compile$1(template, options)
 	}
 
+=======
+
+	/*  */
+
+	var cache = Object.create(null);
+
+	var baseOptions = {
+	  isIE: isIE,
+	  expectHTML: true,
+	  modules: modules$1,
+	  staticKeys: genStaticKeys(modules$1),
+	  directives: directives$1,
+	  isReservedTag: isReservedTag,
+	  isUnaryTag: isUnaryTag,
+	  mustUseProp: mustUseProp,
+	  getTagNamespace: getTagNamespace,
+	  isPreTag: isPreTag
+	};
+
+	function compile$$1 (
+	  template,
+	  options
+	) {
+	  options = options
+	    ? extend(extend({}, baseOptions), options)
+	    : baseOptions;
+	  return compile$1(template, options)
+	}
+
+>>>>>>> upgrade-vuejs2
 	function compileToFunctions (
 	  template,
 	  options,
@@ -7505,6 +7606,7 @@
 	        );
 	      }
 	    }
+<<<<<<< HEAD
 	  }
 	  var key = options && options.delimiters
 	    ? String(options.delimiters) + template
@@ -7563,6 +7665,66 @@
 	    return this
 	  }
 
+=======
+	  }
+	  var key = options && options.delimiters
+	    ? String(options.delimiters) + template
+	    : template;
+	  if (cache[key]) {
+	    return cache[key]
+	  }
+	  var res = {};
+	  var compiled = compile$$1(template, options);
+	  res.render = makeFunction(compiled.render);
+	  var l = compiled.staticRenderFns.length;
+	  res.staticRenderFns = new Array(l);
+	  for (var i = 0; i < l; i++) {
+	    res.staticRenderFns[i] = makeFunction(compiled.staticRenderFns[i]);
+	  }
+	  {
+	    if (res.render === noop || res.staticRenderFns.some(function (fn) { return fn === noop; })) {
+	      _warn(
+	        "failed to compile template:\n\n" + template + "\n\n" +
+	        detectErrors(compiled.ast).join('\n') +
+	        '\n\n',
+	        vm
+	      );
+	    }
+	  }
+	  return (cache[key] = res)
+	}
+
+	function makeFunction (code) {
+	  try {
+	    return new Function(code)
+	  } catch (e) {
+	    return noop
+	  }
+	}
+
+	/*  */
+
+	var idToTemplate = cached(function (id) {
+	  var el = query(id);
+	  return el && el.innerHTML
+	});
+
+	var mount = Vue$3.prototype.$mount;
+	Vue$3.prototype.$mount = function (
+	  el,
+	  hydrating
+	) {
+	  el = el && query(el);
+
+	  /* istanbul ignore if */
+	  if (el === document.body || el === document.documentElement) {
+	    "development" !== 'production' && warn(
+	      "Do not mount Vue to <html> or <body> - mount to normal elements instead."
+	    );
+	    return this
+	  }
+
+>>>>>>> upgrade-vuejs2
 	  var options = this.$options;
 	  // resolve template/el and convert to render function
 	  if (!options.render) {
@@ -7615,9 +7777,31 @@
 	Vue$3.compile = compileToFunctions;
 
 	return Vue$3;
+<<<<<<< HEAD
+
+	})));
+=======
+>>>>>>> upgrade-vuejs2
 
 	})));
 
+<<<<<<< HEAD
+/***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * vue-router v2.0.1
+	 * (c) 2016 Evan You
+	 * @license MIT
+	 */
+	(function (global, factory) {
+	   true ? module.exports = factory() :
+	  typeof define === 'function' && define.amd ? define(factory) :
+	  (global.VueRouter = factory());
+	}(this, (function () { 'use strict';
+
+=======
 
 /***/ },
 /* 2 */
@@ -7634,6 +7818,7 @@
 	  (global.VueRouter = factory());
 	}(this, (function () { 'use strict';
 
+>>>>>>> upgrade-vuejs2
 	var View = {
 	  name: 'router-view',
 	  functional: true,
@@ -7811,6 +7996,7 @@
 	  var res = Object.create(null)
 
 	  query = query.trim().replace(/^(\?|#|&)/, '')
+<<<<<<< HEAD
 
 	  if (!query) {
 	    return res
@@ -7933,6 +8119,184 @@
 	    )
 	  } else {
 	    return false
+=======
+
+	  if (!query) {
+	    return res
+	  }
+
+	  query.split('&').forEach(function (param) {
+	    var parts = param.replace(/\+/g, ' ').split('=')
+	    var key = decode(parts.shift())
+	    var val = parts.length > 0
+	      ? decode(parts.join('='))
+	      : null
+
+	    if (res[key] === undefined) {
+	      res[key] = val
+	    } else if (Array.isArray(res[key])) {
+	      res[key].push(val)
+	    } else {
+	      res[key] = [res[key], val]
+	    }
+	  })
+
+	  return res
+	}
+
+	function stringifyQuery (obj) {
+	  var res = obj ? Object.keys(obj).sort().map(function (key) {
+	    var val = obj[key]
+
+	    if (val === undefined) {
+	      return ''
+	    }
+
+	    if (val === null) {
+	      return encode(key)
+	    }
+
+	    if (Array.isArray(val)) {
+	      var result = []
+	      val.slice().forEach(function (val2) {
+	        if (val2 === undefined) {
+	          return
+	        }
+	        if (val2 === null) {
+	          result.push(encode(key))
+	        } else {
+	          result.push(encode(key) + '=' + encode(val2))
+	        }
+	      })
+	      return result.join('&')
+	    }
+
+	    return encode(key) + '=' + encode(val)
+	  }).filter(function (x) { return x.length > 0; }).join('&') : null
+	  return res ? ("?" + res) : ''
+	}
+
+	/*  */
+
+	function createRoute (
+	  record,
+	  location,
+	  redirectedFrom
+	) {
+	  var route = {
+	    name: location.name || (record && record.name),
+	    meta: (record && record.meta) || {},
+	    path: location.path || '/',
+	    hash: location.hash || '',
+	    query: location.query || {},
+	    params: location.params || {},
+	    fullPath: getFullPath(location),
+	    matched: record ? formatMatch(record) : []
+	  }
+	  if (redirectedFrom) {
+	    route.redirectedFrom = getFullPath(redirectedFrom)
+	  }
+	  return Object.freeze(route)
+	}
+
+	// the starting route that represents the initial state
+	var START = createRoute(null, {
+	  path: '/'
+	})
+
+	function formatMatch (record) {
+	  var res = []
+	  while (record) {
+	    res.unshift(record)
+	    record = record.parent
+>>>>>>> upgrade-vuejs2
+	  }
+	  return res
+	}
+
+<<<<<<< HEAD
+	function isObjectEqual (a, b) {
+	  if ( a === void 0 ) a = {};
+	  if ( b === void 0 ) b = {};
+
+	  var aKeys = Object.keys(a)
+	  var bKeys = Object.keys(b)
+	  if (aKeys.length !== bKeys.length) {
+	    return false
+	  }
+	  return aKeys.every(function (key) { return String(a[key]) === String(b[key]); })
+	}
+
+	function isIncludedRoute (current, target) {
+	  return (
+	    current.path.indexOf(target.path) === 0 &&
+	    (!target.hash || current.hash === target.hash) &&
+	    queryIncludes(current.query, target.query)
+	  )
+	}
+
+	function queryIncludes (current, target) {
+	  for (var key in target) {
+	    if (!(key in current)) {
+	      return false
+	    }
+	  }
+	  return true
+	}
+
+	/*  */
+
+	function normalizeLocation (
+	  raw,
+	  current,
+	  append
+	) {
+	  var next = typeof raw === 'string' ? { path: raw } : raw
+	  if (next.name || next._normalized) {
+	    return next
+	  }
+
+	  var parsedPath = parsePath(next.path || '')
+	  var basePath = (current && current.path) || '/'
+	  var path = parsedPath.path
+	    ? resolvePath(parsedPath.path, basePath, append)
+	    : (current && current.path) || '/'
+	  var query = resolveQuery(parsedPath.query, next.query)
+	  var hash = next.hash || parsedPath.hash
+	  if (hash && hash.charAt(0) !== '#') {
+	    hash = "#" + hash
+	  }
+
+=======
+	function getFullPath (ref) {
+	  var path = ref.path;
+	  var query = ref.query; if ( query === void 0 ) query = {};
+	  var hash = ref.hash; if ( hash === void 0 ) hash = '';
+
+	  return (path || '/') + stringifyQuery(query) + hash
+	}
+
+	var trailingSlashRE = /\/$/
+	function isSameRoute (a, b) {
+	  if (b === START) {
+	    return a === b
+	  } else if (!b) {
+	    return false
+	  } else if (a.path && b.path) {
+	    return (
+	      a.path.replace(trailingSlashRE, '') === b.path.replace(trailingSlashRE, '') &&
+	      a.hash === b.hash &&
+	      isObjectEqual(a.query, b.query)
+	    )
+	  } else if (a.name && b.name) {
+	    return (
+	      a.name === b.name &&
+	      a.hash === b.hash &&
+	      isObjectEqual(a.query, b.query) &&
+	      isObjectEqual(a.params, b.params)
+	    )
+	  } else {
+	    return false
 	  }
 	}
 
@@ -7988,6 +8352,7 @@
 	    hash = "#" + hash
 	  }
 
+>>>>>>> upgrade-vuejs2
 	  return {
 	    _normalized: true,
 	    path: path,
@@ -9051,6 +9416,7 @@
 	    }
 	  })
 	}
+<<<<<<< HEAD
 
 	function flatMapComponents (
 	  matched,
@@ -9296,6 +9662,253 @@
 	    })
 	  };
 
+=======
+
+	function flatMapComponents (
+	  matched,
+	  fn
+	) {
+	  return Array.prototype.concat.apply([], matched.map(function (m) {
+	    return Object.keys(m.components).map(function (key) { return fn(
+	      m.components[key],
+	      m.instances[key],
+	      m, key
+	    ); })
+	  }))
+	}
+
+	/*  */
+
+	function saveScrollPosition (key) {
+	  if (!key) { return }
+	  window.sessionStorage.setItem(key, JSON.stringify({
+	    x: window.pageXOffset,
+	    y: window.pageYOffset
+	  }))
+	}
+
+	function getScrollPosition (key) {
+	  if (!key) { return }
+	  return JSON.parse(window.sessionStorage.getItem(key))
+	}
+
+	function getElementPosition (el) {
+	  var docRect = document.documentElement.getBoundingClientRect()
+	  var elRect = el.getBoundingClientRect()
+	  return {
+	    x: elRect.left - docRect.left,
+	    y: elRect.top - docRect.top
+	  }
+	}
+
+	function isValidPosition (obj) {
+	  return isNumber(obj.x) || isNumber(obj.y)
+	}
+
+	function normalizePosition (obj) {
+	  return {
+	    x: isNumber(obj.x) ? obj.x : window.pageXOffset,
+	    y: isNumber(obj.y) ? obj.y : window.pageYOffset
+	  }
+	}
+
+	function isNumber (v) {
+	  return typeof v === 'number'
+	}
+
+	/*  */
+
+
+	var genKey = function () { return String(Date.now()); }
+	var _key = genKey()
+
+	var HTML5History = (function (History) {
+	  function HTML5History (router, base) {
+	    var this$1 = this;
+
+	    History.call(this, router, base)
+
+	    this.transitionTo(getLocation(this.base))
+
+	    var expectScroll = router.options.scrollBehavior
+	    window.addEventListener('popstate', function (e) {
+	      _key = e.state && e.state.key
+	      var current = this$1.current
+	      this$1.transitionTo(getLocation(this$1.base), function (next) {
+	        if (expectScroll) {
+	          this$1.handleScroll(next, current, true)
+	        }
+	      })
+	    })
+
+	    if (expectScroll) {
+	      window.addEventListener('scroll', function () {
+	        saveScrollPosition(_key)
+	      })
+	    }
+	  }
+
+	  if ( History ) HTML5History.__proto__ = History;
+	  HTML5History.prototype = Object.create( History && History.prototype );
+	  HTML5History.prototype.constructor = HTML5History;
+
+	  HTML5History.prototype.go = function go (n) {
+	    window.history.go(n)
+	  };
+
+	  HTML5History.prototype.push = function push (location) {
+	    var this$1 = this;
+
+	    var current = this.current
+	    this.transitionTo(location, function (route) {
+	      pushState(cleanPath(this$1.base + route.fullPath))
+	      this$1.handleScroll(route, current, false)
+	    })
+	  };
+
+	  HTML5History.prototype.replace = function replace (location) {
+	    var this$1 = this;
+
+	    var current = this.current
+	    this.transitionTo(location, function (route) {
+	      replaceState(cleanPath(this$1.base + route.fullPath))
+	      this$1.handleScroll(route, current, false)
+	    })
+	  };
+
+	  HTML5History.prototype.ensureURL = function ensureURL () {
+	    if (getLocation(this.base) !== this.current.fullPath) {
+	      replaceState(cleanPath(this.base + this.current.fullPath))
+	    }
+	  };
+
+	  HTML5History.prototype.handleScroll = function handleScroll (to, from, isPop) {
+	    var router = this.router
+	    if (!router.app) {
+	      return
+	    }
+
+	    var behavior = router.options.scrollBehavior
+	    if (!behavior) {
+	      return
+	    }
+	    assert(typeof behavior === 'function', "scrollBehavior must be a function")
+
+	    // wait until re-render finishes before scrolling
+	    router.app.$nextTick(function () {
+	      var position = getScrollPosition(_key)
+	      var shouldScroll = behavior(to, from, isPop ? position : null)
+	      if (!shouldScroll) {
+	        return
+	      }
+	      var isObject = typeof shouldScroll === 'object'
+	      if (isObject && typeof shouldScroll.selector === 'string') {
+	        var el = document.querySelector(shouldScroll.selector)
+	        if (el) {
+	          position = getElementPosition(el)
+	        } else if (isValidPosition(shouldScroll)) {
+	          position = normalizePosition(shouldScroll)
+	        }
+	      } else if (isObject && isValidPosition(shouldScroll)) {
+	        position = normalizePosition(shouldScroll)
+	      }
+
+	      if (position) {
+	        window.scrollTo(position.x, position.y)
+	      }
+	    })
+	  };
+
+	  return HTML5History;
+	}(History));
+
+	function getLocation (base) {
+	  var path = window.location.pathname
+	  if (base && path.indexOf(base) === 0) {
+	    path = path.slice(base.length)
+	  }
+	  return (path || '/') + window.location.search + window.location.hash
+	}
+
+	function pushState (url, replace) {
+	  // try...catch the pushState call to get around Safari
+	  // DOM Exception 18 where it limits to 100 pushState calls
+	  var history = window.history
+	  try {
+	    if (replace) {
+	      history.replaceState({ key: _key }, '', url)
+	    } else {
+	      _key = genKey()
+	      history.pushState({ key: _key }, '', url)
+	    }
+	    saveScrollPosition(_key)
+	  } catch (e) {
+	    window.location[replace ? 'assign' : 'replace'](url)
+	  }
+	}
+
+	function replaceState (url) {
+	  pushState(url, true)
+	}
+
+	/*  */
+
+
+	var HashHistory = (function (History) {
+	  function HashHistory (router, base, fallback) {
+	    var this$1 = this;
+
+	    History.call(this, router, base)
+
+	    // check history fallback deeplinking
+	    if (fallback && this.checkFallback()) {
+	      return
+	    }
+
+	    ensureSlash()
+	    this.transitionTo(getHash(), function () {
+	      window.addEventListener('hashchange', function () {
+	        this$1.onHashChange()
+	      })
+	    })
+	  }
+
+	  if ( History ) HashHistory.__proto__ = History;
+	  HashHistory.prototype = Object.create( History && History.prototype );
+	  HashHistory.prototype.constructor = HashHistory;
+
+	  HashHistory.prototype.checkFallback = function checkFallback () {
+	    var location = getLocation(this.base)
+	    if (!/^\/#/.test(location)) {
+	      window.location.replace(
+	        cleanPath(this.base + '/#' + location)
+	      )
+	      return true
+	    }
+	  };
+
+	  HashHistory.prototype.onHashChange = function onHashChange () {
+	    if (!ensureSlash()) {
+	      return
+	    }
+	    this.transitionTo(getHash(), function (route) {
+	      replaceHash(route.fullPath)
+	    })
+	  };
+
+	  HashHistory.prototype.push = function push (location) {
+	    this.transitionTo(location, function (route) {
+	      pushHash(route.fullPath)
+	    })
+	  };
+
+	  HashHistory.prototype.replace = function replace (location) {
+	    this.transitionTo(location, function (route) {
+	      replaceHash(route.fullPath)
+	    })
+	  };
+
+>>>>>>> upgrade-vuejs2
 	  HashHistory.prototype.go = function go (n) {
 	    window.history.go(n)
 	  };
@@ -9308,6 +9921,7 @@
 
 	  return HashHistory;
 	}(History));
+<<<<<<< HEAD
 
 	function ensureSlash () {
 	  var path = getHash()
@@ -9326,6 +9940,26 @@
 	  return index === -1 ? '' : href.slice(index + 1)
 	}
 
+=======
+
+	function ensureSlash () {
+	  var path = getHash()
+	  if (path.charAt(0) === '/') {
+	    return true
+	  }
+	  replaceHash('/' + path)
+	  return false
+	}
+
+	function getHash () {
+	  // We can't use window.location.hash here because it's not
+	  // consistent across browsers - Firefox will pre-decode it!
+	  var href = window.location.href
+	  var index = href.indexOf('#')
+	  return index === -1 ? '' : href.slice(index + 1)
+	}
+
+>>>>>>> upgrade-vuejs2
 	function pushHash (path) {
 	  window.location.hash = path
 	}
@@ -9370,6 +10004,7 @@
 
 	  AbstractHistory.prototype.go = function go (n) {
 	    var this$1 = this;
+<<<<<<< HEAD
 
 	    var targetIndex = this.index + n
 	    if (targetIndex < 0 || targetIndex >= this.stack.length) {
@@ -9796,6 +10431,434 @@
 
 	    var promise = this;
 
+=======
+
+	    var targetIndex = this.index + n
+	    if (targetIndex < 0 || targetIndex >= this.stack.length) {
+	      return
+	    }
+	    var route = this.stack[targetIndex]
+	    this.confirmTransition(route, function () {
+	      this$1.index = targetIndex
+	      this$1.updateRoute(route)
+	    })
+	  };
+
+	  AbstractHistory.prototype.ensureURL = function ensureURL () {
+	    // noop
+	  };
+
+	  return AbstractHistory;
+	}(History));
+
+	/*  */
+
+	var VueRouter = function VueRouter (options) {
+	  if ( options === void 0 ) options = {};
+
+	  this.app = null
+	  this.options = options
+	  this.beforeHooks = []
+	  this.afterHooks = []
+	  this.match = createMatcher(options.routes || [])
+
+	  var mode = options.mode || 'hash'
+	  this.fallback = mode === 'history' && !supportsHistory
+	  if (this.fallback) {
+	    mode = 'hash'
+	  }
+	  if (!inBrowser) {
+	    mode = 'abstract'
+	  }
+	  this.mode = mode
+	};
+
+	var prototypeAccessors = { currentRoute: {} };
+
+	prototypeAccessors.currentRoute.get = function () {
+	  return this.history && this.history.current
+	};
+
+	VueRouter.prototype.init = function init (app /* Vue component instance */) {
+	    var this$1 = this;
+
+	  assert(
+	    install.installed,
+	    "not installed. Make sure to call `Vue.use(VueRouter)` " +
+	    "before creating root instance."
+	  )
+
+	  this.app = app
+
+	  var ref = this;
+	    var mode = ref.mode;
+	    var options = ref.options;
+	    var fallback = ref.fallback;
+	  switch (mode) {
+	    case 'history':
+	      this.history = new HTML5History(this, options.base)
+	      break
+	    case 'hash':
+	      this.history = new HashHistory(this, options.base, fallback)
+	      break
+	    case 'abstract':
+	      this.history = new AbstractHistory(this)
+	      break
+	    default:
+	      assert(false, ("invalid mode: " + mode))
+	  }
+
+	  this.history.listen(function (route) {
+	    this$1.app._route = route
+	  })
+	};
+
+	VueRouter.prototype.beforeEach = function beforeEach (fn) {
+	  this.beforeHooks.push(fn)
+	};
+
+	VueRouter.prototype.afterEach = function afterEach (fn) {
+	  this.afterHooks.push(fn)
+	};
+
+	VueRouter.prototype.push = function push (location) {
+	  this.history.push(location)
+	};
+
+	VueRouter.prototype.replace = function replace (location) {
+	  this.history.replace(location)
+	};
+
+	VueRouter.prototype.go = function go (n) {
+	  this.history.go(n)
+	};
+
+	VueRouter.prototype.back = function back () {
+	  this.go(-1)
+	};
+
+	VueRouter.prototype.forward = function forward () {
+	  this.go(1)
+	};
+
+	VueRouter.prototype.getMatchedComponents = function getMatchedComponents () {
+	  if (!this.currentRoute) {
+	    return []
+	  }
+	  return [].concat.apply([], this.currentRoute.matched.map(function (m) {
+	    return Object.keys(m.components).map(function (key) {
+	      return m.components[key]
+	    })
+	  }))
+	};
+
+	Object.defineProperties( VueRouter.prototype, prototypeAccessors );
+
+	VueRouter.install = install
+
+	if (inBrowser && window.Vue) {
+	  window.Vue.use(VueRouter)
+	}
+
+	return VueRouter;
+
+	})));
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	function applyStyles(el, obj) {
+		for(var style in obj) {
+			el.style[style] = obj[style];
+		}
+	}
+
+	function addTitleTooltip(el, text, timeLimit) {
+		var span = document.createElement('span');
+		var spanText = text
+			.replace('@content', el.innerHTML)
+			.replace(/@attr\(([^)]*)\)/gi, function(m, attr) {
+				return el.getAttribute(attr);
+			});
+
+		span.appendChild(document.createTextNode(spanText));
+		span.classList.add('title-tooltip');
+		applyStyles(span, {
+			'backgroundColor': 'rgb(60,60,60)',
+			'color': '#fff',
+			'fontFamily': "'Roboto', sans-serif",
+			'fontWeight': '30',
+			'fontSize': '0.75rem',
+			'padding': '0.25rem 0.5rem',
+			'position': 'absolute',
+			'zIndex': '3',
+			'border': '0',
+			'borderRadius': '0.2rem',
+			'opacity': '0',
+			'max-width': '15rem',
+			'transition': 'opacity 0.25s, margin-top 0.25s',
+			'pointer-events': 'none',
+			'marginTop': '0.3rem'
+		});
+		
+		var arrow = document.createElement('div');
+		applyStyles(arrow, {
+			'borderLeft': '0.5rem solid transparent',
+			'borderRight': '0.5rem solid transparent',
+			'borderTop': '0.5rem solid rgb(60,60,60)',
+			'position': 'absolute',
+			'left': 'calc(50% - 0.45rem)',
+			'bottom': '-0.4rem',
+			'pointer-events': 'none'
+		});
+
+		span.appendChild(arrow);
+		document.body.appendChild(span);
+
+		function positionTooltip() {
+			var coordsSpan = span.getBoundingClientRect();
+			var coordsEl = el.getBoundingClientRect();
+			var elMarginTop = +getComputedStyle(el).marginTop.slice(0,-2);
+			var body = document.body.getBoundingClientRect();
+
+			var elCenter = coordsEl.left + coordsEl.width/2;
+
+			span.style.left = "calc(" + elCenter + "px - " + coordsSpan.width/2 + "px)";
+
+			if(window.pageYOffset) {
+				span.style.top = (window.pageYOffset || document.documentElement.clientTop) + coordsEl.top +  - 2*coordsSpan.height + 'px';
+			} else {
+				span.style.top = coordsEl.top +  - 6 - coordsSpan.height + 'px';
+			}
+			
+			coordsSpan = span.getBoundingClientRect();
+			coordsEl = el.getBoundingClientRect();
+			var coordsArrow = arrow.getBoundingClientRect();
+			
+			if(coordsSpan.left <= 0) {
+				span.style.left = '8px';
+				arrow.style.left = "calc(" + elCenter + "px - " + coordsArrow.width + "px)";
+			}
+			if(coordsSpan.right >= body.width) {
+				span.style.left = null;
+				span.style.right = '8px';
+				arrow.style.left = null;
+				arrow.style.right = (coordsEl.y + coordsArrow.width) + "px";
+			}
+		}
+		positionTooltip();
+
+		var previousCoords = el.getBoundingClientRect();
+		var pollElementInterval;
+		function pollElement() {
+			if(!document.body.contains(span)) { 
+				clearInterval(pollElementInterval); 
+			}
+
+			var currentCoords = el.getBoundingClientRect();
+			if(
+				previousCoords.left !== currentCoords.left ||
+				previousCoords.width !== currentCoords.width ||
+				previousCoords.top !== currentCoords.top ||
+				previousCoords.height !== currentCoords.height
+			) {
+				positionTooltip();
+			}
+		}
+		pollElementInterval = setInterval(pollElement, 5);
+		
+		if(timeLimit) {
+			setTimeout(function() {
+				document.body.removeChild(span);
+			}, timeLimit);
+		}
+
+		setTimeout(function() {
+			span.style.opacity = '0.95';
+			span.style.marginTop = '0';
+		}, 250);
+
+		return span;
+	}
+
+	document.body.addEventListener('mouseover', function(ev) {
+		var title = ev.target.getAttribute('data-title');
+		
+		if(title) {
+			addTitleTooltip(ev.target, title);
+		}
+	});
+	document.body.addEventListener('mouseout', function(ev) {
+		var title = ev.target.getAttribute('data-title');
+		
+		if(title) {
+			document.body.removeChild(document.querySelector('.title-tooltip'));
+		}
+	});
+
+	/*
+	<a
+		href='link'
+		data-title='Here is a @attr(data-dynamic-attr) @content'
+		data-dynamic-attr='tooltip for a'
+	>
+		link
+	</a>
+	Gives: 'Here is a tooltip for a link'
+	*/
+
+	module.exports = addTitleTooltip;
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	var tooltipEventListeners = {};
+
+	function closeDiv(div) {
+		div.classList.add('tooltip-fade');
+
+		setTimeout(function() {
+			div.parentElement.removeChild(div);
+		}, 200);
+	}
+
+	function tooltip(tQueryString, tData) {
+		//Prevent multiple event listeners being added
+		if(tooltipEventListeners[tQueryString]) return;
+		tooltipEventListeners[tQueryString] = true;
+
+		function eventCb(ev) {
+			if(ev.target.matches(tQueryString)) {
+				 append(tData, ev.target)
+			 } else if(ev.target.parentElement.matches(tQueryString)) {
+			 	append(tData, ev.target.parentElement);
+			 }
+		} 
+
+		function getDiv(data) {
+			var innerHTML = 
+				`<div class='tooltip-triangle-gray'></div>
+				<div class='tooltip-triangle-white'></div>
+				<div class='tooltip-header'>
+						<span class='tooltip-header-title'>${data.header}</span>
+				</div>`;
+			
+			var div = document.createElement('div');
+			div.classList.add('tooltip');
+			div.innerHTML = innerHTML;
+			
+			data.items.forEach(function(item) {
+				var itemDiv = document.createElement('div');
+				itemDiv.classList.add('tooltip-item');
+
+				if(typeof item.title === 'function') {
+					itemDiv.appendChild(document.createTextNode(item.title()));
+				} else {
+					itemDiv.appendChild(document.createTextNode(item.title));
+				}
+				
+				itemDiv.addEventListener('click', function(ev) {
+					if(item.click) {
+						item.click(ev);
+					}
+					closeDiv(div);
+				})
+				
+				div.appendChild(itemDiv);
+			});
+
+			if(!data.header) {
+				div.removeChild(div.querySelector('.tooltip-header'));
+			}
+
+			return div; 
+		}
+
+		function append(data, el) {  
+			var div = getDiv(data);
+			document.body.appendChild(div);
+
+			var coordsDiv = div.getBoundingClientRect();
+			var coordsEl = el.getBoundingClientRect();
+			
+			var elCenter = coordsEl.left + coordsEl.width/2;
+		
+			div.style.left = "calc(" + elCenter + "px - 6.5rem)";
+			div.style.top = "calc(" + coordsEl.top + "px - " + (coordsDiv.height+5) + 'px)';
+
+			coordsDiv = div.getBoundingClientRect();
+
+			if(document.body.getBoundingClientRect().width <= coordsDiv.right) {
+				div.style.left = null;
+				div.style.right = '10px';
+
+				var triangleWhite = div.querySelector('.tooltip-triangle-white');
+				var triangleGray = div.querySelector('.tooltip-triangle-gray');
+
+				triangleWhite.style.position = 'fixed';
+				triangleWhite.style.left = elCenter - 4 + 'px';
+				triangleWhite.style.top = 'calc(' + coordsEl.bottom + 'px - 1px - 1.5rem)';
+
+				triangleGray.style.position = 'fixed';
+				triangleGray.style.left = elCenter - 7 + 'px';
+				triangleGray.style.top = 'calc(' + coordsEl.bottom + 'px - 1.5rem)';
+			}
+		}
+
+		document.body.addEventListener('click', eventCb);
+	}
+
+	document.body.addEventListener('click', function(ev) {
+		var tooltipEl = document.querySelector('.tooltip');
+		if(tooltipEl && !tooltipEl.contains(ev.target)) {
+			closeDiv(tooltipEl);
+		}
+	});
+
+	module.exports = tooltip;
+
+	/*var data = {
+		header: 'test',
+		items: [
+			{title: 'one', click: function() {alert('here')}},
+			{title: 'and another'},
+			{title: 'and another'}
+		]
+	};
+
+	tooltip('button', data);*/
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	/*!
+	 * vue-resource v1.0.3
+	 * https://github.com/vuejs/vue-resource
+	 * Released under the MIT License.
+	 */
+
+	'use strict';
+
+	/**
+	 * Promises/A+ polyfill v1.1.4 (https://github.com/bramstein/promis)
+	 */
+
+	var RESOLVED = 0;
+	var REJECTED = 1;
+	var PENDING = 2;
+
+	function Promise$1(executor) {
+
+	    this.state = PENDING;
+	    this.value = undefined;
+	    this.deferred = [];
+
+	    var promise = this;
+
+>>>>>>> upgrade-vuejs2
 	    try {
 	        executor(function (x) {
 	            promise.resolve(x);
@@ -10066,6 +11129,7 @@
 	function toLower(str) {
 	    return str ? str.toLowerCase() : '';
 	}
+<<<<<<< HEAD
 
 	function toUpper(str) {
 	    return str ? str.toUpperCase() : '';
@@ -10463,6 +11527,405 @@
 
 	    params.add = function (key, value) {
 
+=======
+
+	function toUpper(str) {
+	    return str ? str.toUpperCase() : '';
+	}
+
+	var isArray = Array.isArray;
+
+	function isString(val) {
+	    return typeof val === 'string';
+	}
+
+	function isBoolean(val) {
+	    return val === true || val === false;
+	}
+
+	function isFunction(val) {
+	    return typeof val === 'function';
+	}
+
+	function isObject(obj) {
+	    return obj !== null && typeof obj === 'object';
+	}
+
+	function isPlainObject(obj) {
+	    return isObject(obj) && Object.getPrototypeOf(obj) == Object.prototype;
+	}
+
+	function isBlob(obj) {
+	    return typeof Blob !== 'undefined' && obj instanceof Blob;
+	}
+
+	function isFormData(obj) {
+	    return typeof FormData !== 'undefined' && obj instanceof FormData;
+	}
+
+	function when(value, fulfilled, rejected) {
+
+	    var promise = PromiseObj.resolve(value);
+
+	    if (arguments.length < 2) {
+	        return promise;
+	    }
+
+	    return promise.then(fulfilled, rejected);
+	}
+
+	function options(fn, obj, opts) {
+
+	    opts = opts || {};
+
+	    if (isFunction(opts)) {
+	        opts = opts.call(obj);
+	    }
+
+	    return merge(fn.bind({ $vm: obj, $options: opts }), fn, { $options: opts });
+	}
+
+	function each(obj, iterator) {
+
+	    var i, key;
+
+	    if (obj && typeof obj.length == 'number') {
+	        for (i = 0; i < obj.length; i++) {
+	            iterator.call(obj[i], obj[i], i);
+	        }
+	    } else if (isObject(obj)) {
+	        for (key in obj) {
+	            if (obj.hasOwnProperty(key)) {
+	                iterator.call(obj[key], obj[key], key);
+	            }
+	        }
+	    }
+
+	    return obj;
+	}
+
+	var assign = Object.assign || _assign;
+
+	function merge(target) {
+
+	    var args = slice.call(arguments, 1);
+
+	    args.forEach(function (source) {
+	        _merge(target, source, true);
+	    });
+
+	    return target;
+	}
+
+	function defaults(target) {
+
+	    var args = slice.call(arguments, 1);
+
+	    args.forEach(function (source) {
+
+	        for (var key in source) {
+	            if (target[key] === undefined) {
+	                target[key] = source[key];
+	            }
+	        }
+	    });
+
+	    return target;
+	}
+
+	function _assign(target) {
+
+	    var args = slice.call(arguments, 1);
+
+	    args.forEach(function (source) {
+	        _merge(target, source);
+	    });
+
+	    return target;
+	}
+
+	function _merge(target, source, deep) {
+	    for (var key in source) {
+	        if (deep && (isPlainObject(source[key]) || isArray(source[key]))) {
+	            if (isPlainObject(source[key]) && !isPlainObject(target[key])) {
+	                target[key] = {};
+	            }
+	            if (isArray(source[key]) && !isArray(target[key])) {
+	                target[key] = [];
+	            }
+	            _merge(target[key], source[key], deep);
+	        } else if (source[key] !== undefined) {
+	            target[key] = source[key];
+	        }
+	    }
+	}
+
+	/**
+	 * Root Prefix Transform.
+	 */
+
+	function root (options, next) {
+
+	    var url = next(options);
+
+	    if (isString(options.root) && !url.match(/^(https?:)?\//)) {
+	        url = options.root + '/' + url;
+	    }
+
+	    return url;
+	}
+
+	/**
+	 * Query Parameter Transform.
+	 */
+
+	function query (options, next) {
+
+	    var urlParams = Object.keys(Url.options.params),
+	        query = {},
+	        url = next(options);
+
+	    each(options.params, function (value, key) {
+	        if (urlParams.indexOf(key) === -1) {
+	            query[key] = value;
+	        }
+	    });
+
+	    query = Url.params(query);
+
+	    if (query) {
+	        url += (url.indexOf('?') == -1 ? '?' : '&') + query;
+	    }
+
+	    return url;
+	}
+
+	/**
+	 * URL Template v2.0.6 (https://github.com/bramstein/url-template)
+	 */
+
+	function expand(url, params, variables) {
+
+	    var tmpl = parse(url),
+	        expanded = tmpl.expand(params);
+
+	    if (variables) {
+	        variables.push.apply(variables, tmpl.vars);
+	    }
+
+	    return expanded;
+	}
+
+	function parse(template) {
+
+	    var operators = ['+', '#', '.', '/', ';', '?', '&'],
+	        variables = [];
+
+	    return {
+	        vars: variables,
+	        expand: function (context) {
+	            return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, function (_, expression, literal) {
+	                if (expression) {
+
+	                    var operator = null,
+	                        values = [];
+
+	                    if (operators.indexOf(expression.charAt(0)) !== -1) {
+	                        operator = expression.charAt(0);
+	                        expression = expression.substr(1);
+	                    }
+
+	                    expression.split(/,/g).forEach(function (variable) {
+	                        var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
+	                        values.push.apply(values, getValues(context, operator, tmp[1], tmp[2] || tmp[3]));
+	                        variables.push(tmp[1]);
+	                    });
+
+	                    if (operator && operator !== '+') {
+
+	                        var separator = ',';
+
+	                        if (operator === '?') {
+	                            separator = '&';
+	                        } else if (operator !== '#') {
+	                            separator = operator;
+	                        }
+
+	                        return (values.length !== 0 ? operator : '') + values.join(separator);
+	                    } else {
+	                        return values.join(',');
+	                    }
+	                } else {
+	                    return encodeReserved(literal);
+	                }
+	            });
+	        }
+	    };
+	}
+
+	function getValues(context, operator, key, modifier) {
+
+	    var value = context[key],
+	        result = [];
+
+	    if (isDefined(value) && value !== '') {
+	        if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+	            value = value.toString();
+
+	            if (modifier && modifier !== '*') {
+	                value = value.substring(0, parseInt(modifier, 10));
+	            }
+
+	            result.push(encodeValue(operator, value, isKeyOperator(operator) ? key : null));
+	        } else {
+	            if (modifier === '*') {
+	                if (Array.isArray(value)) {
+	                    value.filter(isDefined).forEach(function (value) {
+	                        result.push(encodeValue(operator, value, isKeyOperator(operator) ? key : null));
+	                    });
+	                } else {
+	                    Object.keys(value).forEach(function (k) {
+	                        if (isDefined(value[k])) {
+	                            result.push(encodeValue(operator, value[k], k));
+	                        }
+	                    });
+	                }
+	            } else {
+	                var tmp = [];
+
+	                if (Array.isArray(value)) {
+	                    value.filter(isDefined).forEach(function (value) {
+	                        tmp.push(encodeValue(operator, value));
+	                    });
+	                } else {
+	                    Object.keys(value).forEach(function (k) {
+	                        if (isDefined(value[k])) {
+	                            tmp.push(encodeURIComponent(k));
+	                            tmp.push(encodeValue(operator, value[k].toString()));
+	                        }
+	                    });
+	                }
+
+	                if (isKeyOperator(operator)) {
+	                    result.push(encodeURIComponent(key) + '=' + tmp.join(','));
+	                } else if (tmp.length !== 0) {
+	                    result.push(tmp.join(','));
+	                }
+	            }
+	        }
+	    } else {
+	        if (operator === ';') {
+	            result.push(encodeURIComponent(key));
+	        } else if (value === '' && (operator === '&' || operator === '?')) {
+	            result.push(encodeURIComponent(key) + '=');
+	        } else if (value === '') {
+	            result.push('');
+	        }
+	    }
+
+	    return result;
+	}
+
+	function isDefined(value) {
+	    return value !== undefined && value !== null;
+	}
+
+	function isKeyOperator(operator) {
+	    return operator === ';' || operator === '&' || operator === '?';
+	}
+
+	function encodeValue(operator, value, key) {
+
+	    value = operator === '+' || operator === '#' ? encodeReserved(value) : encodeURIComponent(value);
+
+	    if (key) {
+	        return encodeURIComponent(key) + '=' + value;
+	    } else {
+	        return value;
+	    }
+	}
+
+	function encodeReserved(str) {
+	    return str.split(/(%[0-9A-Fa-f]{2})/g).map(function (part) {
+	        if (!/%[0-9A-Fa-f]/.test(part)) {
+	            part = encodeURI(part);
+	        }
+	        return part;
+	    }).join('');
+	}
+
+	/**
+	 * URL Template (RFC 6570) Transform.
+	 */
+
+	function template (options) {
+
+	    var variables = [],
+	        url = expand(options.url, options.params, variables);
+
+	    variables.forEach(function (key) {
+	        delete options.params[key];
+	    });
+
+	    return url;
+	}
+
+	/**
+	 * Service for URL templating.
+	 */
+
+	var ie = document.documentMode;
+	var el = document.createElement('a');
+
+	function Url(url, params) {
+
+	    var self = this || {},
+	        options = url,
+	        transform;
+
+	    if (isString(url)) {
+	        options = { url: url, params: params };
+	    }
+
+	    options = merge({}, Url.options, self.$options, options);
+
+	    Url.transforms.forEach(function (handler) {
+	        transform = factory(handler, transform, self.$vm);
+	    });
+
+	    return transform(options);
+	}
+
+	/**
+	 * Url options.
+	 */
+
+	Url.options = {
+	    url: '',
+	    root: null,
+	    params: {}
+	};
+
+	/**
+	 * Url transforms.
+	 */
+
+	Url.transforms = [template, query, root];
+
+	/**
+	 * Encodes a Url parameter string.
+	 *
+	 * @param {Object} obj
+	 */
+
+	Url.params = function (obj) {
+
+	    var params = [],
+	        escape = encodeURIComponent;
+
+	    params.add = function (key, value) {
+
+>>>>>>> upgrade-vuejs2
 	        if (isFunction(value)) {
 	            value = value();
 	        }
@@ -10558,6 +12021,7 @@
 
 	            resolve(request.respondWith(xdr.responseText, { status: status }));
 	        };
+<<<<<<< HEAD
 
 	        request.abort = function () {
 	            return xdr.abort();
@@ -10700,10 +12164,188 @@
 	        script.onerror = handler;
 
 	        document.body.appendChild(script);
+=======
+
+	        request.abort = function () {
+	            return xdr.abort();
+	        };
+
+	        xdr.open(request.method, request.getUrl());
+	        xdr.timeout = 0;
+	        xdr.onload = handler;
+	        xdr.onerror = handler;
+	        xdr.ontimeout = handler;
+	        xdr.onprogress = function () {};
+	        xdr.send(request.getBody());
 	    });
 	}
 
 	/**
+	 * CORS Interceptor.
+	 */
+
+	var ORIGIN_URL = Url.parse(location.href);
+	var SUPPORTS_CORS = 'withCredentials' in new XMLHttpRequest();
+
+	function cors (request, next) {
+
+	    if (!isBoolean(request.crossOrigin) && crossOrigin(request)) {
+	        request.crossOrigin = true;
+	    }
+
+	    if (request.crossOrigin) {
+
+	        if (!SUPPORTS_CORS) {
+	            request.client = xdrClient;
+	        }
+
+	        delete request.emulateHTTP;
+	    }
+
+	    next();
+	}
+
+	function crossOrigin(request) {
+
+	    var requestUrl = Url.parse(Url(request));
+
+	    return requestUrl.protocol !== ORIGIN_URL.protocol || requestUrl.host !== ORIGIN_URL.host;
+	}
+
+	/**
+	 * Body Interceptor.
+	 */
+
+	function body (request, next) {
+
+	    if (isFormData(request.body)) {
+
+	        request.headers.delete('Content-Type');
+	    } else if (isObject(request.body) || isArray(request.body)) {
+
+	        if (request.emulateJSON) {
+	            request.body = Url.params(request.body);
+	            request.headers.set('Content-Type', 'application/x-www-form-urlencoded');
+	        } else {
+	            request.body = JSON.stringify(request.body);
+	        }
+	    }
+
+	    next(function (response) {
+
+	        Object.defineProperty(response, 'data', {
+	            get: function () {
+	                return this.body;
+	            },
+	            set: function (body) {
+	                this.body = body;
+	            }
+	        });
+
+	        return response.bodyText ? when(response.text(), function (text) {
+
+	            var type = response.headers.get('Content-Type');
+
+	            if (isString(type) && type.indexOf('application/json') === 0) {
+
+	                try {
+	                    response.body = JSON.parse(text);
+	                } catch (e) {
+	                    response.body = null;
+	                }
+	            } else {
+	                response.body = text;
+	            }
+
+	            return response;
+	        }) : response;
+>>>>>>> upgrade-vuejs2
+	    });
+	}
+
+	/**
+<<<<<<< HEAD
+	 * JSONP Interceptor.
+	 */
+
+	function jsonp (request, next) {
+
+	    if (request.method == 'JSONP') {
+	        request.client = jsonpClient;
+	    }
+
+	    next(function (response) {
+
+	        if (request.method == 'JSONP') {
+
+	            return when(response.json(), function (json) {
+
+	                response.body = json;
+
+	                return response;
+	            });
+	        }
+=======
+	 * JSONP client.
+	 */
+
+	function jsonpClient (request) {
+	    return new PromiseObj(function (resolve) {
+
+	        var name = request.jsonp || 'callback',
+	            callback = '_jsonp' + Math.random().toString(36).substr(2),
+	            body = null,
+	            handler,
+	            script;
+
+	        handler = function (_ref) {
+	            var type = _ref.type;
+
+
+	            var status = 0;
+
+	            if (type === 'load' && body !== null) {
+	                status = 200;
+	            } else if (type === 'error') {
+	                status = 500;
+	            }
+
+	            resolve(request.respondWith(body, { status: status }));
+
+	            delete window[callback];
+	            document.body.removeChild(script);
+	        };
+
+	        request.params[name] = callback;
+
+	        window[callback] = function (result) {
+	            body = JSON.stringify(result);
+	        };
+
+	        script = document.createElement('script');
+	        script.src = request.getUrl();
+	        script.type = 'text/javascript';
+	        script.async = true;
+	        script.onload = handler;
+	        script.onerror = handler;
+
+	        document.body.appendChild(script);
+>>>>>>> upgrade-vuejs2
+	    });
+	}
+
+	/**
+<<<<<<< HEAD
+	 * Before Interceptor.
+	 */
+
+	function before (request, next) {
+
+	    if (isFunction(request.before)) {
+	        request.before.call(this, request);
+	    }
+
+=======
 	 * JSONP Interceptor.
 	 */
 
@@ -10737,6 +12379,7 @@
 	        request.before.call(this, request);
 	    }
 
+>>>>>>> upgrade-vuejs2
 	    next();
 	}
 
@@ -11003,6 +12646,7 @@
 	/**
 	 * HTTP Response.
 	 */
+<<<<<<< HEAD
 
 	var Response = function () {
 	    function Response(body, _ref) {
@@ -11055,6 +12699,60 @@
 
 	        var reader = new FileReader();
 
+=======
+
+	var Response = function () {
+	    function Response(body, _ref) {
+	        var url = _ref.url;
+	        var headers = _ref.headers;
+	        var status = _ref.status;
+	        var statusText = _ref.statusText;
+	        classCallCheck(this, Response);
+
+
+	        this.url = url;
+	        this.ok = status >= 200 && status < 300;
+	        this.status = status || 0;
+	        this.statusText = statusText || '';
+	        this.headers = new Headers(headers);
+	        this.body = body;
+
+	        if (isString(body)) {
+
+	            this.bodyText = body;
+	        } else if (isBlob(body)) {
+
+	            this.bodyBlob = body;
+
+	            if (isBlobText(body)) {
+	                this.bodyText = blobText(body);
+	            }
+	        }
+	    }
+
+	    Response.prototype.blob = function blob() {
+	        return when(this.bodyBlob);
+	    };
+
+	    Response.prototype.text = function text() {
+	        return when(this.bodyText);
+	    };
+
+	    Response.prototype.json = function json() {
+	        return when(this.text(), function (text) {
+	            return JSON.parse(text);
+	        });
+	    };
+
+	    return Response;
+	}();
+
+	function blobText(body) {
+	    return new PromiseObj(function (resolve) {
+
+	        var reader = new FileReader();
+
+>>>>>>> upgrade-vuejs2
 	        reader.readAsText(body);
 	        reader.onload = function () {
 	            resolve(reader.result);
@@ -11185,6 +12883,7 @@
 	}
 
 	function opts(action, args) {
+<<<<<<< HEAD
 
 	    var options = assign({}, action),
 	        params = {},
@@ -11239,6 +12938,62 @@
 	 * Install plugin.
 	 */
 
+=======
+
+	    var options = assign({}, action),
+	        params = {},
+	        body;
+
+	    switch (args.length) {
+
+	        case 2:
+
+	            params = args[0];
+	            body = args[1];
+
+	            break;
+
+	        case 1:
+
+	            if (/^(POST|PUT|PATCH)$/i.test(options.method)) {
+	                body = args[0];
+	            } else {
+	                params = args[0];
+	            }
+
+	            break;
+
+	        case 0:
+
+	            break;
+
+	        default:
+
+	            throw 'Expected up to 4 arguments [params, body], got ' + args.length + ' arguments';
+	    }
+
+	    options.body = body;
+	    options.params = assign({}, options.params, params);
+
+	    return options;
+	}
+
+	Resource.actions = {
+
+	    get: { method: 'GET' },
+	    save: { method: 'POST' },
+	    query: { method: 'GET' },
+	    update: { method: 'PUT' },
+	    remove: { method: 'DELETE' },
+	    delete: { method: 'DELETE' }
+
+	};
+
+	/**
+	 * Install plugin.
+	 */
+
+>>>>>>> upgrade-vuejs2
 	function plugin(Vue) {
 
 	    if (plugin.installed) {
@@ -11347,7 +13102,11 @@
 				this.selectedId = id;
 			}, 
 			editPost: function() {
+<<<<<<< HEAD
 				this.$router.push('posts/post/' + this.selectedId);
+=======
+				this.$router.push({ name: 'posts/post', params: {id: this.selectedId} });
+>>>>>>> upgrade-vuejs2
 			},
 			deletePost: function() {
 				var index = this.posts.indexOf(this.selectedPost);
@@ -11758,6 +13517,7 @@
 	        else if ( next.length ) {
 	          // Check the next block - it might be code too
 	          if ( !next[0].match( re ) ) break block_search;
+<<<<<<< HEAD
 
 	          // Pull how how many blanks lines follow - minus two to account for .join
 	          ret.push ( block.trailing.replace(/[^\n]/g, "").substring(2) );
@@ -12107,6 +13867,357 @@
 	        }
 	      }
 
+=======
+
+	          // Pull how how many blanks lines follow - minus two to account for .join
+	          ret.push ( block.trailing.replace(/[^\n]/g, "").substring(2) );
+
+	          block = next.shift();
+	        }
+	        else {
+	          break block_search;
+	        }
+	      } while ( true );
+
+	      return [ [ "code_block", ret.join("\n") ] ];
+	    },
+
+	    horizRule: function horizRule( block, next ) {
+	      // this needs to find any hr in the block to handle abutting blocks
+	      var m = block.match( /^(?:([\s\S]*?)\n)?[ \t]*([-_*])(?:[ \t]*\2){2,}[ \t]*(?:\n([\s\S]*))?$/ );
+
+	      if ( !m ) {
+	        return undefined;
+	      }
+
+	      var jsonml = [ [ "hr" ] ];
+
+	      // if there's a leading abutting block, process it
+	      if ( m[ 1 ] ) {
+	        jsonml.unshift.apply( jsonml, this.processBlock( m[ 1 ], [] ) );
+	      }
+
+	      // if there's a trailing abutting block, stick it into next
+	      if ( m[ 3 ] ) {
+	        next.unshift( mk_block( m[ 3 ] ) );
+	      }
+
+	      return jsonml;
+	    },
+
+	    // There are two types of lists. Tight and loose. Tight lists have no whitespace
+	    // between the items (and result in text just in the <li>) and loose lists,
+	    // which have an empty line between list items, resulting in (one or more)
+	    // paragraphs inside the <li>.
+	    //
+	    // There are all sorts weird edge cases about the original markdown.pl's
+	    // handling of lists:
+	    //
+	    // * Nested lists are supposed to be indented by four chars per level. But
+	    //   if they aren't, you can get a nested list by indenting by less than
+	    //   four so long as the indent doesn't match an indent of an existing list
+	    //   item in the 'nest stack'.
+	    //
+	    // * The type of the list (bullet or number) is controlled just by the
+	    //    first item at the indent. Subsequent changes are ignored unless they
+	    //    are for nested lists
+	    //
+	    lists: (function( ) {
+	      // Use a closure to hide a few variables.
+	      var any_list = "[*+-]|\\d+\\.",
+	          bullet_list = /[*+-]/,
+	          number_list = /\d+\./,
+	          // Capture leading indent as it matters for determining nested lists.
+	          is_list_re = new RegExp( "^( {0,3})(" + any_list + ")[ \t]+" ),
+	          indent_re = "(?: {0,3}\\t| {4})";
+
+	      // TODO: Cache this regexp for certain depths.
+	      // Create a regexp suitable for matching an li for a given stack depth
+	      function regex_for_depth( depth ) {
+
+	        return new RegExp(
+	          // m[1] = indent, m[2] = list_type
+	          "(?:^(" + indent_re + "{0," + depth + "} {0,3})(" + any_list + ")\\s+)|" +
+	          // m[3] = cont
+	          "(^" + indent_re + "{0," + (depth-1) + "}[ ]{0,4})"
+	        );
+	      }
+	      function expand_tab( input ) {
+	        return input.replace( / {0,3}\t/g, "    " );
+	      }
+
+	      // Add inline content `inline` to `li`. inline comes from processInline
+	      // so is an array of content
+	      function add(li, loose, inline, nl) {
+	        if ( loose ) {
+	          li.push( [ "para" ].concat(inline) );
+	          return;
+	        }
+	        // Hmmm, should this be any block level element or just paras?
+	        var add_to = li[li.length -1] instanceof Array && li[li.length - 1][0] == "para"
+	                   ? li[li.length -1]
+	                   : li;
+
+	        // If there is already some content in this list, add the new line in
+	        if ( nl && li.length > 1 ) inline.unshift(nl);
+
+	        for ( var i = 0; i < inline.length; i++ ) {
+	          var what = inline[i],
+	              is_str = typeof what == "string";
+	          if ( is_str && add_to.length > 1 && typeof add_to[add_to.length-1] == "string" ) {
+	            add_to[ add_to.length-1 ] += what;
+	          }
+	          else {
+	            add_to.push( what );
+	          }
+	        }
+	      }
+
+	      // contained means have an indent greater than the current one. On
+	      // *every* line in the block
+	      function get_contained_blocks( depth, blocks ) {
+
+	        var re = new RegExp( "^(" + indent_re + "{" + depth + "}.*?\\n?)*$" ),
+	            replace = new RegExp("^" + indent_re + "{" + depth + "}", "gm"),
+	            ret = [];
+
+	        while ( blocks.length > 0 ) {
+	          if ( re.exec( blocks[0] ) ) {
+	            var b = blocks.shift(),
+	                // Now remove that indent
+	                x = b.replace( replace, "");
+
+	            ret.push( mk_block( x, b.trailing, b.lineNumber ) );
+	          }
+	          else {
+	            break;
+	          }
+	        }
+	        return ret;
+	      }
+
+	      // passed to stack.forEach to turn list items up the stack into paras
+	      function paragraphify(s, i, stack) {
+	        var list = s.list;
+	        var last_li = list[list.length-1];
+
+	        if ( last_li[1] instanceof Array && last_li[1][0] == "para" ) {
+	          return;
+	        }
+	        if ( i + 1 == stack.length ) {
+	          // Last stack frame
+	          // Keep the same array, but replace the contents
+	          last_li.push( ["para"].concat( last_li.splice(1, last_li.length - 1) ) );
+	        }
+	        else {
+	          var sublist = last_li.pop();
+	          last_li.push( ["para"].concat( last_li.splice(1, last_li.length - 1) ), sublist );
+	        }
+	      }
+
+	      // The matcher function
+	      return function( block, next ) {
+	        var m = block.match( is_list_re );
+	        if ( !m ) return undefined;
+
+	        function make_list( m ) {
+	          var list = bullet_list.exec( m[2] )
+	                   ? ["bulletlist"]
+	                   : ["numberlist"];
+
+	          stack.push( { list: list, indent: m[1] } );
+	          return list;
+	        }
+
+
+	        var stack = [], // Stack of lists for nesting.
+	            list = make_list( m ),
+	            last_li,
+	            loose = false,
+	            ret = [ stack[0].list ],
+	            i;
+
+	        // Loop to search over block looking for inner block elements and loose lists
+	        loose_search:
+	        while ( true ) {
+	          // Split into lines preserving new lines at end of line
+	          var lines = block.split( /(?=\n)/ );
+
+	          // We have to grab all lines for a li and call processInline on them
+	          // once as there are some inline things that can span lines.
+	          var li_accumulate = "";
+
+	          // Loop over the lines in this block looking for tight lists.
+	          tight_search:
+	          for ( var line_no = 0; line_no < lines.length; line_no++ ) {
+	            var nl = "",
+	                l = lines[line_no].replace(/^\n/, function(n) { nl = n; return ""; });
+
+	            // TODO: really should cache this
+	            var line_re = regex_for_depth( stack.length );
+
+	            m = l.match( line_re );
+	            //print( "line:", uneval(l), "\nline match:", uneval(m) );
+
+	            // We have a list item
+	            if ( m[1] !== undefined ) {
+	              // Process the previous list item, if any
+	              if ( li_accumulate.length ) {
+	                add( last_li, loose, this.processInline( li_accumulate ), nl );
+	                // Loose mode will have been dealt with. Reset it
+	                loose = false;
+	                li_accumulate = "";
+	              }
+
+	              m[1] = expand_tab( m[1] );
+	              var wanted_depth = Math.floor(m[1].length/4)+1;
+	              //print( "want:", wanted_depth, "stack:", stack.length);
+	              if ( wanted_depth > stack.length ) {
+	                // Deep enough for a nested list outright
+	                //print ( "new nested list" );
+	                list = make_list( m );
+	                last_li.push( list );
+	                last_li = list[1] = [ "listitem" ];
+	              }
+	              else {
+	                // We aren't deep enough to be strictly a new level. This is
+	                // where Md.pl goes nuts. If the indent matches a level in the
+	                // stack, put it there, else put it one deeper then the
+	                // wanted_depth deserves.
+	                var found = false;
+	                for ( i = 0; i < stack.length; i++ ) {
+	                  if ( stack[ i ].indent != m[1] ) continue;
+	                  list = stack[ i ].list;
+	                  stack.splice( i+1, stack.length - (i+1) );
+	                  found = true;
+	                  break;
+	                }
+
+	                if (!found) {
+	                  //print("not found. l:", uneval(l));
+	                  wanted_depth++;
+	                  if ( wanted_depth <= stack.length ) {
+	                    stack.splice(wanted_depth, stack.length - wanted_depth);
+	                    //print("Desired depth now", wanted_depth, "stack:", stack.length);
+	                    list = stack[wanted_depth-1].list;
+	                    //print("list:", uneval(list) );
+	                  }
+	                  else {
+	                    //print ("made new stack for messy indent");
+	                    list = make_list(m);
+	                    last_li.push(list);
+	                  }
+	                }
+
+	                //print( uneval(list), "last", list === stack[stack.length-1].list );
+	                last_li = [ "listitem" ];
+	                list.push(last_li);
+	              } // end depth of shenegains
+	              nl = "";
+	            }
+
+	            // Add content
+	            if ( l.length > m[0].length ) {
+	              li_accumulate += nl + l.substr( m[0].length );
+	            }
+	          } // tight_search
+
+	          if ( li_accumulate.length ) {
+	            add( last_li, loose, this.processInline( li_accumulate ), nl );
+	            // Loose mode will have been dealt with. Reset it
+	            loose = false;
+	            li_accumulate = "";
+	          }
+
+	          // Look at the next block - we might have a loose list. Or an extra
+	          // paragraph for the current li
+	          var contained = get_contained_blocks( stack.length, next );
+
+	          // Deal with code blocks or properly nested lists
+	          if ( contained.length > 0 ) {
+	            // Make sure all listitems up the stack are paragraphs
+	            forEach( stack, paragraphify, this);
+
+	            last_li.push.apply( last_li, this.toTree( contained, [] ) );
+	          }
+
+	          var next_block = next[0] && next[0].valueOf() || "";
+
+	          if ( next_block.match(is_list_re) || next_block.match( /^ / ) ) {
+	            block = next.shift();
+
+	            // Check for an HR following a list: features/lists/hr_abutting
+	            var hr = this.dialect.block.horizRule( block, next );
+
+	            if ( hr ) {
+	              ret.push.apply(ret, hr);
+	              break;
+	            }
+
+	            // Make sure all listitems up the stack are paragraphs
+	            forEach( stack, paragraphify, this);
+
+	            loose = true;
+	            continue loose_search;
+	          }
+	          break;
+	        } // loose_search
+
+	        return ret;
+	      };
+	    })(),
+
+	    blockquote: function blockquote( block, next ) {
+	      if ( !block.match( /^>/m ) )
+	        return undefined;
+
+	      var jsonml = [];
+
+	      // separate out the leading abutting block, if any. I.e. in this case:
+	      //
+	      //  a
+	      //  > b
+	      //
+	      if ( block[ 0 ] != ">" ) {
+	        var lines = block.split( /\n/ ),
+	            prev = [],
+	            line_no = block.lineNumber;
+
+	        // keep shifting lines until you find a crotchet
+	        while ( lines.length && lines[ 0 ][ 0 ] != ">" ) {
+	            prev.push( lines.shift() );
+	            line_no++;
+	        }
+
+	        var abutting = mk_block( prev.join( "\n" ), "\n", block.lineNumber );
+	        jsonml.push.apply( jsonml, this.processBlock( abutting, [] ) );
+	        // reassemble new block of just block quotes!
+	        block = mk_block( lines.join( "\n" ), block.trailing, line_no );
+	      }
+
+
+	      // if the next block is also a blockquote merge it in
+	      while ( next.length && next[ 0 ][ 0 ] == ">" ) {
+	        var b = next.shift();
+	        block = mk_block( block + block.trailing + b, b.trailing, block.lineNumber );
+	      }
+
+	      // Strip off the leading "> " and re-process as a block.
+	      var input = block.replace( /^> ?/gm, "" ),
+	          old_tree = this.tree,
+	          processedBlock = this.toTree( input, [ "blockquote" ] ),
+	          attr = extract_attr( processedBlock );
+
+	      // If any link references were found get rid of them
+	      if ( attr && attr.references ) {
+	        delete attr.references;
+	        // And then remove the attribute object if it's empty
+	        if ( isEmpty( attr ) ) {
+	          processedBlock.splice( 1, 1 );
+	        }
+	      }
+
+>>>>>>> upgrade-vuejs2
 	      jsonml.push( processedBlock );
 	      return jsonml;
 	    },
@@ -12388,6 +14499,7 @@
 	        return [ 1, "`" ];
 	      }
 	    },
+<<<<<<< HEAD
 
 	    "  \n": function lineBreak( text ) {
 	      return [ 3, [ "linebreak" ] ];
@@ -12458,6 +14570,78 @@
 	Markdown.dialects.Gruber.inline["_"]  = strong_em("em", "_");
 
 
+=======
+
+	    "  \n": function lineBreak( text ) {
+	      return [ 3, [ "linebreak" ] ];
+	    }
+
+	};
+
+	// Meta Helper/generator method for em and strong handling
+	function strong_em( tag, md ) {
+
+	  var state_slot = tag + "_state",
+	      other_slot = tag == "strong" ? "em_state" : "strong_state";
+
+	  function CloseTag(len) {
+	    this.len_after = len;
+	    this.name = "close_" + md;
+	  }
+
+	  return function ( text, orig_match ) {
+
+	    if ( this[state_slot][0] == md ) {
+	      // Most recent em is of this type
+	      //D:this.debug("closing", md);
+	      this[state_slot].shift();
+
+	      // "Consume" everything to go back to the recrusion in the else-block below
+	      return[ text.length, new CloseTag(text.length-md.length) ];
+	    }
+	    else {
+	      // Store a clone of the em/strong states
+	      var other = this[other_slot].slice(),
+	          state = this[state_slot].slice();
+
+	      this[state_slot].unshift(md);
+
+	      //D:this.debug_indent += "  ";
+
+	      // Recurse
+	      var res = this.processInline( text.substr( md.length ) );
+	      //D:this.debug_indent = this.debug_indent.substr(2);
+
+	      var last = res[res.length - 1];
+
+	      //D:this.debug("processInline from", tag + ": ", uneval( res ) );
+
+	      var check = this[state_slot].shift();
+	      if ( last instanceof CloseTag ) {
+	        res.pop();
+	        // We matched! Huzzah.
+	        var consumed = text.length - last.len_after;
+	        return [ consumed, [ tag ].concat(res) ];
+	      }
+	      else {
+	        // Restore the state of the other kind. We might have mistakenly closed it.
+	        this[other_slot] = other;
+	        this[state_slot] = state;
+
+	        // We can't reuse the processed result as it could have wrong parsing contexts in it.
+	        return [ md.length, md ];
+	      }
+	    }
+	  }; // End returned function
+	}
+
+	Markdown.dialects.Gruber.inline["**"] = strong_em("strong", "**");
+	Markdown.dialects.Gruber.inline["__"] = strong_em("strong", "__");
+	Markdown.dialects.Gruber.inline["*"]  = strong_em("em", "*");
+	Markdown.dialects.Gruber.inline["_"]  = strong_em("em", "_");
+
+
+>>>>>>> upgrade-vuejs2
 	// Build default order from insertion order.
 	Markdown.buildBlockOrder = function(d) {
 	  var ord = [];
@@ -12717,6 +14901,7 @@
 
 	// splits on unescaped instances of @ch. If @ch is not a character the result
 	// can be unpredictable
+<<<<<<< HEAD
 
 	Markdown.dialects.Maruku.block.table = function table (block, next) {
 
@@ -12827,6 +15012,118 @@
 	  return Object.prototype.toString.call(obj) == "[object Array]";
 	};
 
+=======
+
+	Markdown.dialects.Maruku.block.table = function table (block, next) {
+
+	    var _split_on_unescaped = function(s, ch) {
+	        ch = ch || '\\s';
+	        if (ch.match(/^[\\|\[\]{}?*.+^$]$/)) { ch = '\\' + ch; }
+	        var res = [ ],
+	            r = new RegExp('^((?:\\\\.|[^\\\\' + ch + '])*)' + ch + '(.*)'),
+	            m;
+	        while(m = s.match(r)) {
+	            res.push(m[1]);
+	            s = m[2];
+	        }
+	        res.push(s);
+	        return res;
+	    }
+
+	    var leading_pipe = /^ {0,3}\|(.+)\n {0,3}\|\s*([\-:]+[\-| :]*)\n((?:\s*\|.*(?:\n|$))*)(?=\n|$)/,
+	        // find at least an unescaped pipe in each line
+	        no_leading_pipe = /^ {0,3}(\S(?:\\.|[^\\|])*\|.*)\n {0,3}([\-:]+\s*\|[\-| :]*)\n((?:(?:\\.|[^\\|])*\|.*(?:\n|$))*)(?=\n|$)/,
+	        i, m;
+	    if (m = block.match(leading_pipe)) {
+	        // remove leading pipes in contents
+	        // (header and horizontal rule already have the leading pipe left out)
+	        m[3] = m[3].replace(/^\s*\|/gm, '');
+	    } else if (! ( m = block.match(no_leading_pipe))) {
+	        return undefined;
+	    }
+
+	    var table = [ "table", [ "thead", [ "tr" ] ], [ "tbody" ] ];
+
+	    // remove trailing pipes, then split on pipes
+	    // (no escaped pipes are allowed in horizontal rule)
+	    m[2] = m[2].replace(/\|\s*$/, '').split('|');
+
+	    // process alignment
+	    var html_attrs = [ ];
+	    forEach (m[2], function (s) {
+	        if (s.match(/^\s*-+:\s*$/))       html_attrs.push({align: "right"});
+	        else if (s.match(/^\s*:-+\s*$/))  html_attrs.push({align: "left"});
+	        else if (s.match(/^\s*:-+:\s*$/)) html_attrs.push({align: "center"});
+	        else                              html_attrs.push({});
+	    });
+
+	    // now for the header, avoid escaped pipes
+	    m[1] = _split_on_unescaped(m[1].replace(/\|\s*$/, ''), '|');
+	    for (i = 0; i < m[1].length; i++) {
+	        table[1][1].push(['th', html_attrs[i] || {}].concat(
+	            this.processInline(m[1][i].trim())));
+	    }
+
+	    // now for body contents
+	    forEach (m[3].replace(/\|\s*$/mg, '').split('\n'), function (row) {
+	        var html_row = ['tr'];
+	        row = _split_on_unescaped(row, '|');
+	        for (i = 0; i < row.length; i++) {
+	            html_row.push(['td', html_attrs[i] || {}].concat(this.processInline(row[i].trim())));
+	        }
+	        table[2].push(html_row);
+	    }, this);
+
+	    return [table];
+	}
+
+	Markdown.dialects.Maruku.inline[ "{:" ] = function inline_meta( text, matches, out ) {
+	  if ( !out.length ) {
+	    return [ 2, "{:" ];
+	  }
+
+	  // get the preceeding element
+	  var before = out[ out.length - 1 ];
+
+	  if ( typeof before === "string" ) {
+	    return [ 2, "{:" ];
+	  }
+
+	  // match a meta hash
+	  var m = text.match( /^\{:\s*((?:\\\}|[^\}])*)\s*\}/ );
+
+	  // no match, false alarm
+	  if ( !m ) {
+	    return [ 2, "{:" ];
+	  }
+
+	  // attach the attributes to the preceeding element
+	  var meta = this.dialect.processMetaHash( m[ 1 ] ),
+	      attr = extract_attr( before );
+
+	  if ( !attr ) {
+	    attr = {};
+	    before.splice( 1, 0, attr );
+	  }
+
+	  for ( var k in meta ) {
+	    attr[ k ] = meta[ k ];
+	  }
+
+	  // cut out the string and replace it with nothing
+	  return [ m[ 0 ].length, "" ];
+	};
+
+	Markdown.dialects.Maruku.inline.__escape__ = /^\\[\\`\*_{}\[\]()#\+.!\-|:]/;
+
+	Markdown.buildBlockOrder ( Markdown.dialects.Maruku.block );
+	Markdown.buildInlinePatterns( Markdown.dialects.Maruku.inline );
+
+	var isArray = Array.isArray || function(obj) {
+	  return Object.prototype.toString.call(obj) == "[object Array]";
+	};
+
+>>>>>>> upgrade-vuejs2
 	var forEach;
 	// Don't mess with Array.prototype. Its not friendly
 	if ( Array.prototype.forEach ) {
@@ -13060,6 +15357,7 @@
 
 	  // convert all the children
 	  i = 1;
+<<<<<<< HEAD
 
 	  // deal with the attribute node, if it exists
 	  if ( attrs ) {
@@ -13103,17 +15401,73 @@
 	      merge_text_nodes( jsonml[ i ] );
 	      ++i;
 	    }
+=======
+
+	  // deal with the attribute node, if it exists
+	  if ( attrs ) {
+	    // if there are keys, skip over it
+	    for ( var key in jsonml[ 1 ] ) {
+	        i = 2;
+	        break;
+	    }
+	    // if there aren't, remove it
+	    if ( i === 1 ) {
+	      jsonml.splice( i, 1 );
+	    }
+	  }
+
+	  for ( ; i < jsonml.length; ++i ) {
+	    jsonml[ i ] = convert_tree_to_html( jsonml[ i ], references, options );
+>>>>>>> upgrade-vuejs2
 	  }
 	}
 
+<<<<<<< HEAD
+=======
+	  return jsonml;
+	}
+
+
+	// merges adjacent text nodes into a single node
+	function merge_text_nodes( jsonml ) {
+	  // skip the tag name and attribute hash
+	  var i = extract_attr( jsonml ) ? 2 : 1;
+
+	  while ( i < jsonml.length ) {
+	    // if it's a string check the next item too
+	    if ( typeof jsonml[ i ] === "string" ) {
+	      if ( i + 1 < jsonml.length && typeof jsonml[ i + 1 ] === "string" ) {
+	        // merge the second string into the first and remove it
+	        jsonml[ i ] += jsonml.splice( i + 1, 1 )[ 0 ];
+	      }
+	      else {
+	        ++i;
+	      }
+	    }
+	    // if it's not a string recurse
+	    else {
+	      merge_text_nodes( jsonml[ i ] );
+	      ++i;
+	    }
+	  }
+	}
+
+>>>>>>> upgrade-vuejs2
 	} )( (function() {
 	  if ( false ) {
 	    window.markdown = {};
 	    return window.markdown;
+<<<<<<< HEAD
 	  }
 	  else {
 	    return exports;
 	  }
+=======
+	  }
+	  else {
+	    return exports;
+	  }
+>>>>>>> upgrade-vuejs2
 	} )() );
 
 
@@ -13312,6 +15666,7 @@
 	  } else {
 	    return str;
 	  }
+<<<<<<< HEAD
 	}
 
 
@@ -13562,8 +15917,159 @@
 	           output.join(',\n  ') +
 	           ' ' +
 	           braces[1];
+=======
+	}
+
+
+	function stylizeNoColor(str, styleType) {
+	  return str;
+	}
+
+
+	function arrayToHash(array) {
+	  var hash = {};
+
+	  array.forEach(function(val, idx) {
+	    hash[val] = true;
+	  });
+
+	  return hash;
+	}
+
+
+	function formatValue(ctx, value, recurseTimes) {
+	  // Provide a hook for user-specified inspect functions.
+	  // Check that value is an object with an inspect function on it
+	  if (ctx.customInspect &&
+	      value &&
+	      isFunction(value.inspect) &&
+	      // Filter out the util module, it's inspect function is special
+	      value.inspect !== exports.inspect &&
+	      // Also filter out any prototype objects using the circular check.
+	      !(value.constructor && value.constructor.prototype === value)) {
+	    var ret = value.inspect(recurseTimes, ctx);
+	    if (!isString(ret)) {
+	      ret = formatValue(ctx, ret, recurseTimes);
+	    }
+	    return ret;
 	  }
 
+	  // Primitive types cannot have properties
+	  var primitive = formatPrimitive(ctx, value);
+	  if (primitive) {
+	    return primitive;
+	  }
+
+	  // Look up the keys of the object.
+	  var keys = Object.keys(value);
+	  var visibleKeys = arrayToHash(keys);
+
+	  if (ctx.showHidden) {
+	    keys = Object.getOwnPropertyNames(value);
+	  }
+
+	  // IE doesn't make error fields non-enumerable
+	  // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
+	  if (isError(value)
+	      && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
+	    return formatError(value);
+	  }
+
+	  // Some type of object without properties can be shortcutted.
+	  if (keys.length === 0) {
+	    if (isFunction(value)) {
+	      var name = value.name ? ': ' + value.name : '';
+	      return ctx.stylize('[Function' + name + ']', 'special');
+	    }
+	    if (isRegExp(value)) {
+	      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+	    }
+	    if (isDate(value)) {
+	      return ctx.stylize(Date.prototype.toString.call(value), 'date');
+	    }
+	    if (isError(value)) {
+	      return formatError(value);
+	    }
+	  }
+
+	  var base = '', array = false, braces = ['{', '}'];
+
+	  // Make Array say that they are Array
+	  if (isArray(value)) {
+	    array = true;
+	    braces = ['[', ']'];
+	  }
+
+	  // Make functions say that they are functions
+	  if (isFunction(value)) {
+	    var n = value.name ? ': ' + value.name : '';
+	    base = ' [Function' + n + ']';
+	  }
+
+	  // Make RegExps say that they are RegExps
+	  if (isRegExp(value)) {
+	    base = ' ' + RegExp.prototype.toString.call(value);
+	  }
+
+	  // Make dates with properties first say the date
+	  if (isDate(value)) {
+	    base = ' ' + Date.prototype.toUTCString.call(value);
+	  }
+
+	  // Make error with message first say the error
+	  if (isError(value)) {
+	    base = ' ' + formatError(value);
+	  }
+
+	  if (keys.length === 0 && (!array || value.length == 0)) {
+	    return braces[0] + base + braces[1];
+	  }
+
+	  if (recurseTimes < 0) {
+	    if (isRegExp(value)) {
+	      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+	    } else {
+	      return ctx.stylize('[Object]', 'special');
+	    }
+	  }
+
+	  ctx.seen.push(value);
+
+	  var output;
+	  if (array) {
+	    output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
+	  } else {
+	    output = keys.map(function(key) {
+	      return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
+	    });
+	  }
+
+	  ctx.seen.pop();
+
+	  return reduceToSingleString(output, base, braces);
+	}
+
+
+	function formatPrimitive(ctx, value) {
+	  if (isUndefined(value))
+	    return ctx.stylize('undefined', 'undefined');
+	  if (isString(value)) {
+	    var simple = '\'' + JSON.stringify(value).replace(/^"|"$/g, '')
+	                                             .replace(/'/g, "\\'")
+	                                             .replace(/\\"/g, '"') + '\'';
+	    return ctx.stylize(simple, 'string');
+>>>>>>> upgrade-vuejs2
+	  }
+	  if (isNumber(value))
+	    return ctx.stylize('' + value, 'number');
+	  if (isBoolean(value))
+	    return ctx.stylize('' + value, 'boolean');
+	  // For some reason typeof null is "object", so special case here.
+	  if (isNull(value))
+	    return ctx.stylize('null', 'null');
+	}
+
+<<<<<<< HEAD
 	  return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
 	}
 
@@ -13582,9 +16088,94 @@
 
 	function isNull(arg) {
 	  return arg === null;
+=======
+
+	function formatError(value) {
+	  return '[' + Error.prototype.toString.call(value) + ']';
+	}
+
+
+	function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
+	  var output = [];
+	  for (var i = 0, l = value.length; i < l; ++i) {
+	    if (hasOwnProperty(value, String(i))) {
+	      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+	          String(i), true));
+	    } else {
+	      output.push('');
+	    }
+	  }
+	  keys.forEach(function(key) {
+	    if (!key.match(/^\d+$/)) {
+	      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+	          key, true));
+	    }
+	  });
+	  return output;
+	}
+
+
+	function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
+	  var name, str, desc;
+	  desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
+	  if (desc.get) {
+	    if (desc.set) {
+	      str = ctx.stylize('[Getter/Setter]', 'special');
+	    } else {
+	      str = ctx.stylize('[Getter]', 'special');
+	    }
+	  } else {
+	    if (desc.set) {
+	      str = ctx.stylize('[Setter]', 'special');
+	    }
+	  }
+	  if (!hasOwnProperty(visibleKeys, key)) {
+	    name = '[' + key + ']';
+	  }
+	  if (!str) {
+	    if (ctx.seen.indexOf(desc.value) < 0) {
+	      if (isNull(recurseTimes)) {
+	        str = formatValue(ctx, desc.value, null);
+	      } else {
+	        str = formatValue(ctx, desc.value, recurseTimes - 1);
+	      }
+	      if (str.indexOf('\n') > -1) {
+	        if (array) {
+	          str = str.split('\n').map(function(line) {
+	            return '  ' + line;
+	          }).join('\n').substr(2);
+	        } else {
+	          str = '\n' + str.split('\n').map(function(line) {
+	            return '   ' + line;
+	          }).join('\n');
+	        }
+	      }
+	    } else {
+	      str = ctx.stylize('[Circular]', 'special');
+	    }
+	  }
+	  if (isUndefined(name)) {
+	    if (array && key.match(/^\d+$/)) {
+	      return str;
+	    }
+	    name = JSON.stringify('' + key);
+	    if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
+	      name = name.substr(1, name.length - 2);
+	      name = ctx.stylize(name, 'name');
+	    } else {
+	      name = name.replace(/'/g, "\\'")
+	                 .replace(/\\"/g, '"')
+	                 .replace(/(^"|"$)/g, "'");
+	      name = ctx.stylize(name, 'string');
+	    }
+	  }
+
+	  return name + ': ' + str;
+>>>>>>> upgrade-vuejs2
 	}
 	exports.isNull = isNull;
 
+<<<<<<< HEAD
 	function isNullOrUndefined(arg) {
 	  return arg == null;
 	}
@@ -13803,9 +16394,235 @@
 	process.cwd = function () { return '/' };
 	process.chdir = function (dir) {
 	    throw new Error('process.chdir is not supported');
+=======
+
+	function reduceToSingleString(output, base, braces) {
+	  var numLinesEst = 0;
+	  var length = output.reduce(function(prev, cur) {
+	    numLinesEst++;
+	    if (cur.indexOf('\n') >= 0) numLinesEst++;
+	    return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
+	  }, 0);
+
+	  if (length > 60) {
+	    return braces[0] +
+	           (base === '' ? '' : base + '\n ') +
+	           ' ' +
+	           output.join(',\n  ') +
+	           ' ' +
+	           braces[1];
+	  }
+
+	  return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
+	}
+
+
+	// NOTE: These type checking functions intentionally don't use `instanceof`
+	// because it is fragile and can be easily faked with `Object.create()`.
+	function isArray(ar) {
+	  return Array.isArray(ar);
+	}
+	exports.isArray = isArray;
+
+	function isBoolean(arg) {
+	  return typeof arg === 'boolean';
+	}
+	exports.isBoolean = isBoolean;
+
+	function isNull(arg) {
+	  return arg === null;
+	}
+	exports.isNull = isNull;
+
+	function isNullOrUndefined(arg) {
+	  return arg == null;
+	}
+	exports.isNullOrUndefined = isNullOrUndefined;
+
+	function isNumber(arg) {
+	  return typeof arg === 'number';
+	}
+	exports.isNumber = isNumber;
+
+	function isString(arg) {
+	  return typeof arg === 'string';
+	}
+	exports.isString = isString;
+
+	function isSymbol(arg) {
+	  return typeof arg === 'symbol';
+	}
+	exports.isSymbol = isSymbol;
+
+	function isUndefined(arg) {
+	  return arg === void 0;
+	}
+	exports.isUndefined = isUndefined;
+
+	function isRegExp(re) {
+	  return isObject(re) && objectToString(re) === '[object RegExp]';
+	}
+	exports.isRegExp = isRegExp;
+
+	function isObject(arg) {
+	  return typeof arg === 'object' && arg !== null;
+	}
+	exports.isObject = isObject;
+
+	function isDate(d) {
+	  return isObject(d) && objectToString(d) === '[object Date]';
+	}
+	exports.isDate = isDate;
+
+	function isError(e) {
+	  return isObject(e) &&
+	      (objectToString(e) === '[object Error]' || e instanceof Error);
+	}
+	exports.isError = isError;
+
+	function isFunction(arg) {
+	  return typeof arg === 'function';
+	}
+	exports.isFunction = isFunction;
+
+	function isPrimitive(arg) {
+	  return arg === null ||
+	         typeof arg === 'boolean' ||
+	         typeof arg === 'number' ||
+	         typeof arg === 'string' ||
+	         typeof arg === 'symbol' ||  // ES6 symbol
+	         typeof arg === 'undefined';
+	}
+	exports.isPrimitive = isPrimitive;
+
+	exports.isBuffer = __webpack_require__(11);
+
+	function objectToString(o) {
+	  return Object.prototype.toString.call(o);
+	}
+
+
+	function pad(n) {
+	  return n < 10 ? '0' + n.toString(10) : n.toString(10);
+	}
+
+
+	var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
+	              'Oct', 'Nov', 'Dec'];
+
+	// 26 Feb 16:19:34
+	function timestamp() {
+	  var d = new Date();
+	  var time = [pad(d.getHours()),
+	              pad(d.getMinutes()),
+	              pad(d.getSeconds())].join(':');
+	  return [d.getDate(), months[d.getMonth()], time].join(' ');
+	}
+
+
+	// log is just a thin wrapper to console.log that prepends a timestamp
+	exports.log = function() {
+	  console.log('%s - %s', timestamp(), exports.format.apply(exports, arguments));
+	};
+
+
+	/**
+	 * Inherit the prototype methods from one constructor into another.
+	 *
+	 * The Function.prototype.inherits from lang.js rewritten as a standalone
+	 * function (not on Function.prototype). NOTE: If this file is to be loaded
+	 * during bootstrapping this function needs to be rewritten using some native
+	 * functions as prototype setup using normal JavaScript does not work as
+	 * expected during bootstrapping (see mirror.js in r114903).
+	 *
+	 * @param {function} ctor Constructor function which needs to inherit the
+	 *     prototype.
+	 * @param {function} superCtor Constructor function to inherit prototype from.
+	 */
+	exports.inherits = __webpack_require__(12);
+
+	exports._extend = function(origin, add) {
+	  // Don't do anything if add isn't an object
+	  if (!add || !isObject(add)) return origin;
+
+	  var keys = Object.keys(add);
+	  var i = keys.length;
+	  while (i--) {
+	    origin[keys[i]] = add[keys[i]];
+	  }
+	  return origin;
+	};
+
+	function hasOwnProperty(obj, prop) {
+	  return Object.prototype.hasOwnProperty.call(obj, prop);
+	}
+
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(10)))
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	// shim for using process in browser
+
+	var process = module.exports = {};
+	var queue = [];
+	var draining = false;
+	var currentQueue;
+	var queueIndex = -1;
+
+	function cleanUpNextTick() {
+	    draining = false;
+	    if (currentQueue.length) {
+	        queue = currentQueue.concat(queue);
+	    } else {
+	        queueIndex = -1;
+	    }
+	    if (queue.length) {
+	        drainQueue();
+	    }
+	}
+
+	function drainQueue() {
+	    if (draining) {
+	        return;
+	    }
+	    var timeout = setTimeout(cleanUpNextTick);
+	    draining = true;
+
+	    var len = queue.length;
+	    while(len) {
+	        currentQueue = queue;
+	        queue = [];
+	        while (++queueIndex < len) {
+	            if (currentQueue) {
+	                currentQueue[queueIndex].run();
+	            }
+	        }
+	        queueIndex = -1;
+	        len = queue.length;
+	    }
+	    currentQueue = null;
+	    draining = false;
+	    clearTimeout(timeout);
+	}
+
+	process.nextTick = function (fun) {
+	    var args = new Array(arguments.length - 1);
+	    if (arguments.length > 1) {
+	        for (var i = 1; i < arguments.length; i++) {
+	            args[i - 1] = arguments[i];
+	        }
+	    }
+	    queue.push(new Item(fun, args));
+	    if (queue.length === 1 && !draining) {
+	        setTimeout(drainQueue, 0);
+	    }
+>>>>>>> upgrade-vuejs2
 	};
 	process.umask = function() { return 0; };
 
+<<<<<<< HEAD
 
 /***/ },
 /* 11 */
@@ -14705,6 +17522,934 @@
 	function containsTable(attr, tables) {
 		if (tables === true) return true;
 
+=======
+	// v8 likes predictible objects
+	function Item(fun, array) {
+	    this.fun = fun;
+	    this.array = array;
+	}
+	Item.prototype.run = function () {
+	    this.fun.apply(null, this.array);
+	};
+	process.title = 'browser';
+	process.browser = true;
+	process.env = {};
+	process.argv = [];
+	process.version = ''; // empty string to avoid regexp issues
+	process.versions = {};
+
+	function noop() {}
+
+	process.on = noop;
+	process.addListener = noop;
+	process.once = noop;
+	process.off = noop;
+	process.removeListener = noop;
+	process.removeAllListeners = noop;
+	process.emit = noop;
+
+	process.binding = function (name) {
+	    throw new Error('process.binding is not supported');
+	};
+
+	process.cwd = function () { return '/' };
+	process.chdir = function (dir) {
+	    throw new Error('process.chdir is not supported');
+	};
+	process.umask = function() { return 0; };
+
+
+/***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	module.exports = function isBuffer(arg) {
+	  return arg && typeof arg === 'object'
+	    && typeof arg.copy === 'function'
+	    && typeof arg.fill === 'function'
+	    && typeof arg.readUInt8 === 'function';
+	}
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	if (typeof Object.create === 'function') {
+	  // implementation from standard node.js 'util' module
+	  module.exports = function inherits(ctor, superCtor) {
+	    ctor.super_ = superCtor
+	    ctor.prototype = Object.create(superCtor.prototype, {
+	      constructor: {
+	        value: ctor,
+	        enumerable: false,
+	        writable: true,
+	        configurable: true
+	      }
+	    });
+	  };
+	} else {
+	  // old school shim for old browsers
+	  module.exports = function inherits(ctor, superCtor) {
+	    ctor.super_ = superCtor
+	    var TempCtor = function () {}
+	    TempCtor.prototype = superCtor.prototype
+	    ctor.prototype = new TempCtor()
+	    ctor.prototype.constructor = ctor
+	  }
+	}
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Errors = __webpack_require__(14);
+	var Request = __webpack_require__(15);
+
+	function genericModal(message, okColour) {
+		var modalDiv = document.createElement('div');
+		var colourClass = okColour ? 'btn-' + okColour : '';
+
+		var template =
+			`<div class='modal-box'>
+				<div class='modal-box-content'>
+					${message}
+				</div>
+				<img style='display:none;' />
+				<div class='modal-box-buttons'>
+					<button id='modal-button-ok' class='button ${colourClass}'>OK</button>
+					<button id='modal-button-cancel' class='button'>Cancel</button>
+				</div>
+			</div>`;
+
+		modalDiv.classList.add('modal');
+		modalDiv.innerHTML = template;
+
+		modalDiv.close = function() {
+			modalDiv.classList.add('modal-close');
+
+			setTimeout(function() {
+				if(!document.body.contains(modalDiv)) return;
+
+				document.body.removeChild(modalDiv);
+			}, 200)
+		}
+
+		return modalDiv;
+	}
+
+	var confirmBox = function (message, cb, okColour) {
+		var confirmBoxDiv = genericModal(message, okColour);
+
+		confirmBoxDiv.querySelector('#modal-button-ok').addEventListener('click', function() {
+			cb(true);
+			confirmBoxDiv.close();
+		});
+		confirmBoxDiv.querySelector('#modal-button-cancel').addEventListener('click', function() {
+			cb(false);
+			confirmBoxDiv.close();
+		});
+
+		if(document.querySelector('.modal')) {
+			document.body.removeChild(document.querySelector('.modal'));
+		}
+		document.body.appendChild(confirmBoxDiv);
+	}
+
+	var prompBox = function (message, placeholder, cb, okColour) {
+		var promptBoxDiv = genericModal(message, okColour);
+
+		var input = document.createElement('input');
+			input.classList.add('modal-box-content-input');
+			input.setAttribute('placeholder', placeholder);
+			promptBoxDiv.querySelector('.modal-box-content').appendChild(input);
+
+		promptBoxDiv.querySelector('#modal-button-ok').addEventListener('click', function() {
+			cb(input.value.trim());
+			promptBoxDiv.close();
+		});
+		promptBoxDiv.querySelector('#modal-button-cancel').addEventListener('click', function() {
+			cb(null);
+			promptBoxDiv.close();
+		});
+
+		input.addEventListener('keydown', function(ev) {
+			if(ev.keyCode === 13) {
+				cb(input.value.trim());
+				promptBoxDiv.close();
+				ev.preventDefault();
+			}
+		});
+
+		if(document.querySelector('.modal')) {
+			document.body.removeChild(document.querySelector('.modal'));
+		}
+		document.body.appendChild(promptBoxDiv);
+		input.focus();
+	}
+
+	var alertBox = function (message, cb, okColour) {
+		var alertBoxDiv = genericModal(message, okColour);
+
+		var cancelButton = alertBoxDiv.querySelector('#modal-button-cancel');
+		cancelButton.parentElement.removeChild(cancelButton);
+
+		alertBoxDiv.querySelector('.modal-box-buttons').classList.add('modal-box-alert');
+
+		alertBoxDiv.querySelector('#modal-button-ok').addEventListener('click', function() {
+			if(cb) cb(true);
+			alertBoxDiv.close();
+		});
+
+		if(document.querySelector('.modal')) {
+			document.body.removeChild(document.querySelector('.modal'));
+		}
+		document.body.appendChild(alertBoxDiv);
+	}
+
+	var fileBox = function (props, cb, okColour) {
+		var uploadMessage =
+			`${props.message || 'Drag and drop a file here or'}
+			<label class='modal-box-file button'>browse<input type='file' accept='${props.accept || '*'}'></label>`;
+
+		var fileBoxDiv = genericModal(uploadMessage, okColour);
+		var input = document.createElement('input');
+			input.classList.add('modal-box-content-input');
+			input.setAttribute('placeholder', props.placeholder || '');
+			fileBoxDiv.querySelector('.modal-box-content').appendChild(input);
+
+			fileBoxDiv.querySelector('#modal-button-ok').textContent = props.leftButton || 'OK';
+
+		/*function showImgThumbnail(file) {
+			if(file && file.type.includes('image')) {
+				var reader = new FileReader();
+				var img = document.createElement('img');
+
+				reader.onload = function(e) {
+					img.src = e.target.result;
+		
+					fileBoxDiv.querySelector('.modal-box').replaceChild(img, fileBoxDiv.querySelector('img'));
+				};
+				reader.readAsDataURL(file);
+			}
+		}*/
+
+		function uploadFile(file) {
+			fileBoxDiv.querySelector('.modal-box').classList.add('modal-box-disabled');
+
+			Request.post(props.upload, file, function(err, res) {
+				fileBoxDiv.close();
+
+				if(err) {
+					console.log(err);
+					cb(Errors.unknown);
+				} else if(res.error) {
+					cb(res.error)
+				} else {
+					cb(null, res.url);
+				}
+			});
+		}
+
+		fileBoxDiv.querySelector('.modal-box').addEventListener('dragenter', function(ev) {
+			this.classList.add('modal-box-dragging');
+		});
+		fileBoxDiv.querySelector('.modal-box').addEventListener('dragexit', function(ev) {
+			this.classList.remove('modal-box-dragging');
+		});
+		fileBoxDiv.querySelector('.modal-box').addEventListener('dragover', function(ev) {
+			ev.preventDefault();
+		});
+		fileBoxDiv.querySelector('.modal-box').addEventListener('drop', function(ev) {
+			ev.preventDefault();
+
+			this.classList.remove('modal-box-dragging');
+			uploadFile(ev.dataTransfer.files[0]);
+		});
+		fileBoxDiv.querySelector('.modal-box input').addEventListener('change', function(ev) {
+			uploadFile(this.files[0]);
+		});
+
+		fileBoxDiv.querySelector('#modal-button-ok').addEventListener('click', function() {
+			cb(null, input.value.trim());
+			fileBoxDiv.close();
+		});
+		fileBoxDiv.querySelector('#modal-button-cancel').addEventListener('click', function() {
+			cb(null);
+			fileBoxDiv.close();
+		});
+
+		fileBoxDiv.querySelector('.modal-box-buttons').classList.add('modal-box-alert');
+
+		if(document.querySelector('.modal')) {
+			document.body.removeChild(document.querySelector('.modal'));
+		}
+		document.body.appendChild(fileBoxDiv);
+	}
+
+
+	module.exports = {
+		confirm: confirmBox,
+		prompt: prompBox,
+		alert: alertBox,
+		file: fileBox
+	}
+
+/***/ },
+/* 14 */
+/***/ function(module, exports) {
+
+	var Errors = {
+		unknown: 'An unknown error occured on our end. Please try again later',
+		accountAlreadyCreated: 'An account has already been created',
+		incorrectCredentials: 'Either the username or password was incorrect',
+		invalidParams: 'The parameters of the request were incorrect',
+		notAuthorised: 'The request was not authorised. Try logging in again',
+		invalidId: 'An invalid post id was provided',
+		postNotFound: 'No post was found for the id provided',
+		commentsDisabled: 'Comments have been disabled'
+	};
+
+	for(var errorName in Errors) {
+		var temp = {};
+		temp.name = errorName;
+		temp.message = Errors[errorName];
+
+		Errors[errorName] = temp;
+	}
+
+	module.exports = Errors;
+
+/***/ },
+/* 15 */
+/***/ function(module, exports) {
+
+	var Request = {};
+
+	Request.serializeData = function(object) {
+		var temp = '';
+		var serializedString = '';
+		for(var key in object) {
+			if(object[key] === undefined) continue;
+			if(typeof object[key] === 'object') {
+				temp = '&' + key + '=' + encodeURIComponent(JSON.stringify(object[key]));
+			} else {
+				temp = '&' + key + '=' + encodeURIComponent(object[key]);
+			}
+			serializedString += temp;
+		}
+		return serializedString.slice(1);
+	};
+	Request.request = function(method, url, data, cb) {
+		var http = new XMLHttpRequest();
+
+		http.addEventListener('load', function() {
+			var json;
+
+			try {
+				json = JSON.parse(this.responseText)
+			} catch(err) {
+				console.log(err);
+				console.log(this.responseText);
+				cb(err)
+			}
+
+			if(cb) {
+				cb(null, json);
+			}
+		})
+
+		http.open(method, url, true);
+
+		if(data instanceof File) {
+			var formData = new FormData();
+			formData.append('image', data);
+
+			http.send(formData);
+		} else if(typeof data !== 'function') {
+			http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			http.send(this.serializeData(data));
+		} else {
+			http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			http.send();
+		}
+	}
+	Request.post = function(url, data, cb) {
+		this.request('post', url, data, cb);
+	};
+	Request.delete = function(url, data, cb) {
+		this.request('delete', url, data, cb);
+	};
+	Request.put = function(url, data, cb) {
+		this.request('put', url, data, cb);
+	};
+	Request.get = function(url, data, cb) {
+		var http = new XMLHttpRequest();
+
+		http.addEventListener('load', function() {
+			if(cb) {
+				cb(JSON.parse(this.responseText));
+			}
+		})
+
+		http.open('GET', url + '/?' + this.serializeData(data || {}), true);
+		http.send();
+	};
+
+	var Model = {
+		getType: function(val) {
+			if(typeof val !== 'object') {
+				return typeof val;
+			} else if(Array.isArray(val)) {
+				return 'array';
+			} else if(val === null) {
+				return 'null';
+			} else {
+				return typeof val;
+			}
+		},
+		new: function(modelName, modelDefn, updateDelay, updateFunction) {
+			var modelFactory = function(params) {
+				var self = this;
+				var _data = {};
+
+				this.data = {};
+				this.changedObject = {};
+
+				if(updateFunction) {
+					this.updateFunction = updateFunction.bind(this);
+				}
+
+				this.save = function(cb) {
+					var url = Model.rootUrl + '/' + modelFactory.modelName;
+					var dataNoUndefined = {};
+
+					for(var key in _data) {
+						if(_data[key] !== undefined) {
+							dataNoUndefined[key] = _data[key];
+						}
+					}
+
+					Request.post(url, dataNoUndefined, function(modelInstance) {
+						if(modelInstance._id) {
+							self.data._id = modelInstance._id;
+						}
+						cb(modelInstance.error, modelInstance);
+					})
+				}
+
+				this.delete = function(cb) {
+					if(!this.data[modelFactory.primaryKey]) {
+						throw new Error('Model instance does not have primary key field "' + modelFactory.primaryKey + '"');
+						return;
+					}
+					var url = Model.rootUrl + '/' + modelFactory.modelName + '/' + this.data[modelFactory.primaryKey];
+					Request.delete(url, function(result) {
+						cb(result.error, result);
+					})
+				}
+
+				this.update = function(cb, specificData) {
+					if(!this.data[modelFactory.primaryKey]) {
+						throw new Error('Model instance does not have primary key field "' + modelFactory.primaryKey + '"');
+						return;
+					}
+					var url = Model.rootUrl + '/' + modelFactory.modelName + '/' + this.data[modelFactory.primaryKey];
+					Request.put(url, specificData || _data, function(modelInstance) {
+						cb(modelInstance.error, modelInstance);
+					})
+				}
+				
+
+				this.post = function(url, cb) {	
+					var url = Model.rootUrl + '/' + modelFactory.modelName + '/' + url;
+					Request.post(url, _data, cb);
+				}
+
+				//Create getter/setter for each field
+				// which checks type on setting
+				function getSetProp(proxyObj, prop, originalObj, type) {
+					Object.defineProperty(proxyObj, prop, {
+						get: function() {
+							return originalObj[prop];
+						},
+						set: function(val) {
+							if(Model.getType(val) !== type) {
+								throw new TypeError('Field "' + prop + '" must be of type "' + type + '"');
+							} else {
+								originalObj[prop] = val;
+								self.changedObject[prop] = val;
+							}
+						}
+					})
+				}
+				for(var prop in modelDefn) {
+					var type = modelDefn[prop].type || modelDefn[prop];
+
+					if(modelDefn[prop].primaryKey) {
+						modelFactory.primaryKey = prop;
+					}
+
+					if(typeof params[prop] !== undefined) {
+						_data[prop] = params[prop];
+					}
+
+					getSetProp(self.data, prop, _data, type);
+				}
+
+				setInterval(function() {
+					if(Object.keys(self.changedObject).length && self.updateFunction) {
+						self.update(self.updateFunction, self.changedObject)
+						self.changedObject = {};
+					}
+				}, modelFactory.updateDelay)
+			};
+
+			modelFactory.modelName = modelName;
+
+			modelFactory.get = function(idOrCb, cb) {
+				var url = Model.rootUrl + '/' + modelFactory.modelName;
+				if(typeof idOrCb !== 'function') {
+					url += '/' + idOrCb;
+				}
+				
+				Request.get(url, {}, function(modelInstances) {
+					if(cb) {
+						cb(modelInstances.error, modelInstances);
+					} else {
+						idOrCb(modelInstances.error, modelInstances);
+					}
+				})
+			};
+
+			modelFactory.updateDelay = updateDelay;
+			
+			return modelFactory;
+		}
+	};
+
+	module.exports = Request;
+
+/***/ },
+/* 16 */
+/***/ function(module, exports) {
+
+	module.exports = "<div id='main-container'>\r\n\t<div class='post-listings'>\r\n\t\t<div\r\n\t\t\tclass='post-listing'\r\n\t\t\tv-on:click='selectPost(post._id)'\r\n\t\t\tv-for='post in posts'\r\n\t\t\tv-bind:class='{\"selected\": selectedId === post._id}'\r\n\t\t>\r\n\t\t\t<div class='post-title' :title='post.title'>{{post.title}}</div>\r\n\t\t\t<span class='post-status' v-bind:class='[post.published ? classes.published : classes.draft]'></span>\r\n\t\t\t<div class='post-date_created'>{{post.dateString}}</div>\r\n\t\t</div>\r\n\t\t<template v-if='!posts.length'>\r\n\t\t\t<div class='no-post-selected'>\r\n\t\t\t\t<span>{{noPostsMessageBox}}</span>\r\n\t\t\t</div>\r\n\t\t</template>\r\n\t</div>\r\n\t<div id='post-display_card'>\r\n\t\t<div id='post-display_card-bar'>\r\n\t\t\t<template v-if='posts.length'>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<span v-on:click='editPost()'><i class='fa fa-pencil-square-o fa-fw'></i>Edit post</span>\r\n\t\t\t\t\t<span v-on:click='deletePost()'><i class='fa fa-trash-o fa-fw'></i>Delete post</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<a v-if='selectedPost.published' :href='\"/blog/post/\" + selectedPost.slug' target='_blank'>\r\n\t\t\t\t\t<i class='fa fa-external-link fa-fw' style='margin-right: 0.125rem;'></i>View on blog\r\n\t\t\t\t</a>\r\n\t\t\t</template>\r\n\t\t</div>\r\n\t\t<div id='post-display_card-html'>\r\n\t\t\t<div v-if='posts.length' v-html='selectedPost.bodyHTML'></div>\r\n\t\t\t<div class='no-post-selected' v-else v-html='noPostsMessageMain'></div>\r\n\t\t</div>\r\n\t</div>\r\n</div>";
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Vue = __webpack_require__(1);
+	var markdown = __webpack_require__(7);
+	var modals = __webpack_require__(13);
+	var wordCount = __webpack_require__(18);
+	var tooltip = __webpack_require__(4);
+	var Errors = __webpack_require__(14);
+
+	function pluralize(number, word) {
+		if(!number || number > 1) {
+			return number + ' ' + word + 's';
+		} else {
+			return number + ' ' + word;
+		}
+	}
+
+	function getInputSelection(el) {
+	    var start = 0, end = 0, normalizedValue, range,
+	        textInputRange, len, endRange;
+
+	    if (typeof el.selectionStart == "number" && typeof el.selectionEnd == "number") {
+	        start = el.selectionStart;
+	        end = el.selectionEnd;
+	    } else {
+	        range = document.selection.createRange();
+
+	        if (range && range.parentElement() == el) {
+	            len = el.value.length;
+	            normalizedValue = el.value.replace(/\r\n/g, "\n");
+
+	            // Create a working TextRange that lives only in the input
+	            textInputRange = el.createTextRange();
+	            textInputRange.moveToBookmark(range.getBookmark());
+
+	            // Check if the start and end of the selection are at the very end
+	            // of the input, since moveStart/moveEnd doesn't return what we want
+	            // in those cases
+	            endRange = el.createTextRange();
+	            endRange.collapse(false);
+
+	            if (textInputRange.compareEndPoints("StartToEnd", endRange) > -1) {
+	                start = end = len;
+	            } else {
+	                start = -textInputRange.moveStart("character", -len);
+	                start += normalizedValue.slice(0, start).split("\n").length - 1;
+
+	                if (textInputRange.compareEndPoints("EndToEnd", endRange) > -1) {
+	                    end = len;
+	                } else {
+	                    end = -textInputRange.moveEnd("character", -len);
+	                    end += normalizedValue.slice(0, end).split("\n").length - 1;
+	                }
+	            }
+	        }
+	    }
+
+	    return {
+	        start: start,
+	        end: end
+	    };
+	}
+
+	function replaceSelectedText(start, end) {
+		var el = document.querySelector("#markdown-editor textarea");
+
+	    var sel = getInputSelection(el), val = el.value;
+	    var selected = val.slice(sel.start, sel.end);
+	    el.value = val.slice(0, sel.start) + start + val.slice(sel.start, sel.end) + end + val.slice(sel.end);
+	    el.focus();
+	    el.setSelectionRange(sel.start+start.length, sel.start + (start + selected).length);
+
+	    return el.value;
+	}
+
+	var PostsNew = Vue.extend({
+		template: __webpack_require__(29),
+		components: {
+			'tag-bar': __webpack_require__(30)
+		},
+		data: function() {
+			return {
+				tags: [],
+				title: '',
+				markdown: '',
+				published: false,
+				slug: '',
+				commentsAllowed: true,
+				ui: {
+					markdownEditorActive: false,
+					tagBarActive: false,
+					isSavedPost: !!this.$route.params.id,
+					saving: false,
+					savingOptions: false
+				}
+			}
+		},
+		computed: {
+			html: function() {
+				return markdown.parse(this.markdown);
+			},
+			wordCountString: function() {
+				var count = wordCount(this.html);
+				return pluralize(count, 'word');
+			},
+			random: function() {
+				return Math.random();
+			}
+		},
+		events: {
+			tags: function(tags) {
+				this.tags = tags;
+			}
+		},
+		methods: {
+			bold: function() {
+				this.markdown = replaceSelectedText("__", "__");
+			},
+			italic: function() {
+				this.markdown = replaceSelectedText("*", "*");
+			},
+			link: function() {
+				var self = this;
+				modals.prompt('Enter the URL for the link', 'e.g. https://google.com', function(val) {
+					if(val) {
+						self.markdown = replaceSelectedText('[', '](' + val.trim() + ')');
+					}
+				}, 'green');
+			},
+			bulletPoint: function() {
+				this.markdown = replaceSelectedText('   * ', '');
+			},
+			image: function() {
+				var self = this;
+				modals.file({
+					placeholder: 'Or enter the URL of the image',
+					message: 'Drag and drop an image here or',
+					accept: 'image/*',
+					leftButton: 'Add image',
+					upload: '/api/images'
+				}, function(err, val) {
+					if(err) {
+						modals.alert(err.message);
+					} else if(val) {
+						self.markdown = replaceSelectedText('![', '](' + val.trim() + ')');
+					}
+				}, 'green');
+			},
+			saveButton: function() {
+				if(this.$route.path === '/posts/new') {
+					this.createPost();
+				} else {
+					this.updatePost({}, {button: 'save', message: 'All changes saved'});
+				}
+			},
+			toggleFocusMarkdownEditor: function() {
+				this.ui.markdownEditorActive = !this.ui.markdownEditorActive;
+			},
+
+			buttonMessage: function(button, message) {
+				console.log(this.$refs)
+
+				if(button === 'save') {
+					titleTooltip(this.$refs.saveButton, message, 3000);
+				} else if(button === 'options') {
+					titleTooltip(this.$refs.optionsButton, message, 3000);
+				}
+			},
+
+			updatePost(postObjAdditions, message) {
+				var id = this.$route.params.id;
+				var postObj = {
+					title: this.title,
+					markdown: this.markdown,
+					tags: this.tags,
+					commentsAllowed: this.commentsAllowed
+				};
+				for(var key in postObjAdditions) {
+					postObj[key] = postObjAdditions[key];
+				}
+
+				var toggleSaving = () => {
+					if(message && message.button !== 'save') {
+						this.ui.savingOptions = !this.ui.savingOptions;
+					} else {
+						this.ui.saving = !this.ui.saving;
+					}
+				};
+
+				toggleSaving();
+				this.$http.put('/api/posts/' + id, postObj).then(function(res) {
+					if(res.data.error) {
+						modals.alert(res.data.error.message);
+					} else if(message) {
+						this.buttonMessage(message.button, message.message);
+					}
+					toggleSaving();
+				}, function(err) {
+					console.log(err);
+					modals.alert(Errors.unknown.message);
+					toggleSaving();
+				});
+			},
+			createPost(postObjAdditions, message) {
+				var postObj = {
+					title: this.title,
+					markdown: this.markdown,
+					tags: this.tags,
+					commentsAllowed: this.commentsAllowed
+				};
+				for(var key in postObjAdditions) {
+					postObj[key] = postObjAdditions[key];
+				}
+
+				console.log(postObj)
+
+				this.ui.saving = true;
+				
+				this.$http.post('/api/posts', postObj).then(function(res) {
+					if(res.data.error) {
+						modals.alert(res.data.error.message);
+					} else {
+						this.buttonMessage('save', 'Draft saved');
+						this.$router.push('post/' + res.data._id);
+					}
+					this.ui.saving = false;
+				}, function(err) {
+					console.log(err);
+					modals.alert(Errors.unknown.message);
+					this.ui.saving = false;
+				});
+			},
+			deletePost: function() {
+				var id = this.$route.params.id;
+
+				modals.confirm(
+					'Are you sure you want to delete this draft and published post? ' +
+					'<br/>This cannot be undone',
+					function(res) {
+						if(res) {
+							this.$http.delete('/api/posts/' + id).then(function(res) {
+								if(res.data.error) {
+									modals.alert(res.data.error.message)
+								} else if(res.data.success) {
+									this.$router.push('posts');
+								}
+							}, function(err) {
+								console.log(err);
+								modals.alert(Errors.unknown.message);
+							});
+						}
+					}.bind(this),
+					'red'
+				);
+			},
+			togglePublished: function() {
+				var status = !this.published;
+				var message = status ? 'Post published' : 'Post unpublished';
+
+				this.updatePost({published: status}, {button: 'options', message: message});
+				this.published = status;
+			},
+			toggleComments: function() {
+				var id = this.$route.params.id;
+
+				this.commentsAllowed = !this.commentsAllowed;
+				this.ui.savingOptions = true;
+
+				this.$http.put('/api/posts/' + id, {commentsAllowed: this.commentsAllowed}).then(function(res) {
+					if(res.data.error) {
+						modals.alert(res.data.error.message);
+					} else {
+						this.buttonMessage('options', this.commentsAllowed ? 'Comments enabled' : 'Comments disabled');
+					}
+					this.ui.savingOptions = false;
+				}, function(err) {
+					console.log(err);
+					modals.alert(Errors.unknown.message);
+					this.ui.savingOptions = false;
+				});
+			}
+		},
+		mounted: function() {
+			var self = this;
+
+			this.$nextTick(function() {
+				tooltip('#post-options', {
+					items: [
+						{title: 'Delete post', click: this.deletePost},
+						{title: 'Preview blog post', click: ()=>{window.open('/blog/post/' + self.slug)} },
+						{title: () => this.commentsAllowed ? 'Disable comments' : 'Enable comments', click: this.toggleComments},
+						{title: () => this.published ? 'Unpublish post' : 'Publish draft', click: this.togglePublished}
+					]
+				})
+
+				var id = this.$route.params.id;
+				if(id) {
+					this.$http.get('/api/posts/' + id).then(function(res) {
+						if(res.data.error) {
+							modals.alert(res.data.error.message, function() {
+								this.$router.push('posts')
+							}.bind(this));
+						} else {
+							this.title = res.data.title;
+							this.markdown = res.data.markdown;
+							this.tags = res.data.tags;
+							this.published = res.data.published;
+							this.slug = res.data.slug;
+							if(typeof res.data.commentsAllowed !== 'undefined') {
+								this.commentsAllowed = res.data.commentsAllowed;
+							}
+						}
+					}, function(err) {
+						if(err) {
+							console.log(err);
+							modals.alert(Errors.unknown.message, function() {
+								this.$router.push('posts')
+							}.bind(this));
+						}
+					});
+				}
+			});
+		}
+	});
+
+	module.exports = PostsNew;
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var htmlToText = __webpack_require__(19);
+	var wordCount = __webpack_require__(26);
+
+	module.exports = function (body) {
+	  var text = htmlToText.fromString(body, {
+	    wordwrap: false,
+	    ignoreImage: true,
+	    ignoreHref: true
+	  });
+
+	  return wordCount(text);
+	};
+
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(20);
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var util = __webpack_require__(9);
+
+	var _ = __webpack_require__(21);
+	var _s = __webpack_require__(22);
+	var htmlparser = __webpack_require__(23);
+
+	var helper = __webpack_require__(24);
+	var format = __webpack_require__(25);
+
+	// Which type of tags should not be parsed
+	var SKIP_TYPES = [
+		'style',
+		'script'
+	];
+
+	function htmlToText(html, options) {
+		options = options || {};
+		_.defaults(options, {
+			wordwrap: 80,
+			tables: [],
+			preserveNewlines: false,
+			hideLinkHrefIfSameAsText: false,
+			linkHrefBaseUrl: null
+		});
+
+		var handler = new htmlparser.DefaultHandler(function (error, dom) {
+			
+		}, {
+			verbose: true,
+			ignoreWhitespace: true
+		});
+		new htmlparser.Parser(handler).parseComplete(html);
+		
+		var result = walk(filterBody(handler.dom), options);
+		return _s.strip(result);
+	}
+
+	function filterBody(dom) {
+		var result = null;
+		function walk(dom) {
+			if (result) return;
+			_.each(dom, function(elem) {
+				if (elem.name === 'body') {
+					result = elem.children;
+					return;
+				}
+				if (elem.children) walk(elem.children);
+			});
+		}
+		walk(dom);
+		return result || dom;
+	}
+
+	function containsTable(attr, tables) {
+		if (tables === true) return true;
+
+>>>>>>> upgrade-vuejs2
 		function removePrefix(key) {
 			return key.substr(1);
 		}
@@ -14860,6 +18605,7 @@
 	  } else {
 	    root._ = _;
 	  }
+<<<<<<< HEAD
 
 	  // Current version.
 	  _.VERSION = '1.8.3';
@@ -15130,6 +18876,417 @@
 	  // Return the minimum element (or element-based computation).
 	  _.min = function(obj, iteratee, context) {
 	    var result = Infinity, lastComputed = Infinity,
+=======
+
+	  // Current version.
+	  _.VERSION = '1.8.3';
+
+	  // Internal function that returns an efficient (for current engines) version
+	  // of the passed-in callback, to be repeatedly applied in other Underscore
+	  // functions.
+	  var optimizeCb = function(func, context, argCount) {
+	    if (context === void 0) return func;
+	    switch (argCount == null ? 3 : argCount) {
+	      case 1: return function(value) {
+	        return func.call(context, value);
+	      };
+	      case 2: return function(value, other) {
+	        return func.call(context, value, other);
+	      };
+	      case 3: return function(value, index, collection) {
+	        return func.call(context, value, index, collection);
+	      };
+	      case 4: return function(accumulator, value, index, collection) {
+	        return func.call(context, accumulator, value, index, collection);
+	      };
+	    }
+	    return function() {
+	      return func.apply(context, arguments);
+	    };
+	  };
+
+	  // A mostly-internal function to generate callbacks that can be applied
+	  // to each element in a collection, returning the desired result — either
+	  // identity, an arbitrary callback, a property matcher, or a property accessor.
+	  var cb = function(value, context, argCount) {
+	    if (value == null) return _.identity;
+	    if (_.isFunction(value)) return optimizeCb(value, context, argCount);
+	    if (_.isObject(value)) return _.matcher(value);
+	    return _.property(value);
+	  };
+	  _.iteratee = function(value, context) {
+	    return cb(value, context, Infinity);
+	  };
+
+	  // An internal function for creating assigner functions.
+	  var createAssigner = function(keysFunc, undefinedOnly) {
+	    return function(obj) {
+	      var length = arguments.length;
+	      if (length < 2 || obj == null) return obj;
+	      for (var index = 1; index < length; index++) {
+	        var source = arguments[index],
+	            keys = keysFunc(source),
+	            l = keys.length;
+	        for (var i = 0; i < l; i++) {
+	          var key = keys[i];
+	          if (!undefinedOnly || obj[key] === void 0) obj[key] = source[key];
+	        }
+	      }
+	      return obj;
+	    };
+	  };
+
+	  // An internal function for creating a new object that inherits from another.
+	  var baseCreate = function(prototype) {
+	    if (!_.isObject(prototype)) return {};
+	    if (nativeCreate) return nativeCreate(prototype);
+	    Ctor.prototype = prototype;
+	    var result = new Ctor;
+	    Ctor.prototype = null;
+	    return result;
+	  };
+
+	  var property = function(key) {
+	    return function(obj) {
+	      return obj == null ? void 0 : obj[key];
+	    };
+	  };
+
+	  // Helper for collection methods to determine whether a collection
+	  // should be iterated as an array or as an object
+	  // Related: http://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength
+	  // Avoids a very nasty iOS 8 JIT bug on ARM-64. #2094
+	  var MAX_ARRAY_INDEX = Math.pow(2, 53) - 1;
+	  var getLength = property('length');
+	  var isArrayLike = function(collection) {
+	    var length = getLength(collection);
+	    return typeof length == 'number' && length >= 0 && length <= MAX_ARRAY_INDEX;
+	  };
+
+	  // Collection Functions
+	  // --------------------
+
+	  // The cornerstone, an `each` implementation, aka `forEach`.
+	  // Handles raw objects in addition to array-likes. Treats all
+	  // sparse array-likes as if they were dense.
+	  _.each = _.forEach = function(obj, iteratee, context) {
+	    iteratee = optimizeCb(iteratee, context);
+	    var i, length;
+	    if (isArrayLike(obj)) {
+	      for (i = 0, length = obj.length; i < length; i++) {
+	        iteratee(obj[i], i, obj);
+	      }
+	    } else {
+	      var keys = _.keys(obj);
+	      for (i = 0, length = keys.length; i < length; i++) {
+	        iteratee(obj[keys[i]], keys[i], obj);
+	      }
+	    }
+	    return obj;
+	  };
+
+	  // Return the results of applying the iteratee to each element.
+	  _.map = _.collect = function(obj, iteratee, context) {
+	    iteratee = cb(iteratee, context);
+	    var keys = !isArrayLike(obj) && _.keys(obj),
+	        length = (keys || obj).length,
+	        results = Array(length);
+	    for (var index = 0; index < length; index++) {
+	      var currentKey = keys ? keys[index] : index;
+	      results[index] = iteratee(obj[currentKey], currentKey, obj);
+	    }
+	    return results;
+	  };
+
+	  // Create a reducing function iterating left or right.
+	  function createReduce(dir) {
+	    // Optimized iterator function as using arguments.length
+	    // in the main function will deoptimize the, see #1991.
+	    function iterator(obj, iteratee, memo, keys, index, length) {
+	      for (; index >= 0 && index < length; index += dir) {
+	        var currentKey = keys ? keys[index] : index;
+	        memo = iteratee(memo, obj[currentKey], currentKey, obj);
+	      }
+	      return memo;
+	    }
+
+	    return function(obj, iteratee, memo, context) {
+	      iteratee = optimizeCb(iteratee, context, 4);
+	      var keys = !isArrayLike(obj) && _.keys(obj),
+	          length = (keys || obj).length,
+	          index = dir > 0 ? 0 : length - 1;
+	      // Determine the initial value if none is provided.
+	      if (arguments.length < 3) {
+	        memo = obj[keys ? keys[index] : index];
+	        index += dir;
+	      }
+	      return iterator(obj, iteratee, memo, keys, index, length);
+	    };
+	  }
+
+	  // **Reduce** builds up a single result from a list of values, aka `inject`,
+	  // or `foldl`.
+	  _.reduce = _.foldl = _.inject = createReduce(1);
+
+	  // The right-associative version of reduce, also known as `foldr`.
+	  _.reduceRight = _.foldr = createReduce(-1);
+
+	  // Return the first value which passes a truth test. Aliased as `detect`.
+	  _.find = _.detect = function(obj, predicate, context) {
+	    var key;
+	    if (isArrayLike(obj)) {
+	      key = _.findIndex(obj, predicate, context);
+	    } else {
+	      key = _.findKey(obj, predicate, context);
+	    }
+	    if (key !== void 0 && key !== -1) return obj[key];
+	  };
+
+	  // Return all the elements that pass a truth test.
+	  // Aliased as `select`.
+	  _.filter = _.select = function(obj, predicate, context) {
+	    var results = [];
+	    predicate = cb(predicate, context);
+	    _.each(obj, function(value, index, list) {
+	      if (predicate(value, index, list)) results.push(value);
+	    });
+	    return results;
+	  };
+
+	  // Return all the elements for which a truth test fails.
+	  _.reject = function(obj, predicate, context) {
+	    return _.filter(obj, _.negate(cb(predicate)), context);
+	  };
+
+	  // Determine whether all of the elements match a truth test.
+	  // Aliased as `all`.
+	  _.every = _.all = function(obj, predicate, context) {
+	    predicate = cb(predicate, context);
+	    var keys = !isArrayLike(obj) && _.keys(obj),
+	        length = (keys || obj).length;
+	    for (var index = 0; index < length; index++) {
+	      var currentKey = keys ? keys[index] : index;
+	      if (!predicate(obj[currentKey], currentKey, obj)) return false;
+	    }
+	    return true;
+	  };
+
+	  // Determine if at least one element in the object matches a truth test.
+	  // Aliased as `any`.
+	  _.some = _.any = function(obj, predicate, context) {
+	    predicate = cb(predicate, context);
+	    var keys = !isArrayLike(obj) && _.keys(obj),
+	        length = (keys || obj).length;
+	    for (var index = 0; index < length; index++) {
+	      var currentKey = keys ? keys[index] : index;
+	      if (predicate(obj[currentKey], currentKey, obj)) return true;
+	    }
+	    return false;
+	  };
+
+	  // Determine if the array or object contains a given item (using `===`).
+	  // Aliased as `includes` and `include`.
+	  _.contains = _.includes = _.include = function(obj, item, fromIndex, guard) {
+	    if (!isArrayLike(obj)) obj = _.values(obj);
+	    if (typeof fromIndex != 'number' || guard) fromIndex = 0;
+	    return _.indexOf(obj, item, fromIndex) >= 0;
+	  };
+
+	  // Invoke a method (with arguments) on every item in a collection.
+	  _.invoke = function(obj, method) {
+	    var args = slice.call(arguments, 2);
+	    var isFunc = _.isFunction(method);
+	    return _.map(obj, function(value) {
+	      var func = isFunc ? method : value[method];
+	      return func == null ? func : func.apply(value, args);
+	    });
+	  };
+
+	  // Convenience version of a common use case of `map`: fetching a property.
+	  _.pluck = function(obj, key) {
+	    return _.map(obj, _.property(key));
+	  };
+
+	  // Convenience version of a common use case of `filter`: selecting only objects
+	  // containing specific `key:value` pairs.
+	  _.where = function(obj, attrs) {
+	    return _.filter(obj, _.matcher(attrs));
+	  };
+
+	  // Convenience version of a common use case of `find`: getting the first object
+	  // containing specific `key:value` pairs.
+	  _.findWhere = function(obj, attrs) {
+	    return _.find(obj, _.matcher(attrs));
+	  };
+
+	  // Return the maximum element (or element-based computation).
+	  _.max = function(obj, iteratee, context) {
+	    var result = -Infinity, lastComputed = -Infinity,
+>>>>>>> upgrade-vuejs2
+	        value, computed;
+	    if (iteratee == null && obj != null) {
+	      obj = isArrayLike(obj) ? obj : _.values(obj);
+	      for (var i = 0, length = obj.length; i < length; i++) {
+	        value = obj[i];
+<<<<<<< HEAD
+	        if (value < result) {
+=======
+	        if (value > result) {
+>>>>>>> upgrade-vuejs2
+	          result = value;
+	        }
+	      }
+	    } else {
+	      iteratee = cb(iteratee, context);
+	      _.each(obj, function(value, index, list) {
+	        computed = iteratee(value, index, list);
+<<<<<<< HEAD
+	        if (computed < lastComputed || computed === Infinity && result === Infinity) {
+=======
+	        if (computed > lastComputed || computed === -Infinity && result === -Infinity) {
+>>>>>>> upgrade-vuejs2
+	          result = value;
+	          lastComputed = computed;
+	        }
+	      });
+	    }
+	    return result;
+	  };
+
+<<<<<<< HEAD
+	  // Shuffle a collection, using the modern version of the
+	  // [Fisher-Yates shuffle](http://en.wikipedia.org/wiki/Fisher–Yates_shuffle).
+	  _.shuffle = function(obj) {
+	    var set = isArrayLike(obj) ? obj : _.values(obj);
+	    var length = set.length;
+	    var shuffled = Array(length);
+	    for (var index = 0, rand; index < length; index++) {
+	      rand = _.random(0, index);
+	      if (rand !== index) shuffled[index] = shuffled[rand];
+	      shuffled[rand] = set[index];
+	    }
+	    return shuffled;
+	  };
+
+	  // Sample **n** random values from a collection.
+	  // If **n** is not specified, returns a single random element.
+	  // The internal `guard` argument allows it to work with `map`.
+	  _.sample = function(obj, n, guard) {
+	    if (n == null || guard) {
+	      if (!isArrayLike(obj)) obj = _.values(obj);
+	      return obj[_.random(obj.length - 1)];
+	    }
+	    return _.shuffle(obj).slice(0, Math.max(0, n));
+	  };
+
+	  // Sort the object's values by a criterion produced by an iteratee.
+	  _.sortBy = function(obj, iteratee, context) {
+	    iteratee = cb(iteratee, context);
+	    return _.pluck(_.map(obj, function(value, index, list) {
+	      return {
+	        value: value,
+	        index: index,
+	        criteria: iteratee(value, index, list)
+	      };
+	    }).sort(function(left, right) {
+	      var a = left.criteria;
+	      var b = right.criteria;
+	      if (a !== b) {
+	        if (a > b || a === void 0) return 1;
+	        if (a < b || b === void 0) return -1;
+	      }
+	      return left.index - right.index;
+	    }), 'value');
+	  };
+
+	  // An internal function used for aggregate "group by" operations.
+	  var group = function(behavior) {
+	    return function(obj, iteratee, context) {
+	      var result = {};
+	      iteratee = cb(iteratee, context);
+	      _.each(obj, function(value, index) {
+	        var key = iteratee(value, index, obj);
+	        behavior(result, value, key);
+	      });
+	      return result;
+	    };
+	  };
+
+	  // Groups the object's values by a criterion. Pass either a string attribute
+	  // to group by, or a function that returns the criterion.
+	  _.groupBy = group(function(result, value, key) {
+	    if (_.has(result, key)) result[key].push(value); else result[key] = [value];
+	  });
+
+	  // Indexes the object's values by a criterion, similar to `groupBy`, but for
+	  // when you know that your index values will be unique.
+	  _.indexBy = group(function(result, value, key) {
+	    result[key] = value;
+	  });
+
+	  // Counts instances of an object that group by a certain criterion. Pass
+	  // either a string attribute to count by, or a function that returns the
+	  // criterion.
+	  _.countBy = group(function(result, value, key) {
+	    if (_.has(result, key)) result[key]++; else result[key] = 1;
+	  });
+
+	  // Safely create a real, live array from anything iterable.
+	  _.toArray = function(obj) {
+	    if (!obj) return [];
+	    if (_.isArray(obj)) return slice.call(obj);
+	    if (isArrayLike(obj)) return _.map(obj, _.identity);
+	    return _.values(obj);
+	  };
+
+	  // Return the number of elements in an object.
+	  _.size = function(obj) {
+	    if (obj == null) return 0;
+	    return isArrayLike(obj) ? obj.length : _.keys(obj).length;
+	  };
+
+	  // Split a collection into two arrays: one whose elements all satisfy the given
+	  // predicate, and one whose elements all do not satisfy the predicate.
+	  _.partition = function(obj, predicate, context) {
+	    predicate = cb(predicate, context);
+	    var pass = [], fail = [];
+	    _.each(obj, function(value, key, obj) {
+	      (predicate(value, key, obj) ? pass : fail).push(value);
+	    });
+	    return [pass, fail];
+	  };
+
+	  // Array Functions
+	  // ---------------
+
+	  // Get the first element of an array. Passing **n** will return the first N
+	  // values in the array. Aliased as `head` and `take`. The **guard** check
+	  // allows it to work with `_.map`.
+	  _.first = _.head = _.take = function(array, n, guard) {
+	    if (array == null) return void 0;
+	    if (n == null || guard) return array[0];
+	    return _.initial(array, array.length - n);
+	  };
+
+	  // Returns everything but the last entry of the array. Especially useful on
+	  // the arguments object. Passing **n** will return all the values in
+	  // the array, excluding the last N.
+	  _.initial = function(array, n, guard) {
+	    return slice.call(array, 0, Math.max(0, array.length - (n == null || guard ? 1 : n)));
+	  };
+
+	  // Get the last element of an array. Passing **n** will return the last N
+	  // values in the array.
+	  _.last = function(array, n, guard) {
+	    if (array == null) return void 0;
+	    if (n == null || guard) return array[array.length - 1];
+	    return _.rest(array, Math.max(0, array.length - n));
+	  };
+
+=======
+	  // Return the minimum element (or element-based computation).
+	  _.min = function(obj, iteratee, context) {
+	    var result = Infinity, lastComputed = Infinity,
 	        value, computed;
 	    if (iteratee == null && obj != null) {
 	      obj = isArrayLike(obj) ? obj : _.values(obj);
@@ -15281,6 +19438,7 @@
 	    return _.rest(array, Math.max(0, array.length - n));
 	  };
 
+>>>>>>> upgrade-vuejs2
 	  // Returns everything but the first entry of the array. Aliased as `tail` and `drop`.
 	  // Especially useful on the arguments object. Passing an **n** will return
 	  // the rest N values in the array.
@@ -15712,6 +19870,7 @@
 	  var hasEnumBug = !{toString: null}.propertyIsEnumerable('toString');
 	  var nonEnumerableProps = ['valueOf', 'isPrototypeOf', 'toString',
 	                      'propertyIsEnumerable', 'hasOwnProperty', 'toLocaleString'];
+<<<<<<< HEAD
 
 	  function collectNonEnumProps(obj, keys) {
 	    var nonEnumIdx = nonEnumerableProps.length;
@@ -15742,6 +19901,71 @@
 	    return keys;
 	  };
 
+	  // Retrieve all the property names of an object.
+	  _.allKeys = function(obj) {
+	    if (!_.isObject(obj)) return [];
+	    var keys = [];
+	    for (var key in obj) keys.push(key);
+=======
+
+	  function collectNonEnumProps(obj, keys) {
+	    var nonEnumIdx = nonEnumerableProps.length;
+	    var constructor = obj.constructor;
+	    var proto = (_.isFunction(constructor) && constructor.prototype) || ObjProto;
+
+	    // Constructor is a special case.
+	    var prop = 'constructor';
+	    if (_.has(obj, prop) && !_.contains(keys, prop)) keys.push(prop);
+
+	    while (nonEnumIdx--) {
+	      prop = nonEnumerableProps[nonEnumIdx];
+	      if (prop in obj && obj[prop] !== proto[prop] && !_.contains(keys, prop)) {
+	        keys.push(prop);
+	      }
+	    }
+	  }
+
+	  // Retrieve the names of an object's own properties.
+	  // Delegates to **ECMAScript 5**'s native `Object.keys`
+	  _.keys = function(obj) {
+	    if (!_.isObject(obj)) return [];
+	    if (nativeKeys) return nativeKeys(obj);
+	    var keys = [];
+	    for (var key in obj) if (_.has(obj, key)) keys.push(key);
+>>>>>>> upgrade-vuejs2
+	    // Ahem, IE < 9.
+	    if (hasEnumBug) collectNonEnumProps(obj, keys);
+	    return keys;
+	  };
+
+<<<<<<< HEAD
+	  // Retrieve the values of an object's properties.
+	  _.values = function(obj) {
+	    var keys = _.keys(obj);
+	    var length = keys.length;
+	    var values = Array(length);
+	    for (var i = 0; i < length; i++) {
+	      values[i] = obj[keys[i]];
+	    }
+	    return values;
+	  };
+
+	  // Returns the results of applying the iteratee to each element of the object
+	  // In contrast to _.map it returns an object
+	  _.mapObject = function(obj, iteratee, context) {
+	    iteratee = cb(iteratee, context);
+	    var keys =  _.keys(obj),
+	          length = keys.length,
+	          results = {},
+	          currentKey;
+	      for (var index = 0; index < length; index++) {
+	        currentKey = keys[index];
+	        results[currentKey] = iteratee(obj[currentKey], currentKey, obj);
+	      }
+	      return results;
+	  };
+
+=======
 	  // Retrieve all the property names of an object.
 	  _.allKeys = function(obj) {
 	    if (!_.isObject(obj)) return [];
@@ -15778,6 +20002,7 @@
 	      return results;
 	  };
 
+>>>>>>> upgrade-vuejs2
 	  // Convert an object into a list of `[key, value]` pairs.
 	  _.pairs = function(obj) {
 	    var keys = _.keys(obj);
@@ -16068,6 +20293,7 @@
 	  _.isUndefined = function(obj) {
 	    return obj === void 0;
 	  };
+<<<<<<< HEAD
 
 	  // Shortcut function for checking if an object has a given property directly
 	  // on itself (in other words, not on a prototype).
@@ -16340,6 +20566,280 @@
 	    return '' + this._wrapped;
 	  };
 
+=======
+
+	  // Shortcut function for checking if an object has a given property directly
+	  // on itself (in other words, not on a prototype).
+	  _.has = function(obj, key) {
+	    return obj != null && hasOwnProperty.call(obj, key);
+	  };
+
+	  // Utility Functions
+	  // -----------------
+
+	  // Run Underscore.js in *noConflict* mode, returning the `_` variable to its
+	  // previous owner. Returns a reference to the Underscore object.
+	  _.noConflict = function() {
+	    root._ = previousUnderscore;
+	    return this;
+	  };
+
+	  // Keep the identity function around for default iteratees.
+	  _.identity = function(value) {
+	    return value;
+	  };
+
+	  // Predicate-generating functions. Often useful outside of Underscore.
+	  _.constant = function(value) {
+	    return function() {
+	      return value;
+	    };
+	  };
+
+	  _.noop = function(){};
+
+	  _.property = property;
+
+	  // Generates a function for a given object that returns a given property.
+	  _.propertyOf = function(obj) {
+	    return obj == null ? function(){} : function(key) {
+	      return obj[key];
+	    };
+	  };
+
+	  // Returns a predicate for checking whether an object has a given set of
+	  // `key:value` pairs.
+	  _.matcher = _.matches = function(attrs) {
+	    attrs = _.extendOwn({}, attrs);
+	    return function(obj) {
+	      return _.isMatch(obj, attrs);
+	    };
+	  };
+
+	  // Run a function **n** times.
+	  _.times = function(n, iteratee, context) {
+	    var accum = Array(Math.max(0, n));
+	    iteratee = optimizeCb(iteratee, context, 1);
+	    for (var i = 0; i < n; i++) accum[i] = iteratee(i);
+	    return accum;
+	  };
+
+	  // Return a random integer between min and max (inclusive).
+	  _.random = function(min, max) {
+	    if (max == null) {
+	      max = min;
+	      min = 0;
+	    }
+	    return min + Math.floor(Math.random() * (max - min + 1));
+	  };
+
+	  // A (possibly faster) way to get the current timestamp as an integer.
+	  _.now = Date.now || function() {
+	    return new Date().getTime();
+	  };
+
+	   // List of HTML entities for escaping.
+	  var escapeMap = {
+	    '&': '&amp;',
+	    '<': '&lt;',
+	    '>': '&gt;',
+	    '"': '&quot;',
+	    "'": '&#x27;',
+	    '`': '&#x60;'
+	  };
+	  var unescapeMap = _.invert(escapeMap);
+
+	  // Functions for escaping and unescaping strings to/from HTML interpolation.
+	  var createEscaper = function(map) {
+	    var escaper = function(match) {
+	      return map[match];
+	    };
+	    // Regexes for identifying a key that needs to be escaped
+	    var source = '(?:' + _.keys(map).join('|') + ')';
+	    var testRegexp = RegExp(source);
+	    var replaceRegexp = RegExp(source, 'g');
+	    return function(string) {
+	      string = string == null ? '' : '' + string;
+	      return testRegexp.test(string) ? string.replace(replaceRegexp, escaper) : string;
+	    };
+	  };
+	  _.escape = createEscaper(escapeMap);
+	  _.unescape = createEscaper(unescapeMap);
+
+	  // If the value of the named `property` is a function then invoke it with the
+	  // `object` as context; otherwise, return it.
+	  _.result = function(object, property, fallback) {
+	    var value = object == null ? void 0 : object[property];
+	    if (value === void 0) {
+	      value = fallback;
+	    }
+	    return _.isFunction(value) ? value.call(object) : value;
+	  };
+
+	  // Generate a unique integer id (unique within the entire client session).
+	  // Useful for temporary DOM ids.
+	  var idCounter = 0;
+	  _.uniqueId = function(prefix) {
+	    var id = ++idCounter + '';
+	    return prefix ? prefix + id : id;
+	  };
+
+	  // By default, Underscore uses ERB-style template delimiters, change the
+	  // following template settings to use alternative delimiters.
+	  _.templateSettings = {
+	    evaluate    : /<%([\s\S]+?)%>/g,
+	    interpolate : /<%=([\s\S]+?)%>/g,
+	    escape      : /<%-([\s\S]+?)%>/g
+	  };
+
+	  // When customizing `templateSettings`, if you don't want to define an
+	  // interpolation, evaluation or escaping regex, we need one that is
+	  // guaranteed not to match.
+	  var noMatch = /(.)^/;
+
+	  // Certain characters need to be escaped so that they can be put into a
+	  // string literal.
+	  var escapes = {
+	    "'":      "'",
+	    '\\':     '\\',
+	    '\r':     'r',
+	    '\n':     'n',
+	    '\u2028': 'u2028',
+	    '\u2029': 'u2029'
+	  };
+
+	  var escaper = /\\|'|\r|\n|\u2028|\u2029/g;
+
+	  var escapeChar = function(match) {
+	    return '\\' + escapes[match];
+	  };
+
+	  // JavaScript micro-templating, similar to John Resig's implementation.
+	  // Underscore templating handles arbitrary delimiters, preserves whitespace,
+	  // and correctly escapes quotes within interpolated code.
+	  // NB: `oldSettings` only exists for backwards compatibility.
+	  _.template = function(text, settings, oldSettings) {
+	    if (!settings && oldSettings) settings = oldSettings;
+	    settings = _.defaults({}, settings, _.templateSettings);
+
+	    // Combine delimiters into one regular expression via alternation.
+	    var matcher = RegExp([
+	      (settings.escape || noMatch).source,
+	      (settings.interpolate || noMatch).source,
+	      (settings.evaluate || noMatch).source
+	    ].join('|') + '|$', 'g');
+
+	    // Compile the template source, escaping string literals appropriately.
+	    var index = 0;
+	    var source = "__p+='";
+	    text.replace(matcher, function(match, escape, interpolate, evaluate, offset) {
+	      source += text.slice(index, offset).replace(escaper, escapeChar);
+	      index = offset + match.length;
+
+	      if (escape) {
+	        source += "'+\n((__t=(" + escape + "))==null?'':_.escape(__t))+\n'";
+	      } else if (interpolate) {
+	        source += "'+\n((__t=(" + interpolate + "))==null?'':__t)+\n'";
+	      } else if (evaluate) {
+	        source += "';\n" + evaluate + "\n__p+='";
+	      }
+
+	      // Adobe VMs need the match returned to produce the correct offest.
+	      return match;
+	    });
+	    source += "';\n";
+
+	    // If a variable is not specified, place data values in local scope.
+	    if (!settings.variable) source = 'with(obj||{}){\n' + source + '}\n';
+
+	    source = "var __t,__p='',__j=Array.prototype.join," +
+	      "print=function(){__p+=__j.call(arguments,'');};\n" +
+	      source + 'return __p;\n';
+
+	    try {
+	      var render = new Function(settings.variable || 'obj', '_', source);
+	    } catch (e) {
+	      e.source = source;
+	      throw e;
+	    }
+
+	    var template = function(data) {
+	      return render.call(this, data, _);
+	    };
+
+	    // Provide the compiled source as a convenience for precompilation.
+	    var argument = settings.variable || 'obj';
+	    template.source = 'function(' + argument + '){\n' + source + '}';
+
+	    return template;
+	  };
+
+	  // Add a "chain" function. Start chaining a wrapped Underscore object.
+	  _.chain = function(obj) {
+	    var instance = _(obj);
+	    instance._chain = true;
+	    return instance;
+	  };
+
+	  // OOP
+	  // ---------------
+	  // If Underscore is called as a function, it returns a wrapped object that
+	  // can be used OO-style. This wrapper holds altered versions of all the
+	  // underscore functions. Wrapped objects may be chained.
+
+	  // Helper function to continue chaining intermediate results.
+	  var result = function(instance, obj) {
+	    return instance._chain ? _(obj).chain() : obj;
+	  };
+
+	  // Add your own custom functions to the Underscore object.
+	  _.mixin = function(obj) {
+	    _.each(_.functions(obj), function(name) {
+	      var func = _[name] = obj[name];
+	      _.prototype[name] = function() {
+	        var args = [this._wrapped];
+	        push.apply(args, arguments);
+	        return result(this, func.apply(_, args));
+	      };
+	    });
+	  };
+
+	  // Add all of the Underscore functions to the wrapper object.
+	  _.mixin(_);
+
+	  // Add all mutator Array functions to the wrapper.
+	  _.each(['pop', 'push', 'reverse', 'shift', 'sort', 'splice', 'unshift'], function(name) {
+	    var method = ArrayProto[name];
+	    _.prototype[name] = function() {
+	      var obj = this._wrapped;
+	      method.apply(obj, arguments);
+	      if ((name === 'shift' || name === 'splice') && obj.length === 0) delete obj[0];
+	      return result(this, obj);
+	    };
+	  });
+
+	  // Add all accessor Array functions to the wrapper.
+	  _.each(['concat', 'join', 'slice'], function(name) {
+	    var method = ArrayProto[name];
+	    _.prototype[name] = function() {
+	      return result(this, method.apply(this._wrapped, arguments));
+	    };
+	  });
+
+	  // Extracts the result from a wrapped and chained object.
+	  _.prototype.value = function() {
+	    return this._wrapped;
+	  };
+
+	  // Provide unwrapping proxy for some methods used in engine operations
+	  // such as arithmetic and JSON stringification.
+	  _.prototype.valueOf = _.prototype.toJSON = _.prototype.value;
+
+	  _.prototype.toString = function() {
+	    return '' + this._wrapped;
+	  };
+
+>>>>>>> upgrade-vuejs2
 	  // AMD registration happens at the end for compatibility with AMD loaders
 	  // that may not enforce next-turn semantics on modules. Even though general
 	  // practice for AMD registration is to be anonymous, underscore registers
@@ -16987,6 +21487,7 @@
 	          prev = current[j];
 	          current[j] = value;
 	        }
+<<<<<<< HEAD
 
 	      return current.pop();
 	    },
@@ -17251,6 +21752,272 @@
 			return((match[1] ? "/" : "") + match[2]);
 		}
 
+=======
+
+	      return current.pop();
+	    },
+
+	    toBoolean: function(str, trueValues, falseValues) {
+	      if (typeof str === "number") str = "" + str;
+	      if (typeof str !== "string") return !!str;
+	      str = _s.trim(str);
+	      if (boolMatch(str, trueValues || ["true", "1"])) return true;
+	      if (boolMatch(str, falseValues || ["false", "0"])) return false;
+	    }
+	  };
+
+	  // Aliases
+
+	  _s.strip    = _s.trim;
+	  _s.lstrip   = _s.ltrim;
+	  _s.rstrip   = _s.rtrim;
+	  _s.center   = _s.lrpad;
+	  _s.rjust    = _s.lpad;
+	  _s.ljust    = _s.rpad;
+	  _s.contains = _s.include;
+	  _s.q        = _s.quote;
+	  _s.toBool   = _s.toBoolean;
+
+	  // Exporting
+
+	  // CommonJS module is defined
+	  if (true) {
+	    if (typeof module !== 'undefined' && module.exports)
+	      module.exports = _s;
+
+	    exports._s = _s;
+	  }
+
+	  // Register as a named module with AMD.
+	  if (true)
+	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function(){ return _s; }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+	  // Integrate with Underscore.js if defined
+	  // or create our own underscore object.
+	  root._ = root._ || {};
+	  root._.string = root._.str = _s;
+	}(this, String);
+
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(__filename, __dirname) {/***********************************************
+	Copyright 2010, 2011, Chris Winberry <chris@winberry.net>. All rights reserved.
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to
+	deal in the Software without restriction, including without limitation the
+	rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+	sell copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in
+	all copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+	FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+	IN THE SOFTWARE.
+	***********************************************/
+	/* v1.7.6 */
+
+	(function () {
+
+	function runningInNode () {
+		return(
+			("function") == "function"
+			&&
+			(typeof exports) == "object"
+			&&
+			(typeof module) == "object"
+			&&
+			(typeof __filename) == "string"
+			&&
+			(typeof __dirname) == "string"
+			);
+	}
+
+	if (!runningInNode()) {
+		if (!this.Tautologistics)
+			this.Tautologistics = {};
+		else if (this.Tautologistics.NodeHtmlParser)
+			return; //NodeHtmlParser already defined!
+		this.Tautologistics.NodeHtmlParser = {};
+		exports = this.Tautologistics.NodeHtmlParser;
+	}
+
+	//Types of elements found in the DOM
+	var ElementType = {
+		  Text: "text" //Plain text
+		, Directive: "directive" //Special tag <!...>
+		, Comment: "comment" //Special tag <!--...-->
+		, Script: "script" //Special tag <script>...</script>
+		, Style: "style" //Special tag <style>...</style>
+		, Tag: "tag" //Any tag that isn't special
+	}
+
+	function Parser (handler, options) {
+		this._options = options ? options : { };
+		if (this._options.includeLocation == undefined) {
+			this._options.includeLocation = false; //Do not track element position in document by default
+		}
+
+		this.validateHandler(handler);
+		this._handler = handler;
+		this.reset();
+	}
+
+		//**"Static"**//
+		//Regular expressions used for cleaning up and parsing (stateless)
+		Parser._reTrim = /(^\s+|\s+$)/g; //Trim leading/trailing whitespace
+		Parser._reTrimComment = /(^\!--|--$)/g; //Remove comment tag markup from comment contents
+		Parser._reWhitespace = /\s/g; //Used to find any whitespace to split on
+		Parser._reTagName = /^\s*(\/?)\s*([^\s\/]+)/; //Used to find the tag name for an element
+
+		//Regular expressions used for parsing (stateful)
+		Parser._reAttrib = //Find attributes in a tag
+			/([^=<>\"\'\s]+)\s*=\s*"([^"]*)"|([^=<>\"\'\s]+)\s*=\s*'([^']*)'|([^=<>\"\'\s]+)\s*=\s*([^'"\s]+)|([^=<>\"\'\s\/]+)/g;
+		Parser._reTags = /[\<\>]/g; //Find tag markers
+
+		//**Public**//
+		//Methods//
+		//Parses a complete HTML and pushes it to the handler
+		Parser.prototype.parseComplete = function Parser$parseComplete (data) {
+			this.reset();
+			this.parseChunk(data);
+			this.done();
+		}
+
+		//Parses a piece of an HTML document
+		Parser.prototype.parseChunk = function Parser$parseChunk (data) {
+			if (this._done)
+				this.handleError(new Error("Attempted to parse chunk after parsing already done"));
+			this._buffer += data; //FIXME: this can be a bottleneck
+			this.parseTags();
+		}
+
+		//Tells the parser that the HTML being parsed is complete
+		Parser.prototype.done = function Parser$done () {
+			if (this._done)
+				return;
+			this._done = true;
+		
+			//Push any unparsed text into a final element in the element list
+			if (this._buffer.length) {
+				var rawData = this._buffer;
+				this._buffer = "";
+				var element = {
+					  raw: rawData
+					, data: (this._parseState == ElementType.Text) ? rawData : rawData.replace(Parser._reTrim, "")
+					, type: this._parseState
+					};
+				if (this._parseState == ElementType.Tag || this._parseState == ElementType.Script || this._parseState == ElementType.Style)
+					element.name = this.parseTagName(element.data);
+				this.parseAttribs(element);
+				this._elements.push(element);
+			}
+		
+			this.writeHandler();
+			this._handler.done();
+		}
+
+		//Resets the parser to a blank state, ready to parse a new HTML document
+		Parser.prototype.reset = function Parser$reset () {
+			this._buffer = "";
+			this._done = false;
+			this._elements = [];
+			this._elementsCurrent = 0;
+			this._current = 0;
+			this._next = 0;
+			this._location = {
+				  row: 0
+				, col: 0
+				, charOffset: 0
+				, inBuffer: 0
+			};
+			this._parseState = ElementType.Text;
+			this._prevTagSep = '';
+			this._tagStack = [];
+			this._handler.reset();
+		}
+		
+		//**Private**//
+		//Properties//
+		Parser.prototype._options = null; //Parser options for how to behave
+		Parser.prototype._handler = null; //Handler for parsed elements
+		Parser.prototype._buffer = null; //Buffer of unparsed data
+		Parser.prototype._done = false; //Flag indicating whether parsing is done
+		Parser.prototype._elements =  null; //Array of parsed elements
+		Parser.prototype._elementsCurrent = 0; //Pointer to last element in _elements that has been processed
+		Parser.prototype._current = 0; //Position in data that has already been parsed
+		Parser.prototype._next = 0; //Position in data of the next tag marker (<>)
+		Parser.prototype._location = null; //Position tracking for elements in a stream
+		Parser.prototype._parseState = ElementType.Text; //Current type of element being parsed
+		Parser.prototype._prevTagSep = ''; //Previous tag marker found
+		//Stack of element types previously encountered; keeps track of when
+		//parsing occurs inside a script/comment/style tag
+		Parser.prototype._tagStack = null;
+
+		//Methods//
+		//Takes an array of elements and parses any found attributes
+		Parser.prototype.parseTagAttribs = function Parser$parseTagAttribs (elements) {
+			var idxEnd = elements.length;
+			var idx = 0;
+		
+			while (idx < idxEnd) {
+				var element = elements[idx++];
+				if (element.type == ElementType.Tag || element.type == ElementType.Script || element.type == ElementType.style)
+					this.parseAttribs(element);
+			}
+		
+			return(elements);
+		}
+
+		//Takes an element and adds an "attribs" property for any element attributes found 
+		Parser.prototype.parseAttribs = function Parser$parseAttribs (element) {
+			//Only parse attributes for tags
+			if (element.type != ElementType.Script && element.type != ElementType.Style && element.type != ElementType.Tag)
+				return;
+		
+			var tagName = element.data.split(Parser._reWhitespace, 1)[0];
+			var attribRaw = element.data.substring(tagName.length);
+			if (attribRaw.length < 1)
+				return;
+		
+			var match;
+			Parser._reAttrib.lastIndex = 0;
+			while (match = Parser._reAttrib.exec(attribRaw)) {
+				if (element.attribs == undefined)
+					element.attribs = {};
+		
+				if (typeof match[1] == "string" && match[1].length) {
+					element.attribs[match[1]] = match[2];
+				} else if (typeof match[3] == "string" && match[3].length) {
+					element.attribs[match[3].toString()] = match[4].toString();
+				} else if (typeof match[5] == "string" && match[5].length) {
+					element.attribs[match[5]] = match[6];
+				} else if (typeof match[7] == "string" && match[7].length) {
+					element.attribs[match[7]] = match[7];
+				}
+			}
+		}
+
+		//Extracts the base tag name from the data value of an element
+		Parser.prototype.parseTagName = function Parser$parseTagName (data) {
+			if (data == null || data == "")
+				return("");
+			var match = Parser._reTagName.exec(data);
+			if (!match)
+				return("");
+			return((match[1] ? "/" : "") + match[2]);
+		}
+
+>>>>>>> upgrade-vuejs2
 		//Parses through HTML text and returns an array of found elements
 		//I admit, this function is rather large but splitting up had an noticeable impact on speed
 		Parser.prototype.parseTags = function Parser$parseTags () {
@@ -18237,7 +23004,11 @@
 /* 29 */
 /***/ function(module, exports) {
 
+<<<<<<< HEAD
 	module.exports = "<div id='main-container'>\r\n\t<div id='title-bar'>\r\n\t\t<input id='post-title' v-model='title' placeholder='Post title' spellcheck=\"false\">\r\n\t</div>\r\n\t<div id='editor'>\r\n\t\t<div id='markdown-editor' v-bind:class=\"{'focus': ui.markdownEditorActive}\">\r\n\t\t\t<div class='editor-bar'>\r\n\t\t\t\t<span>Markdown</span>\r\n\t\t\t\t<div id='editor-formatting'>\r\n\t\t\t\t\t<i id='me-bold' v-on:click='bold()' title='Bold' class='fa fa-bold'></i>\r\n\t\t\t\t\t<i id='me-italic' v-on:click='italic()' title='Italic' class='fa fa-italic'></i>\r\n\t\t\t\t\t<i id='me-link' v-on:click='link()' title='Link' class='fa fa-link'></i>\r\n\t\t\t\t\t<i id='me-list-ul' v-on:click='bulletPoint()' title='Bullet-point' class='fa fa-list-ul'></i>\r\n\t\t\t\t\t<i id='me-picture' v-on:click='image()' title='Image' class=\"fa fa-picture-o\"></i>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<textarea\r\n\t\t\t\tv-on:focus='toggleFocusMarkdownEditor()'\r\n\t\t\t\tv-on:blur='toggleFocusMarkdownEditor()' \r\n\t\t\t\tv-model='markdown'\r\n\t\t\t\tplaceholder=\"Write your blog post in markdown here\">\r\n\t\t\t</textarea>\r\n\t\t</div>\r\n\t\t<div id='display'>\r\n\t\t\t<div class='editor-bar'>\r\n\t\t\t\t<span>Display</span>\r\n\t\t\t\t<div id='word-count'>\r\n\t\t\t\t\t{{wordCountString}}\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div id='display-output'>\r\n\t\t\t\t<div v-if='html.length' v-html='html'></div>\r\n\t\t\t\t<span id='display-output-none' v-else>See the HTML output here</span>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div id='options'>\r\n\t\t\t<div \r\n\t\t\t\tid='post-options'\r\n\t\t\t\tclass='button btn-load'\r\n\t\t\t\tv-bind:class='{\"btn-disabled\": ui.savingOptions}'\r\n\t\t\t\tv-show='ui.isSavedPost'\r\n\t\t\t\tref='options-button'\r\n\t\t\t>\r\n\t\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\t\tPost options\r\n\t\t\t</div>\r\n\t\t\t<div\r\n\t\t\t\tv-on:click.self='saveButton()'\r\n\t\t\t\tref='save-button'\r\n\t\t\t\tv-bind:class='{\"btn-disabled\": ui.saving}'\r\n\t\t\t\tclass='button btn-load btn-green'\r\n\t\t\t>\r\n\t\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\t\tSave changes\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n\t<tag-bar v-bind:tags='tags'></tag-bar>\r\n</div>";
+=======
+	module.exports = "<div id='main-container'>\r\n\t<div id='title-bar'>\r\n\t\t<input id='post-title' v-model='title' placeholder='Post title' spellcheck=\"false\">\r\n\t</div>\r\n\t<div id='editor'>\r\n\t\t<div id='markdown-editor' v-bind:class=\"{'focus': ui.markdownEditorActive}\">\r\n\t\t\t<div class='editor-bar'>\r\n\t\t\t\t<span>Markdown</span>\r\n\t\t\t\t<div id='editor-formatting'>\r\n\t\t\t\t\t<i id='me-bold' v-on:click='bold()' title='Bold' class='fa fa-bold'></i>\r\n\t\t\t\t\t<i id='me-italic' v-on:click='italic()' title='Italic' class='fa fa-italic'></i>\r\n\t\t\t\t\t<i id='me-link' v-on:click='link()' title='Link' class='fa fa-link'></i>\r\n\t\t\t\t\t<i id='me-list-ul' v-on:click='bulletPoint()' title='Bullet-point' class='fa fa-list-ul'></i>\r\n\t\t\t\t\t<i id='me-picture' v-on:click='image()' title='Image' class=\"fa fa-picture-o\"></i>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<textarea\r\n\t\t\t\tv-on:focus='toggleFocusMarkdownEditor()'\r\n\t\t\t\tv-on:blur='toggleFocusMarkdownEditor()' \r\n\t\t\t\tv-model='markdown'\r\n\t\t\t\tplaceholder=\"Write your blog post in markdown here\">\r\n\t\t\t</textarea>\r\n\t\t</div>\r\n\t\t<div id='display'>\r\n\t\t\t<div class='editor-bar'>\r\n\t\t\t\t<span>Display</span>\r\n\t\t\t\t<div id='word-count'>\r\n\t\t\t\t\t{{wordCountString}}\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div id='display-output'>\r\n\t\t\t\t<div v-if='html.length' v-html='html'></div>\r\n\t\t\t\t<span id='display-output-none' v-else>See the HTML output here</span>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div id='options'>\r\n\t\t\t<div \r\n\t\t\t\tid='post-options'\r\n\t\t\t\tclass='button btn-load'\r\n\t\t\t\tv-bind:class='{\"btn-disabled\": ui.savingOptions}'\r\n\t\t\t\tv-show='ui.isSavedPost'\r\n\t\t\t\tref='optionsButton'\r\n\t\t\t>\r\n\t\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\t\tPost options\r\n\t\t\t</div>\r\n\t\t\t<div\r\n\t\t\t\tv-on:click.self='saveButton()'\r\n\t\t\t\tref='saveButton'\r\n\t\t\t\tv-bind:class='{\"btn-disabled\": ui.saving}'\r\n\t\t\t\tclass='button btn-load btn-green'\r\n\t\t\t>\r\n\t\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\t\tSave changes\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n\t<tag-bar v-bind:tags='tags'></tag-bar>\r\n</div>";
+>>>>>>> upgrade-vuejs2
 
 /***/ },
 /* 30 */
@@ -18359,7 +23130,11 @@
 				if(this.selected === 'All comments') {
 					return sortedComments;
 				} else if(this.selected !== 'Settings') {
+<<<<<<< HEAD
 					return sortedComments.filter(comment => comment.status === selected.name.toLowerCase());
+=======
+					return sortedComments.filter(comment => comment.status === this.selected.toLowerCase());
+>>>>>>> upgrade-vuejs2
 				}
 			}
 		},
@@ -18460,7 +23235,11 @@
 /* 32 */
 /***/ function(module, exports) {
 
+<<<<<<< HEAD
 	module.exports = "<div id='main-container'>\r\n\t<div id='comments-selection'>\r\n\t\t<div\r\n\t\t\tclass='option'\r\n\t\t\tv-on:click='selectCategory(category.name)'\r\n\t\t\tv-bind:class='{\"selected\": selected === category.name}'\r\n\t\t\tv-for='category in categories'\r\n\t\t>\r\n\t\t\t<i class='fa fa-fw' :class='\"fa-\" + category.icon'></i> {{category.name}}\r\n\t\t</div>\r\n\t</div>\r\n\t<div id='comments-box'>\r\n\t\t<div id='comment-box-bar' v-if='filteredComments.length'>\r\n\t\t\t<span>Sort by: {{sortBy}}&nbsp;<i class='fa fa-caret-down'></i></span>\r\n\t\t</div>\r\n\t\t<div class='loading-box no-select' v-if='!filteredComments.length'>\r\n\t\t\t{{loadingText}}\r\n\t\t</div>\r\n\t\t<div class='comment' v-for='(comment, index) in filteredComments'>\r\n\t\t\t<div class='comment-status' v-bind:class='\"comment-\" + comment.status'></div>\r\n\t\t\t<div class='center-column'>\r\n\t\t\t\t<div class='title-bar'>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<span class='fa fa-pencil' v-if='comment.author' data-title='Comment by blog author'></span>\r\n\t\t\t\t\t\t<span class='name' data-title='Name of commenter'>{{comment.name}}</span>\r\n\t\t\t\t\t\t<span class='reply' v-bind:data-title=\"'Replying to \\\"' + comment.repliesName + '\\\"'\" v-if='comment.repliesName'>\r\n\t\t\t\t\t\t\t<i class='fa fa-long-arrow-right fa-fw'></i>{{comment.repliesName}}\r\n\t\t\t\t\t\t</span>\r\n\t\t\t\t\t\tin post\r\n\t\t\t\t\t\t<span class='post-title' v-on:click='openPost(comment.postId)' data-title='Title of post - click to open in new tab'>\"{{comment.postTitle}}\"</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<span class='date-created'>{{comment.dateCreated | prettyDate('and time')}}</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class='comment-body'>\r\n\t\t\t\t\t{{comment.commentBody}}\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class='comment-buttons'>\r\n\t\t\t\t<div class='button btn-green' v-on:click='moderate(comment._id, index, \"approved\")' v-if='comment.status === \"pending\" || comment.status === \"removed\"'>Approve</div>\r\n\t\t\t\t<div class='button btn-red'  v-on:click='moderate(comment._id, index, \"removed\")'  v-if='comment.status === \"pending\" || comment.status === \"approved\"'>Remove</div>\r\n\t\t\t\t<div class='button btn-red'  v-on:click='deletePost(comment._id, comment)'  v-if='comment.status === \"removed\"'>Delete</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n</div>";
+=======
+	module.exports = "<div id='main-container'>\r\n\t<div id='comments-selection'>\r\n\t\t<div\r\n\t\t\tclass='option'\r\n\t\t\tv-on:click='selectCategory(category.name)'\r\n\t\t\tv-bind:class='{\"selected\": selected === category.name}'\r\n\t\t\tv-for='category in categories'\r\n\t\t>\r\n\t\t\t<i class='fa fa-fw' :class='\"fa-\" + category.icon'></i> {{category.name}}\r\n\t\t</div>\r\n\t</div>\r\n\t<div id='comments-box'>\r\n\t\t<div id='comment-box-bar' v-if='filteredComments.length'>\r\n\t\t\t<span>Sort by: {{sortBy}}&nbsp;<i class='fa fa-caret-down'></i></span>\r\n\t\t</div>\r\n\t\t<div class='loading-box no-select' v-if='!filteredComments.length'>\r\n\t\t\t{{loadingText}}\r\n\t\t</div>\r\n\t\t<div class='comment' v-for='(comment, index) in filteredComments'>\r\n\t\t\t<div class='comment-status' v-bind:class='\"comment-\" + comment.status'></div>\r\n\t\t\t<div class='center-column'>\r\n\t\t\t\t<div class='title-bar'>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<span class='fa fa-pencil' v-if='comment.author' data-title='Comment by blog author'></span>\r\n\t\t\t\t\t\t<span class='name' data-title='Name of commenter'>{{comment.name}}</span>\r\n\t\t\t\t\t\t<span\r\n\t\t\t\t\t\t\tclass='reply'\r\n\t\t\t\t\t\t\tv-bind:data-title=\"'Replying to ' + comment.repliesName + ''\"\r\n\t\t\t\t\t\t\tv-if='comment.repliesName'\r\n\t\t\t\t\t\t>\r\n\t\t\t\t\t\t\t<i class='fa fa-long-arrow-right fa-fw'></i>{{comment.repliesName}}\r\n\t\t\t\t\t\t</span>\r\n\t\t\t\t\t\tin post\r\n\t\t\t\t\t\t<span class='post-title' v-on:click='openPost(comment.postId)' data-title='Title of post - click to open in new tab'>\"{{comment.postTitle}}\"</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<span class='date-created'>{{comment.dateCreated | prettyDate('and time')}}</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class='comment-body'>\r\n\t\t\t\t\t{{comment.commentBody}}\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class='comment-buttons'>\r\n\t\t\t\t<div class='button btn-green' v-on:click='moderate(comment._id, index, \"approved\")' v-if='comment.status === \"pending\" || comment.status === \"removed\"'>Approve</div>\r\n\t\t\t\t<div class='button btn-red'  v-on:click='moderate(comment._id, index, \"removed\")'  v-if='comment.status === \"pending\" || comment.status === \"approved\"'>Remove</div>\r\n\t\t\t\t<div class='button btn-red'  v-on:click='deletePost(comment._id, comment)'  v-if='comment.status === \"removed\"'>Delete</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n</div>";
+>>>>>>> upgrade-vuejs2
 
 /***/ },
 /* 33 */
