@@ -187,7 +187,7 @@ var Dashboard = Vue.extend({
 				var currentDate = a.getTime();
 				var nextDate = b.getTime();
 
-				return (nextDate - currentDate) / (dayMs) - 1;
+				return Math.round((nextDate - currentDate) / (dayMs)) - 1;
 			}
 
 			var pageViews = data;
@@ -222,7 +222,7 @@ var Dashboard = Vue.extend({
 
 			//Now reverse so that it is date ascending
 			pageViews = pageViews.reverse();
-		
+
 			//Fill in gaps between dates
 			pageViews.forEach(function(day, i, arr) {
 				pageViewsAddedDays.push(day);
@@ -234,9 +234,20 @@ var Dashboard = Vue.extend({
 				var nextDate = arr[i+1].date;
 				var daysInBetween = getDaysInBetween(currentDate, nextDate);
 
+				if(daysInBetween === 0) return;
+
 				for(var j = 1; j < daysInBetween+1; j++) {
+					var prevNewDate = new Date(currentDate.getTime() + dayMs*(j-1));
+					var newDate = new Date(currentDate.getTime() + dayMs*j);
+
+					//In case there is a change of time zone offset
+					if(prevNewDate.getDate() === newDate.getDate()) {
+						var offset = -prevNewDate.getTimezoneOffset()*60*1000;
+						newDate = new Date(newDate.getTime() + offset);
+					}
+
 					pageViewsAddedDays.push({
-						date: new Date(currentDate.getTime() + dayMs*j),
+						date: newDate,
 						hits: 0
 					});
 				}
