@@ -57,16 +57,16 @@
 		</div>
 	</div>
 	<div class='widget'>
-		<template v-if='posts.views.length'>
+		<template v-if='posts.views[0]'>
 			<ol id='most-viewed-posts'>
-				<template  v-for='n in 3'>
+				<template  v-for='(post, index) in posts.views'>
 					<li 
-						v-if='posts.views[n]'
+						v-if='post'
 						v-on:click='openPost(posts.views[n].slug)'
-						v-bind:class='{"most-viewed": n===0}'
+						v-bind:class='{"most-viewed": index===0}'
 					>
-						<div data-title="Open post '@content'" data-test='Open post'>{{posts.views[n].title}}</div>
-						<span>{{posts.views[n].views}} {{"view" | pluralize(posts.views[n].views)}}</span>
+						<div data-title="Open post '@content'" data-test='Open post'>{{post.title}}</div>
+						<span>{{post.views}} {{"view" | pluralize(post.views)}}</span>
 					</li>
 					<li v-else class='no-show'></li>
 				</template>

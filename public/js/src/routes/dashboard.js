@@ -141,7 +141,7 @@ var Dashboard = Vue.extend({
 			}.bind(this));
 		},
 		getLatestPostStats: function(posts) {
-			var latestPostViews = 0, allPostViews = {}, allPostViewsArr = [];
+			var latestPostViews = 0, allPostViews = {}, allPostViewsArr = [], arrLengthThree = [];
 
 			var self = this;
 
@@ -170,10 +170,16 @@ var Dashboard = Vue.extend({
 				}
 			});
 
-			this.latestPost.views = latestPostViews;
-			this.posts.views = allPostViewsArr.sort(function(a, b) {
+			allPostViewsArr = allPostViewsArr.sort(function(a, b) {
 				return b.views - a.views
-			}).slice(0, 3);
+			});
+
+			for(var i = 0; i < 3; i++) {
+				arrLengthThree.push(allPostViewsArr[i])
+			}
+
+			this.latestPost.views = latestPostViews;
+			this.posts.views = arrLengthThree;
 		},
 		processData: function(data) {
 			var dayMs = 24*60*60*1000;
