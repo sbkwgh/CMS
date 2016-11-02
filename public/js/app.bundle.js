@@ -11347,7 +11347,7 @@
 				this.selectedId = id;
 			}, 
 			editPost: function() {
-				this.$router.push({ name: 'posts/post', params: {id: this.selectedId} });
+				this.$router.push('posts/post/' + this.selectedId);
 			},
 			deletePost: function() {
 				var index = this.posts.indexOf(this.selectedPost);
@@ -14446,12 +14446,10 @@
 			},
 
 			buttonMessage: function(button, message) {
-				console.log(this.$refs)
-
 				if(button === 'save') {
-					titleTooltip(this.$refs.saveButton, message, 3000);
+					titleTooltip(document.querySelector('#save-button'), message, 3000);
 				} else if(button === 'options') {
-					titleTooltip(this.$refs.optionsButton, message, 3000);
+					titleTooltip(document.querySelector('#post-options'), message, 3000);
 				}
 			},
 
@@ -18229,7 +18227,7 @@
 /* 29 */
 /***/ function(module, exports) {
 
-	module.exports = "<div id='main-container'>\r\n\t<div id='title-bar'>\r\n\t\t<input id='post-title' v-model='title' placeholder='Post title' spellcheck=\"false\">\r\n\t</div>\r\n\t<div id='editor'>\r\n\t\t<div id='markdown-editor' v-bind:class=\"{'focus': ui.markdownEditorActive}\">\r\n\t\t\t<div class='editor-bar'>\r\n\t\t\t\t<span>Markdown</span>\r\n\t\t\t\t<div id='editor-formatting'>\r\n\t\t\t\t\t<i id='me-bold' v-on:click='bold()' title='Bold' class='fa fa-bold'></i>\r\n\t\t\t\t\t<i id='me-italic' v-on:click='italic()' title='Italic' class='fa fa-italic'></i>\r\n\t\t\t\t\t<i id='me-link' v-on:click='link()' title='Link' class='fa fa-link'></i>\r\n\t\t\t\t\t<i id='me-list-ul' v-on:click='bulletPoint()' title='Bullet-point' class='fa fa-list-ul'></i>\r\n\t\t\t\t\t<i id='me-picture' v-on:click='image()' title='Image' class=\"fa fa-picture-o\"></i>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<textarea\r\n\t\t\t\tv-on:focus='toggleFocusMarkdownEditor()'\r\n\t\t\t\tv-on:blur='toggleFocusMarkdownEditor()' \r\n\t\t\t\tv-model='markdown'\r\n\t\t\t\tplaceholder=\"Write your blog post in markdown here\">\r\n\t\t\t</textarea>\r\n\t\t</div>\r\n\t\t<div id='display'>\r\n\t\t\t<div class='editor-bar'>\r\n\t\t\t\t<span>Display</span>\r\n\t\t\t\t<div id='word-count'>\r\n\t\t\t\t\t{{wordCountString}}\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div id='display-output'>\r\n\t\t\t\t<div v-if='html.length' v-html='html'></div>\r\n\t\t\t\t<span id='display-output-none' v-else>See the HTML output here</span>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div id='options'>\r\n\t\t\t<div \r\n\t\t\t\tid='post-options'\r\n\t\t\t\tclass='button btn-load'\r\n\t\t\t\tv-bind:class='{\"btn-disabled\": ui.savingOptions}'\r\n\t\t\t\tv-show='ui.isSavedPost'\r\n\t\t\t\tref='optionsButton'\r\n\t\t\t>\r\n\t\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\t\tPost options\r\n\t\t\t</div>\r\n\t\t\t<div\r\n\t\t\t\tv-on:click.self='saveButton()'\r\n\t\t\t\tref='saveButton'\r\n\t\t\t\tv-bind:class='{\"btn-disabled\": ui.saving}'\r\n\t\t\t\tclass='button btn-load btn-green'\r\n\t\t\t>\r\n\t\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\t\tSave changes\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n\t<tag-bar v-bind:tags='tags'></tag-bar>\r\n</div>";
+	module.exports = "<div id='main-container'>\r\n\t<div id='title-bar'>\r\n\t\t<input id='post-title' v-model='title' placeholder='Post title' spellcheck=\"false\">\r\n\t</div>\r\n\t<div id='editor'>\r\n\t\t<div id='markdown-editor' v-bind:class=\"{'focus': ui.markdownEditorActive}\">\r\n\t\t\t<div class='editor-bar'>\r\n\t\t\t\t<span>Markdown</span>\r\n\t\t\t\t<div id='editor-formatting'>\r\n\t\t\t\t\t<i id='me-bold' v-on:click='bold()' title='Bold' class='fa fa-bold'></i>\r\n\t\t\t\t\t<i id='me-italic' v-on:click='italic()' title='Italic' class='fa fa-italic'></i>\r\n\t\t\t\t\t<i id='me-link' v-on:click='link()' title='Link' class='fa fa-link'></i>\r\n\t\t\t\t\t<i id='me-list-ul' v-on:click='bulletPoint()' title='Bullet-point' class='fa fa-list-ul'></i>\r\n\t\t\t\t\t<i id='me-picture' v-on:click='image()' title='Image' class=\"fa fa-picture-o\"></i>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<textarea\r\n\t\t\t\tv-on:focus='toggleFocusMarkdownEditor()'\r\n\t\t\t\tv-on:blur='toggleFocusMarkdownEditor()' \r\n\t\t\t\tv-model='markdown'\r\n\t\t\t\tplaceholder=\"Write your blog post in markdown here\">\r\n\t\t\t</textarea>\r\n\t\t</div>\r\n\t\t<div id='display'>\r\n\t\t\t<div class='editor-bar'>\r\n\t\t\t\t<span>Display</span>\r\n\t\t\t\t<div id='word-count'>\r\n\t\t\t\t\t{{wordCountString}}\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div id='display-output'>\r\n\t\t\t\t<div v-if='html.length' v-html='html'></div>\r\n\t\t\t\t<span id='display-output-none' v-else>See the HTML output here</span>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div id='options'>\r\n\t\t\t<div \r\n\t\t\t\tid='post-options'\r\n\t\t\t\tclass='button btn-load'\r\n\t\t\t\tv-bind:class='{\"btn-disabled\": ui.savingOptions}'\r\n\t\t\t\tv-show='ui.isSavedPost'\r\n\t\t\t\tref='optionsButton'\r\n\t\t\t>\r\n\t\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\t\tPost options\r\n\t\t\t</div>\r\n\t\t\t<div\r\n\t\t\t\tv-on:click.self='saveButton()'\r\n\t\t\t\tref='saveButton'\r\n\t\t\t\tid='save-button'\r\n\t\t\t\tv-bind:class='{\"btn-disabled\": ui.saving}'\r\n\t\t\t\tclass='button btn-load btn-green'\r\n\t\t\t>\r\n\t\t\t\t<i class='fa fa-refresh fa-spin loading-icon'></i>\r\n\t\t\t\tSave changes\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n\t<tag-bar v-bind:tags='tags'></tag-bar>\r\n</div>";
 
 /***/ },
 /* 30 */
