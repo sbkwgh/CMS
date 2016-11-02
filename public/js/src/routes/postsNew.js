@@ -156,12 +156,10 @@ var PostsNew = Vue.extend({
 		},
 
 		buttonMessage: function(button, message) {
-			console.log(this.$refs)
-
 			if(button === 'save') {
-				titleTooltip(this.$refs.saveButton, message, 3000);
+				titleTooltip(document.querySelector('#save-button'), message, 3000);
 			} else if(button === 'options') {
-				titleTooltip(this.$refs.optionsButton, message, 3000);
+				titleTooltip(document.querySelector('#post-options'), message, 3000);
 			}
 		},
 
