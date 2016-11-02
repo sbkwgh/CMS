@@ -184,7 +184,7 @@ router.delete('/moderate/:id', function(req, res) {
 	if(!validObjectId(id)) {
 		res.json({error: Errors.invalidId});
 	} else {
-		Comment.findOneAndRemove({_id: stringToObjectId}, function(err) {
+		Comment.findOneAndRemove({_id: stringToObjectId(id)}, function(err) {
 			if(err) {
 				console.log(err);
 				res.json({error: Errors.unknown});
